@@ -1,6 +1,6 @@
 # Literature Review
 ## Domain: Intelligent Subscription Commerce, Customer Churn Modeling, and Explainable AI
-**Project**: RentAI – Smart Appliance Rental Platform  
+**Project**: Rentora – Smart Appliance Rental Platform  
 **Version**: 1.0.0  
 
 ---
@@ -19,7 +19,7 @@ However, sustaining profitability in appliance rental ecosystems is intrinsicall
 
 ## 2. E-Commerce Rental Platforms: State of the Art and Limitations
 
-Early literature on electronic commerce platforms primarily addressed one-time purchase lifecycles (Amazon, Flipkart) [2]. When applied to leasing services (e.g. Rentomojo, Furlenco, Grover), traditional e-commerce frameworks exhibit structural deficiencies:
+Early literature on electronic commerce platforms primarily addressed one-time purchase lifecycles (Amazon, Flipkart) [2]. When applied to furniture and appliance leasing services, traditional e-commerce frameworks exhibit structural deficiencies:
 - **Contract Duration Dynamics**: Unlike one-off purchases, rental models require temporal state tracking (active tenures, periodic billing cycles, return inspections, refurbishment, and inventory restoration) [3].
 - **Schema Rigidity in Relational Databases**: Traditional relational database management systems (RDBMS) struggle to represent multi-tiered tenure pricing (e.g., $3, 6, 12$ month discounts) and dynamic city-specific logistics without incurring expensive cross-table joins that degrade read performance under peak load [4].
 
@@ -78,7 +78,7 @@ $$f(x) = \phi_0 + \sum_{i=1}^{M} \phi_i(x)$$
 - **Missingness**: Missing features receive zero attribution.
 - **Consistency**: If a model change increases or leaves unchanged the marginal contribution of a feature, that feature’s Shapley value does not decrease.
 
-RentAI directly harnesses TreeSHAP to transform numeric feature contributions into plain-language operational reason codes (e.g., *"3 late payments in last 6 months"*, *"Over 30 days of inactivity"*), empowering customer retention agents to deploy targeted promotions.
+Rentora directly harnesses TreeSHAP to transform numeric feature contributions into plain-language operational reason codes (e.g., *"3 late payments in last 6 months"*, *"Over 30 days of inactivity"*), empowering customer retention agents to deploy targeted promotions.
 
 ---
 
@@ -100,7 +100,7 @@ the engine produces accurate cross-category recommendations (e.g., suggesting a 
 
 ## 6. Synthesis and Research Gap
 
-| Dimension | Existing Industry Platforms | Academic Literature Baseline | RentAI Proposed Framework |
+| Dimension | Existing Industry Platforms | Academic Literature Baseline | Rentora Proposed Framework |
 |---|---|---|---|
 | **Data Persistence** | Monolithic RDBMS with complex joins | Hybrid Polyglot persistence | Unified MongoDB NoSQL collection architecture |
 | **Churn Prediction** | Infrequent batch Logistic Regression | Standalone offline GBDT benchmarks | Decoupled LightGBM ETL with sub-second MongoDB lookup |
@@ -108,7 +108,7 @@ the engine produces accurate cross-category recommendations (e.g., suggesting a 
 | **Catalog Discovery** | Rule-based "Featured Items" | Collaborative Matrix Factorization | Content-Aware TF-IDF + Cosine Similarity cross-sell engine |
 
 ### The Research Gap
-Existing literature extensively evaluates churn models on telecommunications and banking datasets (e.g. Kaggle Telco Churn), but leaves a prominent void regarding **durable appliance rental ecosystems** where customer engagement patterns, multi-month contract tenures, and physical return logistics drastically alter feature dynamics. RentAI directly addresses this void by unifying explainable GBDT modeling, collaborative text-vectorized item discovery, and a reactive NoSQL operational architecture.
+Existing literature extensively evaluates churn models on telecommunications and banking datasets (e.g. Kaggle Telco Churn), but leaves a prominent void regarding **durable appliance rental ecosystems** where customer engagement patterns, multi-month contract tenures, and physical return logistics drastically alter feature dynamics. Rentora directly addresses this void by unifying explainable GBDT modeling, collaborative text-vectorized item discovery, and a reactive NoSQL operational architecture.
 
 ---
 

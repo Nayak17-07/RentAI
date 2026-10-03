@@ -1,5 +1,5 @@
 # Technical Documentation & Developer Guide
-## Project: RentAI – Smart Appliance Rental Platform
+## Project: Rentora – Smart Appliance Rental Platform
 **Target Audience**: Software Engineers, DevOps Engineers, and Data Scientists  
 **Version**: 1.0.0  
 
@@ -22,8 +22,8 @@ Clone the repository and initialize the Python virtual environment:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/RentAI.git
-cd RentAI
+git clone https://github.com/your-org/Rentora.git
+cd Rentora
 
 # Create and activate virtual environment
 python -m venv venv
@@ -108,7 +108,7 @@ python test_all_modules_fast.py
 The script runs 9 atomic checkpoints and outputs real-time results:
 ```
 ============================================================================
-  RENTAI FULL-STACK SYSTEM VERIFICATION (FAST AGENT)
+  RENTORA FULL-STACK SYSTEM VERIFICATION (FAST AGENT)
 ============================================================================
 [PASSED]   Step 0  | System Architecture            | Frontend (Vite :5173) Health
 [PASSED]   Step 1  | Module 1: User Auth & Profile  | Customer Registration
@@ -131,7 +131,7 @@ The script runs 9 atomic checkpoints and outputs real-time results:
 | `api/mongo_auth.py` | Custom stateless JWT authentication strategy verifying MongoDB tokens. |
 | `api/views.py` | REST API controllers handling Auth, Catalog, Cart, Checkout, Rentals, and Admin. |
 | `api/urls.py` | URL route definitions mapping endpoints to APIViews. |
-| `rentai_core/settings.py` | Core Django configuration, CORS settings, and MongoDB connection URIs. |
+| `rentora_core/settings.py` | Core Django configuration, CORS settings, and MongoDB connection URIs. |
 | `ml_pipeline/etl_pipeline.py` | Behavioral feature transformation and aggregation logic. |
 | `ml_pipeline/train_model.py` | Core ML training harness for LightGBM, SHAP, and TF-IDF. |
 | `ml_pipeline/evaluate_models.py` | Statistical evaluation script comparing models and benchmarking metrics. |

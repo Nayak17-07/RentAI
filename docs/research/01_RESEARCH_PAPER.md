@@ -1,4 +1,4 @@
-# RentAI: An Explainable Machine Learning and Collaborative Recommendation Framework for Smart Appliance Rental Ecosystems
+# Rentora: An Explainable Machine Learning and Collaborative Recommendation Framework for Smart Appliance Rental Ecosystems
 
 **Conference / Journal Submission Format (IEEE Transactions Standard)**  
 **Authors**: Engineering Research Team, SDC-II Project Group  
@@ -9,7 +9,7 @@
 ## Abstract
 The rapid growth of the "access-over-ownership" economy has expanded consumer demand for subscription-based home appliance leasing. However, sustainable unit economics in appliance rental platforms are severely hindered by premature customer churn and high operational acquisition costs. Traditional retention mechanisms rely either on post-cancellation surveys or opaque black-box machine learning models that lack actionable interpretability for business stakeholders. 
 
-In this paper, we propose **RentAI**, an end-to-end intelligent platform that unifies an asynchronous machine learning pipeline with a high-performance MongoDB NoSQL transactional architecture. RentAI integrates **LightGBM (Light Gradient Boosting Machine)** for high-speed churn classification, combined with **TreeSHAP (SHapley Additive exPlanations)** to generate individualized, axiomatically sound reason codes in real time. Furthermore, a content-aware **TF-IDF and Cosine Similarity recommendation engine** mitigates cold-start hurdles to cross-sell complementary inventory. Empirical validation on a comprehensive dataset of rental behavioral metrics demonstrates that our LightGBM architecture attains an **ROC-AUC of 0.9412** and an **F1-score of 0.8787**, while outperforming standard Random Forest and XGBoost baselines in training efficiency by **$7.5\times$**, while maintaining sub-50ms API query response times through pre-computed document caching.
+In this paper, we propose **Rentora**, an end-to-end intelligent platform that unifies an asynchronous machine learning pipeline with a high-performance MongoDB NoSQL transactional architecture. Rentora integrates **LightGBM (Light Gradient Boosting Machine)** for high-speed churn classification, combined with **TreeSHAP (SHapley Additive exPlanations)** to generate individualized, axiomatically sound reason codes in real time. Furthermore, a content-aware **TF-IDF and Cosine Similarity recommendation engine** mitigates cold-start hurdles to cross-sell complementary inventory. Empirical validation on a comprehensive dataset of rental behavioral metrics demonstrates that our LightGBM architecture attains an **ROC-AUC of 0.9412** and an **F1-score of 0.8787**, while outperforming standard Random Forest and XGBoost baselines in training efficiency by **$7.5\times$**, while maintaining sub-50ms API query response times through pre-computed document caching.
 
 ---
 
@@ -21,7 +21,7 @@ Despite this imperative, equipment rental platforms face three persistent techni
 2. **Catalog Sparsity and Cold-Start**: Unlike entertainment media platforms (e.g., Netflix, Spotify), transaction frequency in appliance rentals is low (1 to 4 items per user), rendering pure collaborative filtering ineffective.
 3. **Impedance Mismatch in Relational Schemas**: Traditional RDBMS platforms suffer performance degradation when modeling polymorphic appliance specifications across variable tenure pricing matrices and multi-city distribution hubs.
 
-To resolve these challenges, we introduce **RentAI**, an intelligent cloud platform featuring:
+To resolve these challenges, we introduce **Rentora**, an intelligent cloud platform featuring:
 - A high-concurrency **MongoDB NoSQL document model** natively supporting flexible tenure matrices and pre-computed analytical cache collections.
 - An asynchronous **LightGBM Churn Engine** optimized for tabular behavioral records.
 - Real-time **TreeSHAP attribution** translating mathematical Shapley vectors into plain-language operational reason codes.
@@ -41,7 +41,7 @@ Model interpretability in operational environments has historically relied on LI
 
 ## III. Proposed System Architecture
 
-RentAI decouples the high-velocity transactional web layer from the computationally demanding analytical intelligence layer.
+Rentora decouples the high-velocity transactional web layer from the computationally demanding analytical intelligence layer.
 
 ```mermaid
 graph TD
@@ -94,12 +94,12 @@ Experiments were executed on a test environment configured with Python 3.11, Lig
 |---|---|---|---|---|---|---|
 | Random Forest (100 Trees) | 86.33% | 84.62% | 82.50% | 0.8354 | 0.9088 | 0.318s |
 | XGBoost Baseline | 88.00% | 86.15% | 85.00% | 0.8557 | 0.9240 | 0.285s |
-| **RentAI LightGBM (Proposed)** | **89.67%** | **88.24%** | **87.50%** | **0.8787** | **0.9412** | **0.042s** |
+| **Rentora LightGBM (Proposed)** | **89.67%** | **88.24%** | **87.50%** | **0.8787** | **0.9412** | **0.042s** |
 
 ```mermaid
 xychart-beta
     title "ROC-AUC Comparison Across Machine Learning Classifiers"
-    x-axis ["Random Forest", "XGBoost", "RentAI LightGBM"]
+    x-axis ["Random Forest", "XGBoost", "Rentora LightGBM"]
     y-axis "ROC-AUC Score" 0.85 --> 1.0
     bar [0.9088, 0.9240, 0.9412]
 ```
@@ -113,7 +113,7 @@ Query latency for the pre-computed recommendations and churn scores was evaluate
 ---
 
 ## VI. Conclusion and Future Research
-This research presented RentAI, a full-stack smart appliance rental platform demonstrating that asynchronous gradient boosting coupled with TreeSHAP and NoSQL caching resolves the trade-off between predictive accuracy, operational interpretability, and web transaction latency. Future research will explore multi-modal deep learning representations combining textual specifications with visual appliance damage inspection images for automated returns.
+This research presented Rentora, a full-stack smart appliance rental platform demonstrating that asynchronous gradient boosting coupled with TreeSHAP and NoSQL caching resolves the trade-off between predictive accuracy, operational interpretability, and web transaction latency. Future research will explore multi-modal deep learning representations combining textual specifications with visual appliance damage inspection images for automated returns.
 
 ---
 

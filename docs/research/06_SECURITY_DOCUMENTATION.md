@@ -1,5 +1,5 @@
 # Security Architecture & Compliance Documentation
-## Project: RentAI – Smart Appliance Rental Platform
+## Project: Rentora – Smart Appliance Rental Platform
 **Standard**: OWASP Top 10 (2021) & NIST SP 800-53 Compliant  
 **Version**: 1.0.0  
 
@@ -7,7 +7,7 @@
 
 ## 1. Security Philosophy and Threat Model
 
-RentAI handles sensitive customer information, lease transaction agreements, and financial KYC documentation. Security is architected at every tier following the principle of **Defense-in-Depth (DiD)**.
+Rentora handles sensitive customer information, lease transaction agreements, and financial KYC documentation. Security is architected at every tier following the principle of **Defense-in-Depth (DiD)**.
 
 ```mermaid
 graph TD
@@ -64,13 +64,13 @@ Endpoints enforce granular role checks:
 Unlike SQL applications susceptible to `OR 1=1` statement injection, MongoDB applications can be vulnerable to operator injection (e.g. passing `{"$ne": null}` in JSON payloads to bypass authentication).
 
 ### 3.1 Defense Implementation
-RentAI strictly enforces explicit type casting and whitelist validation before passing parameters into PyMongo queries:
+Rentora strictly enforces explicit type casting and whitelist validation before passing parameters into PyMongo queries:
 
 ```python
 # Vulnerable Pattern (DO NOT USE)
 # user = db.users.find_one({"email": request.data.get("email")})
 
-# RentAI Secure Pattern
+# Rentora Secure Pattern
 email = str(request.data.get("email", "")).strip().lower()
 password = str(request.data.get("password", ""))
 
@@ -85,7 +85,7 @@ By forcing string casting, raw BSON operator dictionaries are rejected, neutrali
 
 ## 4. OWASP Top 10 (2021) Compliance Matrix
 
-| OWASP Vulnerability | Risk Level | RentAI Mitigation Architecture | Status |
+| OWASP Vulnerability | Risk Level | Rentora Mitigation Architecture | Status |
 |---|---|---|---|
 | **A01: Broken Access Control** | Critical | Strict RBAC in `AdminDashboardView` verifying `request.user.role == 'admin'`; users can only query their own `user_id` rentals. | **VERIFIED** |
 | **A02: Cryptographic Failures** | High | PBKDF2 SHA-256 for passwords; TLS 1.3 for all HTTP traffic; secret key protected via environment variables. | **VERIFIED** |

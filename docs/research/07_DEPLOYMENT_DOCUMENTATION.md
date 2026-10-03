@@ -1,5 +1,5 @@
 # Production Deployment & DevOps Guide
-## Project: RentAI – Smart Appliance Rental Platform
+## Project: Rentora – Smart Appliance Rental Platform
 **Target Environment**: Linux (Ubuntu 22.04 LTS) / Cloud Infrastructure (AWS / GCP / DigitalOcean)  
 **Containerization**: Docker & Docker Compose  
 **Reverse Proxy**: Nginx 1.24+ with SSL / TLS 1.3  
@@ -9,7 +9,7 @@
 
 ## 1. Production Architecture Overview
 
-The production deployment of RentAI is designed for high availability, sub-150ms response latency, and complete decoupling of transactional web traffic from background analytical computing.
+The production deployment of Rentora is designed for high availability, sub-150ms response latency, and complete decoupling of transactional web traffic from background analytical computing.
 
 ```mermaid
 graph TD
@@ -75,7 +75,7 @@ RUN pip install --no-cache-dir -r requirements.txt gunicorn
 COPY . .
 
 EXPOSE 8000
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "60", "rentai_core.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "60", "rentora_core.wsgi:application"]
 ```
 
 ### 2.3 Docker Compose Orchestration (`docker-compose.yml`)
@@ -85,10 +85,10 @@ version: '3.8'
 services:
   mongodb:
     image: mongo:6.0
-    container_name: rentai_mongodb
+    container_name: rentora_mongodb
     restart: always
     environment:
-      MONGO_INITDB_DATABASE: rentai_db
+      MONGO_INITDB_DATABASE: rentora_db
     volumes:
       - mongo_data:/data/db
     ports:
@@ -98,11 +98,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: rentai_backend
+    container_name: rentora_backend
     restart: always
     environment:
       - MONGO_URI=mongodb://mongodb:27017/
-      - MONGO_DB_NAME=rentai_db
+      - MONGO_DB_NAME=rentora_db
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=False
     depends_on:
@@ -114,7 +114,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: rentai_frontend
+    container_name: rentora_frontend
     restart: always
     ports:
       - "80:80"
@@ -130,25 +130,25 @@ volumes:
 ## 3. Nginx Reverse Proxy Configuration
 
 ```nginx
-# /etc/nginx/sites-available/rentai.conf
+# /etc/nginx/sites-available/rentora.conf
 server {
     listen 80;
-    server_name rentai.example.com;
+    server_name rentora.example.com;
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name rentai.example.com;
+    server_name rentora.example.com;
 
-    ssl_certificate /etc/letsencrypt/live/rentai.example.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/rentai.example.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/rentora.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/rentora.example.com/privkey.pem;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
 
     # Frontend Single Page App Routing
     location / {
-        root /var/www/rentai/frontend/dist;
+        root /var/www/rentora/frontend/dist;
         try_files $uri $uri/ /index.html;
         expires 7d;
         add_header Cache-Control "public, no-transform";
@@ -183,7 +183,7 @@ graph LR
 
 ### GitHub Actions Pipeline Configuration
 ```yaml
-name: RentAI CI/CD Pipeline
+name: Rentora CI/CD Pipeline
 
 on:
   push:
@@ -236,7 +236,7 @@ BACKUP_DIR="/var/backups/mongodb"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 
 mkdir -p "$BACKUP_DIR"
-mongodump --db=rentai_db --gzip --archive="$BACKUP_DIR/rentai_db_$TIMESTAMP.gz"
+mongodump --db=rentora_db --gzip --archive="$BACKUP_DIR/rentora_db_$TIMESTAMP.gz"
 
 # Retain last 14 days of snapshots
 find "$BACKUP_DIR" -type f -name "*.gz" -mtime +14 -exec rm {} \;

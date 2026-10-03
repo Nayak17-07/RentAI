@@ -22,7 +22,7 @@ DATASET_FILE = os.path.join(CURRENT_DIR, "rental_churn_dataset.csv")
 def generate_rental_dataset(n_samples=1500, random_state=42):
     """
     Generates a realistic rental customer behavioral dataset for churn prediction.
-    Features reflect the operational data described in RentAI's architecture:
+    Features reflect the operational data described in Rentora's architecture:
     - tenure_months, monthly_spend, active_rentals, late_payments,
       early_returns, cart_abandonment, days_inactive, avg_rating.
     """
@@ -79,7 +79,7 @@ def get_or_create_rental_dataset(n_samples=1500, random_state=42):
 
 def evaluate_churn_models_comparison():
     print("=" * 76)
-    print("   RENTAI: CHURN PREDICTION ENGINE — RANDOM FOREST vs LIGHTGBM      ")
+    print("   RENTORA: CHURN PREDICTION ENGINE — RANDOM FOREST vs LIGHTGBM      ")
     print("=" * 76)
 
     df = get_or_create_rental_dataset(n_samples=1500, random_state=42)
@@ -161,7 +161,7 @@ def evaluate_churn_models_comparison():
 
 def evaluate_recommendation_model():
     print("\n" + "=" * 76)
-    print("   RENTAI: RECOMMENDATION ENGINE EVALUATION (AI MODEL 2)           ")
+    print("   RENTORA: RECOMMENDATION ENGINE EVALUATION (AI MODEL 2)           ")
     print("=" * 76)
     
     hit_rate_at_5 = 0.8420

@@ -1,5 +1,5 @@
 # UML Documentation
-## Project: RentAI – Smart Appliance Rental Platform
+## Project: Rentora – Smart Appliance Rental Platform
 **Standard**: Unified Modeling Language (UML 2.5)  
 **Version**: 1.0.0  
 
@@ -7,7 +7,7 @@
 
 ## 1. Introduction
 
-This document formalizes the object-oriented and structural models of the **RentAI** system using standard UML 2.5 notation rendered via interactive Mermaid diagrams. The models encompass functional behavioral views (Use Case, Sequence, Activity, State) and structural engineering views (Class, Component).
+This document formalizes the object-oriented and structural models of the **Rentora** system using standard UML 2.5 notation rendered via interactive Mermaid diagrams. The models encompass functional behavioral views (Use Case, Sequence, Activity, State) and structural engineering views (Class, Component).
 
 ---
 
@@ -23,7 +23,7 @@ graph LR
         A[System Administrator]
     end
 
-    subgraph RentAI Platform Boundaries
+    subgraph Rentora Platform Boundaries
         UC1(Browse Appliance Catalog)
         UC2(Filter by City & Category)
         UC3(Register & Authenticate)

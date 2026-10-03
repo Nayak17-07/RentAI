@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Lock, Mail, Phone, ArrowRight, Home as HomeIcon } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
 
 const RegisterPage = ({ onLogin }) => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     phone_num: '',
-    password: ''
+    password: '',
+    role: 'customer' // 'customer' | 'owner'
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -47,8 +49,14 @@ const RegisterPage = ({ onLogin }) => {
         const data = await loginResponse.json();
         localStorage.setItem('access_token', data.access);
         localStorage.setItem('refresh_token', data.refresh);
+        localStorage.setItem('user_role', data.user?.role || formData.role);
         onLogin(data.access);
-        navigate('/');
+        
+        if (formData.role === 'owner') {
+          navigate('/owner');
+        } else {
+          navigate('/');
+        }
       } else {
         navigate('/login');
       }
@@ -60,15 +68,19 @@ const RegisterPage = ({ onLogin }) => {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-color)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-color)', position: 'relative' }}>
+      <div style={{ position: 'absolute', top: '1.25rem', right: '1.5rem', zIndex: 100 }}>
+        <ThemeToggle />
+      </div>
+
       {/* Left side - Form */}
-      <div style={{ flex: '1', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '2rem', background: 'white' }}>
+      <div style={{ flex: '1', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '2rem', background: 'var(--surface-color, white)' }}>
         <div className="animate-fade-in" style={{ width: '100%', maxWidth: '400px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2rem', justifyContent: 'center' }}>
             <div style={{ background: 'var(--primary-color)', padding: '0.4rem', borderRadius: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <HomeIcon size={20} color="white" />
             </div>
-            <h2 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--primary-color)' }}>RentAI</h2>
+            <h2 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--primary-color)' }}>Rentora</h2>
           </div>
 
           <div style={{ marginBottom: '2rem' }}>
@@ -86,6 +98,52 @@ const RegisterPage = ({ onLogin }) => {
 
           <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             
+            {/* Account Type Selector (Customer vs Owner) */}
+            <div>
+              <label className="input-label" style={{ marginBottom: '0.4rem', display: 'block' }}>I want to:</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, role: 'customer' })}
+                  style={{
+                    padding: '0.75rem 0.5rem',
+                    borderRadius: '8px',
+                    border: formData.role === 'customer' ? '2px solid #e23744' : '1px solid #e2e8f0',
+                    background: formData.role === 'customer' ? '#fff5f5' : '#f8fafc',
+                    cursor: 'pointer',
+                    textAlign: 'center',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <div style={{ fontSize: '1.25rem', marginBottom: '0.2rem' }}>👤</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.85rem', color: formData.role === 'customer' ? '#e23744' : '#334155' }}>
+                    Rent Appliances
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Customer / Renter</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, role: 'owner' })}
+                  style={{
+                    padding: '0.75rem 0.5rem',
+                    borderRadius: '8px',
+                    border: formData.role === 'owner' ? '2px solid #10b981' : '1px solid #e2e8f0',
+                    background: formData.role === 'owner' ? '#ecfdf5' : '#f8fafc',
+                    cursor: 'pointer',
+                    textAlign: 'center',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <div style={{ fontSize: '1.25rem', marginBottom: '0.2rem' }}>💼</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.85rem', color: formData.role === 'owner' ? '#059669' : '#334155' }}>
+                    List & Earn
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Appliance Owner</div>
+                </button>
+              </div>
+            </div>
+
             <div>
               <label className="input-label">Username</label>
               <div style={{ position: 'relative' }}>

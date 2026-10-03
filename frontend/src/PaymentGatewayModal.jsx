@@ -11,11 +11,13 @@ import {
   Sparkles, 
   ArrowRight,
   QrCode,
-  AlertCircle
+  AlertCircle,
+  Banknote,
+  Truck
 } from 'lucide-react';
 
 const PaymentGatewayModal = ({ isOpen, onClose, totalAmount, rentAmount, depositAmount, taxAmount, onPaymentSuccess }) => {
-  const [activeTab, setActiveTab] = useState('upi'); // 'upi' | 'card' | 'netbanking'
+  const [activeTab, setActiveTab] = useState('upi'); // 'upi' | 'card' | 'netbanking' | 'cod'
   const [stage, setStage] = useState('input'); // 'input' | 'processing' | 'success'
   const [statusMessage, setStatusMessage] = useState('');
   
@@ -117,7 +119,7 @@ const PaymentGatewayModal = ({ isOpen, onClose, totalAmount, rentAmount, deposit
   };
 
   const handleSimulatedScanPay = () => {
-    triggerPaymentProcess('UPI_QR', { upi_id: 'instant_qr_scan@rentai', type: 'UPI_QR_AUTO' });
+    triggerPaymentProcess('UPI_QR', { upi_id: 'instant_qr_scan@rentora', type: 'UPI_QR_AUTO' });
   };
 
   const handleCardPay = (e) => {
@@ -201,7 +203,7 @@ const PaymentGatewayModal = ({ isOpen, onClose, totalAmount, rentAmount, deposit
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, letterSpacing: '-0.01em' }}>
-                  RentAI Secure Gateway
+                  Rentora Secure Gateway
                 </h3>
                 <span style={{
                   background: 'rgba(16, 185, 129, 0.2)',
@@ -411,6 +413,30 @@ const PaymentGatewayModal = ({ isOpen, onClose, totalAmount, rentAmount, deposit
                 </div>
               </button>
 
+              <button
+                onClick={() => setActiveTab('cod')}
+                style={{
+                  padding: '1.1rem 1.25rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  background: activeTab === 'cod' ? '#ffffff' : 'transparent',
+                  border: 'none',
+                  borderLeft: activeTab === 'cod' ? '4px solid #16a34a' : '4px solid transparent',
+                  fontWeight: activeTab === 'cod' ? 700 : 500,
+                  color: activeTab === 'cod' ? '#0f172a' : '#64748b',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  transition: 'all 0.15s'
+                }}
+              >
+                <Truck size={18} color={activeTab === 'cod' ? '#16a34a' : '#64748b'} />
+                <div>
+                  <div style={{ fontSize: '0.9rem' }}>Pay on Delivery</div>
+                  <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Cash / UPI on Doorstep</div>
+                </div>
+              </button>
+
               <div style={{ marginTop: 'auto', padding: '1rem', borderTop: '1px solid #e2e8f0', fontSize: '0.7rem', color: '#94a3b8' }}>
                 ⚡ Auto-debit e-mandates supported for monthly rental renewals
               </div>
@@ -465,7 +491,7 @@ const PaymentGatewayModal = ({ isOpen, onClose, totalAmount, rentAmount, deposit
                         <path d="M45 10h5v10h-5zM50 25h10v5h-10zM45 45h10v10h-10zM60 45h5v20h-5zM75 50h15v5h-15zM70 65h10v10h-10zM85 70h5v20h-5zM50 75h10v15h-10zM60 85h15v5h-15zM10 45h15v5h-15zM30 45h10v5h-10z" fill="#0f172a"/>
                       </svg>
                       <span style={{ fontSize: '0.65rem', fontWeight: 600, color: '#e23744', marginTop: '0.25rem' }}>
-                        RentAI UPI
+                        Rentora UPI
                       </span>
                     </div>
 
@@ -721,6 +747,51 @@ const PaymentGatewayModal = ({ isOpen, onClose, totalAmount, rentAmount, deposit
                     style={{ width: '100%', justifyContent: 'center', padding: '0.85rem' }}
                   >
                     Proceed with {popularBanks.find(b => b.id === selectedBank)?.name} (₹{Number(totalAmount).toLocaleString('en-IN')})
+                  </button>
+                </div>
+              )}
+
+              {/* TAB 4: CASH ON DELIVERY / DOORSTEP */}
+              {activeTab === 'cod' && (
+                <div className="animate-fade-in">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                    <h4 style={{ margin: 0, fontSize: '1.05rem', color: '#0f172a', fontWeight: 700 }}>
+                      Pay upon Doorstep Handover
+                    </h4>
+                    <span style={{ fontSize: '0.75rem', background: '#dcfce7', color: '#15803d', padding: '0.2rem 0.5rem', borderRadius: '4px', fontWeight: 700 }}>
+                      Zero Online Charge Today
+                    </span>
+                  </div>
+
+                  <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '1.25rem', marginBottom: '1.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, color: '#166534', marginBottom: '0.5rem' }}>
+                      <CheckCircle2 size={18} color="#16a34a" />
+                      How Doorstep Rental Payment Works
+                    </div>
+                    <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.825rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                      <li><strong>Physical Inspection First:</strong> You inspect the appliance condition during delivery before paying anything.</li>
+                      <li><strong>Pay Delivery Partner:</strong> Handover 1st month rent + refundable deposit via <strong>UPI QR, Cash, or POS Card</strong> to our field technician.</li>
+                      <li><strong>Instant Contract Activation:</strong> Once verified, your active lease and GST tax receipt are instantly logged to your Rentora dashboard.</li>
+                    </ul>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '1rem', marginBottom: '1.5rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.35rem' }}>
+                      <span style={{ color: '#64748b' }}>Due upon delivery:</span>
+                      <strong style={{ color: '#0f172a', fontSize: '1.1rem' }}>₹{Number(totalAmount).toLocaleString('en-IN')}</strong>
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                      Includes 1st Month Rent (₹{Number(rentAmount).toLocaleString('en-IN')}) + Refundable Escrow Deposit (₹{Number(depositAmount).toLocaleString('en-IN')}) + 18% GST.
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => triggerPaymentProcess('CASH_ON_DELIVERY', { type: 'COD_DOORSTEP' })}
+                    className="btn-primary"
+                    style={{ width: '100%', justifyContent: 'center', padding: '0.9rem', background: '#16a34a', borderColor: '#16a34a' }}
+                  >
+                    Confirm Order with Cash on Delivery (₹{Number(totalAmount).toLocaleString('en-IN')})
                   </button>
                 </div>
               )}

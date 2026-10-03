@@ -4,9 +4,6 @@ import time
 import uuid
 import requests
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rentai_core.settings')
-import django
-django.setup()
 
 from api.mongo_client import get_mongo_db
 
@@ -28,7 +25,7 @@ def run_step(step_num, module_name, test_desc, passed, detail=""):
         sys.exit(1)
 
 def main():
-    print_header("RentAI Full-Stack System Verification (Fast Agent)")
+    print_header("Rentora Full-Stack System Verification (Fast Agent)")
     db = get_mongo_db()
     start_time = time.time()
 
@@ -48,7 +45,7 @@ def main():
     # --------------------------------------------------------------------------
     test_uid = uuid.uuid4().hex[:6]
     test_user = f"agent_{test_uid}"
-    test_email = f"agent_{test_uid}@rentai.com"
+    test_email = f"agent_{test_uid}@rentora.com"
     test_pw = "AgentSecurePass123!"
 
     # Registration

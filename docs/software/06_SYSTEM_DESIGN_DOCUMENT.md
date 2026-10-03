@@ -1,5 +1,5 @@
 # System Design Document (SDD – High Level)
-## Project: RentAI – Smart Appliance Rental Platform
+## Project: Rentora – Smart Appliance Rental Platform
 **Document Version**: 1.0.0  
 **Status**: Baselined Architecture  
 
@@ -7,7 +7,7 @@
 
 ## 1. System Overview and Architectural Style
 
-RentAI is engineered as a **distributed, decoupled three-tier web architecture** combined with an **out-of-band asynchronous Machine Learning pipeline**. 
+Rentora is engineered as a **distributed, decoupled three-tier web architecture** combined with an **out-of-band asynchronous Machine Learning pipeline**. 
 
 ```mermaid
 graph TB
@@ -65,7 +65,7 @@ graph TB
 
 ## 2. Subsystem Decomposition
 
-The RentAI ecosystem is decomposed into 8 highly cohesive, loosely coupled functional modules:
+The Rentora ecosystem is decomposed into 8 highly cohesive, loosely coupled functional modules:
 
 ### 2.1 Module 1: User Authentication & Profile Management
 - **Role**: Manages user registration, login authentication, token renewal, and profile identity records.
@@ -114,11 +114,11 @@ The RentAI ecosystem is decomposed into 8 highly cohesive, loosely coupled funct
 
 ```mermaid
 graph TD
-    Customer([Customer]) -->|Registration / Login / Search / Cart / Checkout| RentAI[RentAI System]
-    RentAI -->|Catalog / Booking Confirmation / Recs| Customer
+    Customer([Customer]) -->|Registration / Login / Search / Cart / Checkout| Rentora[Rentora System]
+    Rentora -->|Catalog / Booking Confirmation / Recs| Customer
     
-    Admin([Operations Admin]) -->|Inventory Updates / Inspect Churn Dashboard| RentAI
-    RentAI -->|Real-time Metrics / High-Risk Customer Lists / SHAP Insights| Admin
+    Admin([Operations Admin]) -->|Inventory Updates / Inspect Churn Dashboard| Rentora
+    Rentora -->|Real-time Metrics / High-Risk Customer Lists / SHAP Insights| Admin
 ```
 
 ### 3.2 DFD Level 1 (System Process Flow)

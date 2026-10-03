@@ -1,5 +1,5 @@
 # Feasibility Study Report
-## Project: RentAI – Smart Appliance Rental Platform
+## Project: Rentora – Smart Appliance Rental Platform
 **Framework**: TELOS Feasibility Evaluation Methodology  
 **Version**: 1.0.0  
 **Recommendation**: Proceed to Full Production Deployment  
@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary
 
-This study evaluates the multidimensional feasibility of developing and deploying the **RentAI** system. The evaluation utilizes the industry-standard **TELOS** framework, examining **T**echnical, **E**conomic, **L**egal, **O**perational, and **S**chedule dimensions.
+This study evaluates the multidimensional feasibility of developing and deploying the **Rentora** system. The evaluation utilizes the industry-standard **TELOS** framework, examining **T**echnical, **E**conomic, **L**egal, **O**perational, and **S**chedule dimensions.
 
 Based on empirical benchmarks conducted during early prototyping, the project demonstrates exceptional viability across all five domains, with a projected Return on Investment (ROI) exceeding $240\%$ over a three-year horizon driven by AI-powered customer retention.
 
@@ -56,7 +56,7 @@ The platform leverages lightweight asynchronous architectures that operate effic
 | **Total Estimated First-Year Cost** | **$15.00** | **~$900.00** |
 
 ### 3.2 Financial Benefits & ROI Projection
-Traditional furniture/appliance leasing platforms experience customer churn rates between $18\%$ and $28\%$ annually. By deploying RentAI's proactive LightGBM churn prediction with early intervention incentives:
+Traditional furniture/appliance leasing platforms experience customer churn rates between $18\%$ and $28\%$ annually. By deploying Rentora's proactive LightGBM churn prediction with early intervention incentives:
 - **Retained Customer Value**: Retaining just 15 high-value customers per month saves an estimated $\$18,000$ in annual recurring rental revenues.
 - **Acquisition Cost Savings**: Retention costs $\approx \frac{1}{5}\text{th}$ of new customer acquisition cost (CAC).
 - **Projected 3-Year ROI**:
@@ -106,7 +106,7 @@ The project timeline was structured over a 16-week engineering period:
 
 ## 7. Conclusion & Feasibility Verdict
 
-The RentAI platform satisfies all criteria across the TELOS dimensions:
+The Rentora platform satisfies all criteria across the TELOS dimensions:
 - **Technical**: Robust, horizontally scalable modern tech stack.
 - **Economic**: Minimal operating costs with immense retention ROI.
 - **Legal**: Strict compliance with privacy regulations and permissive OSS licenses.

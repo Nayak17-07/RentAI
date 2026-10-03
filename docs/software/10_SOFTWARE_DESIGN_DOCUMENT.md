@@ -1,5 +1,5 @@
 # Software Design Document (SDD – Low Level)
-## Project: RentAI – Smart Appliance Rental Platform
+## Project: Rentora – Smart Appliance Rental Platform
 **Standard**: IEEE Std 1016-2009 (Software Design Descriptions)  
 **Version**: 1.0.0  
 
@@ -7,12 +7,12 @@
 
 ## 1. Introduction and Module Topology
 
-This Low-Level Software Design Document outlines the detailed class hierarchies, algorithmic workflows, interface contracts, and design patterns utilized in the **RentAI** backend and frontend codebases.
+This Low-Level Software Design Document outlines the detailed class hierarchies, algorithmic workflows, interface contracts, and design patterns utilized in the **Rentora** backend and frontend codebases.
 
 ### 1.1 Directory Organization
 
 ```
-RentAI/
+Rentora/
 ├── api/                           # Backend Django REST Application
 │   ├── mongo_client.py            # Singleton MongoDB Connection Pool
 │   ├── mongo_auth.py              # Custom JWT Authentication Handler
@@ -63,7 +63,7 @@ def get_mongo_db():
 ```
 
 ### 2.2 Strategy Pattern: Custom JWT Authentication
-RentAI avoids tight coupling to Django's default SQL authentication middleware by implementing a custom Strategy (`MongoJWTAuthentication` in `api/mongo_auth.py`) conforming to DRF's `BaseAuthentication`:
+Rentora avoids tight coupling to Django's default SQL authentication middleware by implementing a custom Strategy (`MongoJWTAuthentication` in `api/mongo_auth.py`) conforming to DRF's `BaseAuthentication`:
 
 ```mermaid
 sequenceDiagram

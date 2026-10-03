@@ -1,5 +1,5 @@
 # Software Requirements Specification (SRS)
-## Project: RentAI – Smart Appliance Rental Platform
+## Project: Rentora – Smart Appliance Rental Platform
 **Standard**: IEEE Std 830-1998 Compliant  
 **Version**: 1.0.0  
 **Status**: Approved & Baselined  
@@ -9,10 +9,10 @@
 ## 1. Introduction
 
 ### 1.1 Purpose
-This Software Requirements Specification (SRS) establishes the complete functional and non-functional requirements for the **RentAI** platform. RentAI is an AI-powered smart appliance rental platform that automates customer lifecycle management, inventory logistics, flexible tenure leasing, and predictive retention analytics using machine learning.
+This Software Requirements Specification (SRS) establishes the complete functional and non-functional requirements for the **Rentora** platform. Rentora is an AI-powered smart appliance rental platform that automates customer lifecycle management, inventory logistics, flexible tenure leasing, and predictive retention analytics using machine learning.
 
 ### 1.2 Scope of the System
-RentAI provides a full-stack, distributed web platform delivering:
+Rentora provides a full-stack, distributed web platform delivering:
 1. Flexible tenure-based appliance rentals (3, 6, 12+ months) across multi-city distribution hubs.
 2. Frictionless customer onboarding, profile management, and KYC validation.
 3. Cart configuration, payment recording, and automated contract state machine.
@@ -32,14 +32,14 @@ RentAI provides a full-stack, distributed web platform delivering:
 ### 1.4 References
 - IEEE Std 830-1998: IEEE Recommended Practice for Software Requirements Specifications.
 - ISO/IEC 25010: Systems and software engineering — Systems and software Quality Requirements and Evaluation (SQuaRE).
-- RentAI Architecture Document (`ARCHITECTURE.md`).
+- Rentora Architecture Document (`ARCHITECTURE.md`).
 
 ---
 
 ## 2. Overall Description
 
 ### 2.1 Product Perspective
-RentAI operates as a cloud-native, three-tier client-server application:
+Rentora operates as a cloud-native, three-tier client-server application:
 - **Presentation Tier**: Vite + React 18 single-page application (SPA).
 - **Application & API Tier**: Django 5.2 + Django REST Framework exposing stateless JSON REST endpoints.
 - **Data & Intelligence Tier**: MongoDB NoSQL cluster + Asynchronous Python ML Pipeline.
@@ -131,7 +131,7 @@ graph TD
 
 ### 4.4 Usability & Maintainability
 - **NFR-USE-01**: The user interface shall provide responsive adaptations for Mobile (320px+), Tablet (768px+), and Desktop (1200px+).
-- **NFR-MAINT-01**: Codebase shall maintain modular separation between presentation (`frontend`), API gateway (`api`), core configuration (`rentai_core`), and data science (`ml_pipeline`).
+- **NFR-MAINT-01**: Codebase shall maintain modular separation between presentation (`frontend`), API gateway (`api`), core configuration (`rentora_core`), and data science (`ml_pipeline`).
 
 ---
 
@@ -139,10 +139,10 @@ graph TD
 
 | Requirement ID | Module | Implementation File | Verification Method |
 |---|---|---|---|
-| FR-AUTH-01/03 | Auth | [views.py](file:///c:/Users/dhran/Desktop/RentAI/api/views.py), [mongo_auth.py](file:///c:/Users/dhran/Desktop/RentAI/api/mongo_auth.py) | Automated Integration Test |
-| FR-CAT-01/02 | Inventory | [views.py](file:///c:/Users/dhran/Desktop/RentAI/api/views.py) (`ApplianceView`) | API Contract Test |
-| FR-ORD-01/03 | Orders | [views.py](file:///c:/Users/dhran/Desktop/RentAI/api/views.py) (`CheckoutView`) | Transaction Integrity Test |
-| FR-RET-01/03 | Returns | [views.py](file:///c:/Users/dhran/Desktop/RentAI/api/views.py) (`RentalsView`) | State Machine Unit Test |
-| FR-ML-CHURN | ML Pipeline | [train_model.py](file:///c:/Users/dhran/Desktop/RentAI/ml_pipeline/train_model.py), [evaluate_models.py](file:///c:/Users/dhran/Desktop/RentAI/ml_pipeline/evaluate_models.py) | ROC-AUC & F1 Evaluation |
-| FR-ML-REC | Recommender | [train_model.py](file:///c:/Users/dhran/Desktop/RentAI/ml_pipeline/train_model.py) | Precision@K Benchmarks |
-| FR-ADM-01/02 | Admin | [views.py](file:///c:/Users/dhran/Desktop/RentAI/api/views.py) (`AdminDashboardView`) | End-to-End System Test |
+| FR-AUTH-01/03 | Auth | [views.py](file:///c:/Users/dhran/Desktop/Rentora/api/views.py), [mongo_auth.py](file:///c:/Users/dhran/Desktop/Rentora/api/mongo_auth.py) | Automated Integration Test |
+| FR-CAT-01/02 | Inventory | [views.py](file:///c:/Users/dhran/Desktop/Rentora/api/views.py) (`ApplianceView`) | API Contract Test |
+| FR-ORD-01/03 | Orders | [views.py](file:///c:/Users/dhran/Desktop/Rentora/api/views.py) (`CheckoutView`) | Transaction Integrity Test |
+| FR-RET-01/03 | Returns | [views.py](file:///c:/Users/dhran/Desktop/Rentora/api/views.py) (`RentalsView`) | State Machine Unit Test |
+| FR-ML-CHURN | ML Pipeline | [train_model.py](file:///c:/Users/dhran/Desktop/Rentora/ml_pipeline/train_model.py), [evaluate_models.py](file:///c:/Users/dhran/Desktop/Rentora/ml_pipeline/evaluate_models.py) | ROC-AUC & F1 Evaluation |
+| FR-ML-REC | Recommender | [train_model.py](file:///c:/Users/dhran/Desktop/Rentora/ml_pipeline/train_model.py) | Precision@K Benchmarks |
+| FR-ADM-01/02 | Admin | [views.py](file:///c:/Users/dhran/Desktop/Rentora/api/views.py) (`AdminDashboardView`) | End-to-End System Test |

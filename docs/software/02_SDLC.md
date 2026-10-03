@@ -1,5 +1,5 @@
 # Software Development Life Cycle (SDLC) Specification
-## Project: RentAI – Smart Appliance Rental Platform
+## Project: Rentora – Smart Appliance Rental Platform
 **Methodology**: Agile Scrum with MLOps Integration  
 **Version**: 1.0.0  
 
@@ -7,7 +7,7 @@
 
 ## 1. SDLC Methodology Overview
 
-The RentAI platform development follows an adapted **Agile Scrum Framework integrated with Continuous MLOps Lifecycle**. Because the system couples real-time web transactions (Django + React + MongoDB) with offline predictive learning (LightGBM + SHAP + Scikit-Learn), a hybrid engineering cycle was adopted to allow rapid feature iteration while preserving analytical model stability and reproducibility.
+The Rentora platform development follows an adapted **Agile Scrum Framework integrated with Continuous MLOps Lifecycle**. Because the system couples real-time web transactions (Django + React + MongoDB) with offline predictive learning (LightGBM + SHAP + Scikit-Learn), a hybrid engineering cycle was adopted to allow rapid feature iteration while preserving analytical model stability and reproducibility.
 
 ```mermaid
 graph LR
@@ -31,19 +31,19 @@ graph LR
 ## 2. SDLC Phases and Deliverables
 
 ### Phase 1: Inception, Requirements Analysis & Feasibility
-- **Focus**: Stakeholder interviews, market study of existing furniture/appliance leasing portals (e.g. Furlenco, Rentomojo), requirement elicitation, and technical feasibility validation.
+- **Focus**: Stakeholder interviews, market study of existing furniture/appliance leasing portals, requirement elicitation, and technical feasibility validation.
 - **Key Deliverables**:
-  - [Software Requirements Specification (SRS)](file:///c:/Users/dhran/Desktop/RentAI/docs/software/01_SRS.md)
-  - [Feasibility Study](file:///c:/Users/dhran/Desktop/RentAI/docs/software/03_FEASIBILITY_STUDY.md)
-  - [Project Proposal](file:///c:/Users/dhran/Desktop/RentAI/docs/software/04_PROJECT_PROPOSAL.md)
+  - [Software Requirements Specification (SRS)](file:///c:/Users/dhran/Desktop/Rentora/docs/software/01_SRS.md)
+  - [Feasibility Study](file:///c:/Users/dhran/Desktop/Rentora/docs/software/03_FEASIBILITY_STUDY.md)
+  - [Project Proposal](file:///c:/Users/dhran/Desktop/Rentora/docs/software/04_PROJECT_PROPOSAL.md)
 
 ### Phase 2: System Architecture & Detailed Design
 - **Focus**: Decoupled 3-tier architecture, selection of MongoDB for schema flexibility (flexible tenure pricing structures), RESTful API contracts, and UML modeling.
 - **Key Deliverables**:
-  - [System Design Document](file:///c:/Users/dhran/Desktop/RentAI/docs/software/06_SYSTEM_DESIGN_DOCUMENT.md)
-  - [UML Documentation](file:///c:/Users/dhran/Desktop/RentAI/docs/software/07_UML_DOCUMENTATION.md)
-  - [Database Design Document](file:///c:/Users/dhran/Desktop/RentAI/docs/software/08_DATABASE_DESIGN_DOCUMENT.md)
-  - [API Documentation](file:///c:/Users/dhran/Desktop/RentAI/docs/software/09_API_DOCUMENTATION.md)
+  - [System Design Document](file:///c:/Users/dhran/Desktop/Rentora/docs/software/06_SYSTEM_DESIGN_DOCUMENT.md)
+  - [UML Documentation](file:///c:/Users/dhran/Desktop/Rentora/docs/software/07_UML_DOCUMENTATION.md)
+  - [Database Design Document](file:///c:/Users/dhran/Desktop/Rentora/docs/software/08_DATABASE_DESIGN_DOCUMENT.md)
+  - [API Documentation](file:///c:/Users/dhran/Desktop/Rentora/docs/software/09_API_DOCUMENTATION.md)
 
 ### Phase 3: Core Implementation & Prototyping (Iterative Sprints)
 - **Sprint 1 (Foundations & Data Store)**: Setting up Django project structure, MongoDB connection pooling (`api/mongo_client.py`), JWT cryptographic engine (`api/mongo_auth.py`), and catalog seed datasets.
@@ -55,15 +55,15 @@ graph LR
 ### Phase 4: Verification, Validation & Testing
 - **Focus**: Multi-tier test suite covering automated regression tests, API contract checks, stock concurrency assertions, and ML precision/recall benchmarks.
 - **Key Deliverables**:
-  - [Test Plan](file:///c:/Users/dhran/Desktop/RentAI/docs/software/11_TEST_PLAN.md)
-  - [Test Report](file:///c:/Users/dhran/Desktop/RentAI/docs/software/12_TEST_REPORT.md)
+  - [Test Plan](file:///c:/Users/dhran/Desktop/Rentora/docs/software/11_TEST_PLAN.md)
+  - [Test Report](file:///c:/Users/dhran/Desktop/Rentora/docs/software/12_TEST_REPORT.md)
   - Test Harness: `test_all_modules_fast.py`
 
 ### Phase 5: Deployment, Monitoring & Maintenance
 - **Focus**: Containerization with Docker Compose, Nginx reverse proxy configuration, automated database backup schedules, and model drift monitoring.
 - **Key Deliverables**:
-  - [Deployment Documentation](file:///c:/Users/dhran/Desktop/RentAI/docs/research/07_DEPLOYMENT_DOCUMENTATION.md)
-  - [Security Documentation](file:///c:/Users/dhran/Desktop/RentAI/docs/research/06_SECURITY_DOCUMENTATION.md)
+  - [Deployment Documentation](file:///c:/Users/dhran/Desktop/Rentora/docs/research/07_DEPLOYMENT_DOCUMENTATION.md)
+  - [Security Documentation](file:///c:/Users/dhran/Desktop/Rentora/docs/research/06_SECURITY_DOCUMENTATION.md)
 
 ---
 

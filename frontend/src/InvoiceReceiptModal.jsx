@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Printer, Download, CheckCircle, ShieldCheck, FileText, ArrowDownToLine } from 'lucide-react';
+import { X, Printer, Download, CheckCircle, ShieldCheck, FileText, ArrowDownToLine, MapPin, Truck } from 'lucide-react';
 
 const InvoiceReceiptModal = ({ isOpen, onClose, invoiceData }) => {
   if (!isOpen || !invoiceData) return null;
@@ -27,6 +27,7 @@ const InvoiceReceiptModal = ({ isOpen, onClose, invoiceData }) => {
   const cgst = (tax / 2).toFixed(2);
   const sgst = (tax / 2).toFixed(2);
   const total = Number(invoiceData.amount_total || (rent + deposit + tax));
+  const deliveryAddr = invoiceData.delivery_address;
 
   return (
     <div style={{
@@ -118,11 +119,11 @@ const InvoiceReceiptModal = ({ isOpen, onClose, invoiceData }) => {
                   <ShieldCheck size={18} color="#ffffff" />
                 </div>
                 <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, color: '#e23744', letterSpacing: '-0.02em' }}>
-                  RentAI
+                  Rentora
                 </h2>
               </div>
               <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>
-                RentAI Technologies Pvt. Ltd.<br />
+                Rentora Technologies Pvt. Ltd.<br />
                 Indiranagar 100ft Road, Bangalore, Karnataka - 560038<br />
                 <strong>GSTIN:</strong> 29AAACR9482F1Z4 | <strong>SAC:</strong> 9973 (Leasing Services)
               </p>
@@ -152,14 +153,14 @@ const InvoiceReceiptModal = ({ isOpen, onClose, invoiceData }) => {
           </div>
 
           {/* Billed To & Transaction Details */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1rem', fontSize: '0.85rem' }}>
             <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
               <span style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700, display: 'block', marginBottom: '0.25rem' }}>
                 Billed To
               </span>
               <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>{invoiceData.user_name || 'Customer'}</strong>
-              <div style={{ color: '#64748b', marginTop: '0.2rem' }}>{invoiceData.user_email || 'customer@rentai.com'}</div>
-              <div style={{ color: '#64748b', fontSize: '0.78rem' }}>Status: KYC Verified & Approved</div>
+              <div style={{ color: '#64748b', marginTop: '0.2rem' }}>{invoiceData.user_email || 'customer@rentora.com'}</div>
+              <div style={{ color: '#16a34a', fontSize: '0.78rem', marginTop: '0.2rem', fontWeight: 600 }}>KYC Verified & Identity Approved</div>
             </div>
 
             <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
@@ -177,6 +178,46 @@ const InvoiceReceiptModal = ({ isOpen, onClose, invoiceData }) => {
               </div>
             </div>
           </div>
+
+          {/* Delivery & Installation Destination */}
+          {deliveryAddr && (
+            <div style={{
+              background: '#f0fdf4',
+              border: '1px solid #bbf7d0',
+              borderRadius: '8px',
+              padding: '0.85rem 1rem',
+              marginBottom: '1.25rem',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '1rem',
+              flexWrap: 'wrap'
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#166534', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: '0.2rem' }}>
+                  <Truck size={14} /> Delivery Destination & Assembly
+                </div>
+                <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.88rem' }}>
+                  {deliveryAddr.recipient_name || invoiceData.user_name}
+                  {deliveryAddr.phone && <span style={{ color: '#475569', fontWeight: 500 }}> • +91 {deliveryAddr.phone}</span>}
+                </div>
+                <div style={{ color: '#334155', fontSize: '0.8rem', marginTop: '0.15rem' }}>
+                  {deliveryAddr.house_flat && `${deliveryAddr.house_flat}, `}
+                  {deliveryAddr.street_area && `${deliveryAddr.street_area}, `}
+                  {deliveryAddr.landmark && `Near ${deliveryAddr.landmark}, `}
+                  <strong>{deliveryAddr.city || 'Bangalore'}</strong> - {deliveryAddr.pincode}
+                </div>
+              </div>
+              {deliveryAddr.delivery_slot && (
+                <div style={{ background: '#ffffff', border: '1px solid #86efac', borderRadius: '6px', padding: '0.4rem 0.75rem', textAlign: 'right' }}>
+                  <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Delivery Schedule</div>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#15803d' }}>
+                    {deliveryAddr.delivery_slot}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Table of items */}
           <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
@@ -251,7 +292,7 @@ const InvoiceReceiptModal = ({ isOpen, onClose, invoiceData }) => {
           </div>
 
           <div style={{ textAlign: 'center', fontSize: '0.7rem', color: '#94a3b8' }}>
-            This is an electronically generated tax invoice for RentAI leasing contracts. No physical signature required.
+            This is an electronically generated tax invoice for Rentora leasing contracts. No physical signature required.
           </div>
         </div>
 

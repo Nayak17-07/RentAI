@@ -7,15 +7,20 @@ import CartPage from './CartPage';
 import MyRentalsPage from './MyRentalsPage';
 import KYCPage from './KYCPage';
 import AdminDashboard from './AdminDashboard';
+import OwnerDashboard from './OwnerDashboard';
+import RentoraConcierge from './RentoraConcierge';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return !!localStorage.getItem('access_token');
+  });
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      setIsAuthenticated(true);
-    }
+    const handleStorageChange = () => {
+      setIsAuthenticated(!!localStorage.getItem('access_token'));
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const handleLogin = (token) => {
@@ -57,7 +62,12 @@ function App() {
           path="/admin" 
           element={isAuthenticated ? <AdminDashboard onLogout={handleLogout} /> : <Navigate to="/login" />} 
         />
+        <Route 
+          path="/owner" 
+          element={isAuthenticated ? <OwnerDashboard onLogout={handleLogout} /> : <Navigate to="/login" />} 
+        />
       </Routes>
+      <RentoraConcierge />
     </Router>
   );
 }

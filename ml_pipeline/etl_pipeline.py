@@ -3,12 +3,7 @@ import sys
 import random
 import datetime
 
-# Setup Django environment
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rentai_core.settings')
-
-import django
-django.setup()
 
 from api.mongo_client import get_mongo_db
 

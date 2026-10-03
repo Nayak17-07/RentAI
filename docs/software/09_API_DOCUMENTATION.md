@@ -1,5 +1,5 @@
 # REST API Specification
-## Project: RentAI – Smart Appliance Rental Platform
+## Project: Rentora – Smart Appliance Rental Platform
 **Standard**: OpenAPI 3.0 Compatible REST Specification  
 **Base URL**: `http://127.0.0.1:8000/api`  
 **Authentication Scheme**: HTTP Bearer JWT (`Authorization: Bearer <token>`)  
@@ -145,7 +145,7 @@ Authorization: Bearer <JWT_ACCESS_TOKEN>  (for protected routes)
       "6": { "monthly_price": 750.00, "deposit": 1200.00 },
       "12": { "monthly_price": 620.00, "deposit": 1000.00 }
     },
-    "images": ["https://images.rentai.com/ref1.webp"]
+    "images": ["https://images.rentora.com/ref1.webp"]
   }
 ]
 ```
@@ -168,7 +168,7 @@ Authorization: Bearer <JWT_ACCESS_TOKEN>  (for protected routes)
     "category_id": "microwaves",
     "similarity_score": 0.884,
     "monthly_price": 420.00,
-    "images": ["https://images.rentai.com/micro1.webp"]
+    "images": ["https://images.rentora.com/micro1.webp"]
   }
 ]
 ```

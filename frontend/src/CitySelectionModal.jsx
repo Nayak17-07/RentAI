@@ -12,10 +12,10 @@ const CITIES = [
 function CitySelectionModal({ onCitySelect, isOpen, onClose, currentCity }) {
   if (!isOpen) return null;
 
-  const activeCity = currentCity || localStorage.getItem('rentai_city') || 'Hyderabad';
+  const activeCity = currentCity || localStorage.getItem('rentora_city') || 'Hyderabad';
 
   const handleSelect = (cityName) => {
-    localStorage.setItem('rentai_city', cityName);
+    localStorage.setItem('rentora_city', cityName);
     if (onCitySelect) onCitySelect(cityName);
     if (onClose) onClose();
   };

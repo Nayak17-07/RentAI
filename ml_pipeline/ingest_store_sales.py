@@ -8,10 +8,6 @@ import numpy as np
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(CURRENT_DIR)
 sys.path.append(PROJECT_ROOT)
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rentai_core.settings')
-
-import django
-django.setup()
 
 from api.mongo_client import get_mongo_db
 
@@ -46,7 +42,7 @@ PRODUCT_IMAGE_MAP = {
 
 def ingest_store_sales_data(limit_rows=None):
     print("=" * 70)
-    print("RentAI Store Sales Data Ingestion & Analytics Pipeline")
+    print("Rentora Store Sales Data Ingestion & Analytics Pipeline")
     print(f"Timestamp: {datetime.datetime.now()}")
     print("=" * 70)
 
@@ -82,7 +78,7 @@ def ingest_store_sales_data(limit_rows=None):
         for sub_cat, s_group in group.groupby("Sub-Category"):
             sub_list.append({
                 "sub_category": sub_cat,
-                "rentai_category": SUB_CATEGORY_MAPPINGS.get(sub_cat, "Appliances"),
+                "rentora_category": SUB_CATEGORY_MAPPINGS.get(sub_cat, "Appliances"),
                 "order_count": int(len(s_group)),
                 "total_sales": round(float(s_group["Sales"].sum()), 2),
                 "avg_sales": round(float(s_group["Sales"].mean()), 2),

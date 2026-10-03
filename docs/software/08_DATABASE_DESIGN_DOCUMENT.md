@@ -1,5 +1,5 @@
 # Database Design Document (DDD)
-## Project: RentAI – Smart Appliance Rental Platform
+## Project: Rentora – Smart Appliance Rental Platform
 **Database Engine**: MongoDB 6.0+ (NoSQL Document Store)  
 **ORM / Driver**: PyMongo 4.6+ & Django ORM Adapter  
 **Version**: 1.0.0  
@@ -104,7 +104,7 @@ Stores customer credentials, access roles, and identity verification statuses.
   "kyc_documents": [
     {
       "doc_type": "AADHAAR",
-      "doc_url": "https://secure-storage.rentai.com/kyc/e4b105a2_aadhaar.pdf",
+      "doc_url": "https://secure-storage.rentora.com/kyc/e4b105a2_aadhaar.pdf",
       "uploaded_at": "2026-03-12T10:15:30Z"
     }
   ],
@@ -135,8 +135,8 @@ The primary master inventory catalog supporting multi-city stock and dynamic ten
     "defrosting_type": "Frost Free"
   },
   "images": [
-    "https://images.rentai.com/products/ref_samsung_253l_1.webp",
-    "https://images.rentai.com/products/ref_samsung_253l_2.webp"
+    "https://images.rentora.com/products/ref_samsung_253l_1.webp",
+    "https://images.rentora.com/products/ref_samsung_253l_2.webp"
   ],
   "description": "Energy-efficient double door refrigerator ideal for families of 3-4.",
   "created_at": "2026-01-15T09:30:00Z"
@@ -235,7 +235,7 @@ To satisfy sub-150ms latency guarantees, custom indexes are established across p
 
 ## 5. Concurrency Control and Data Integrity
 
-To prevent race conditions during high-volume checkout (e.g. two users checking out the final available unit simultaneously), RentAI executes **Atomic Conditional Updates**:
+To prevent race conditions during high-volume checkout (e.g. two users checking out the final available unit simultaneously), Rentora executes **Atomic Conditional Updates**:
 
 ```python
 # Atomic stock reservation in MongoDB

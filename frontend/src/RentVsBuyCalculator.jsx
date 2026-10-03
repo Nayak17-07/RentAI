@@ -90,7 +90,7 @@ export const RentVsBuyCalculator = () => {
             Renting vs. Buying Calculator
           </h2>
           <p style={{ color: '#6b7280', fontSize: '0.9rem', margin: '0.35rem 0 0' }}>
-            See how much upfront capital and hassle you save by choosing RentAI over buying.
+            See how much upfront capital and hassle you save by choosing Rentora over buying.
           </p>
         </div>
 
@@ -146,7 +146,7 @@ export const RentVsBuyCalculator = () => {
               </div>
               <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem' }}>
                 <span>Buying Price: <strong>₹{product.buyPrice.toLocaleString()}</strong></span>
-                <span style={{ color: '#e23744' }}>RentAI RMI: <strong>₹{product.rentPerMonth}/mo</strong></span>
+                <span style={{ color: '#e23744' }}>Rentora RMI: <strong>₹{product.rentPerMonth}/mo</strong></span>
               </div>
             </div>
           </div>
@@ -229,7 +229,7 @@ export const RentVsBuyCalculator = () => {
           {/* Compare Table */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', borderTop: '1px solid #fecaca', paddingTop: '1rem', marginBottom: '1.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-              <span style={{ color: '#6b7280' }}>Total RentAI Subscription ({months} mos):</span>
+              <span style={{ color: '#6b7280' }}>Total Rentora Subscription ({months} mos):</span>
               <span style={{ fontWeight: 800, color: '#e23744' }}>₹{totalRentCost.toLocaleString()}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>

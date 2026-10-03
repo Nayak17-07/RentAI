@@ -1,5 +1,5 @@
 # Master Test Plan
-## Project: RentAI – Smart Appliance Rental Platform
+## Project: Rentora – Smart Appliance Rental Platform
 **Standard**: IEEE Std 829-2008 (Test Documentation)  
 **Version**: 1.0.0  
 
@@ -7,7 +7,7 @@
 
 ## 1. Introduction and Objectives
 
-The primary objective of this Test Plan is to define the testing scope, methodology, resources, and schedule for verifying and validating the **RentAI** system. The plan ensures that all functional, performance, security, and machine learning components satisfy their requirements prior to general release.
+The primary objective of this Test Plan is to define the testing scope, methodology, resources, and schedule for verifying and validating the **Rentora** system. The plan ensures that all functional, performance, security, and machine learning components satisfy their requirements prior to general release.
 
 ---
 
@@ -55,7 +55,7 @@ graph TD
 ## 4. Test Environment and Automation Harness
 
 ### 4.1 Automated Harness: `test_all_modules_fast.py`
-The RentAI system provides a consolidated end-to-end verification script ([test_all_modules_fast.py](file:///c:/Users/dhran/Desktop/RentAI/test_all_modules_fast.py)) that executes all 9 critical module checkpoints synchronously against running servers.
+The Rentora system provides a consolidated end-to-end verification script ([test_all_modules_fast.py](file:///c:/Users/dhran/Desktop/Rentora/test_all_modules_fast.py)) that executes all 9 critical module checkpoints synchronously against running servers.
 
 ```bash
 # Execute automated full-system verification

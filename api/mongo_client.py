@@ -1,11 +1,12 @@
+import os
 from pymongo import MongoClient
-from django.conf import settings
 
 def get_mongo_db():
     """
     Returns a connected MongoDB database instance.
-    Uses credentials from Django settings.
+    Uses environment variables or local defaults without any Django dependency.
     """
-    client = MongoClient(settings.MONGO_URI)
-    db = client[settings.MONGO_DB_NAME]
-    return db
+    uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
+    db_name = os.getenv('MONGO_DB_NAME', 'rentai_db')
+    client = MongoClient(uri)
+    return client[db_name]

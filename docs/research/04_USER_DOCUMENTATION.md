@@ -1,5 +1,5 @@
 # User Manual & Operations Guide
-## Project: RentAI – Smart Appliance Rental Platform
+## Project: Rentora – Smart Appliance Rental Platform
 **Audience**: End-User Customers, Operations Staff, and Platform Administrators  
 **Version**: 1.0.0  
 
@@ -7,7 +7,7 @@
 
 ## 1. Introduction
 
-Welcome to **RentAI**, a smart cloud platform for leasing premium home appliances on flexible monthly terms. This guide provides step-by-step instructions for both **Customers** leasing appliances and **Administrators** managing platform retention and inventory.
+Welcome to **Rentora**, a smart cloud platform for leasing premium home appliances on flexible monthly terms. This guide provides step-by-step instructions for both **Customers** leasing appliances and **Administrators** managing platform retention and inventory.
 
 ---
 
@@ -19,7 +19,7 @@ Welcome to **RentAI**, a smart cloud platform for leasing premium home appliance
 3. **Login**: Enter your registered email and password to receive an authenticated session token.
 
 ### 2.2 Selecting Your Operational City
-RentAI operates specialized logistics hubs across major metropolitan regions:
+Rentora operates specialized logistics hubs across major metropolitan regions:
 - Upon initial visit, a **City Selection Modal** will appear.
 - Select your city (e.g. *Bangalore*, *Mumbai*, *Delhi*, *Hyderabad*).
 - The catalog automatically filters to display appliances available in your selected hub.

@@ -1,5 +1,5 @@
 # Project Proposal
-## Project Name: RentAI – Smart Appliance Rental Platform
+## Project Name: Rentora – Smart Appliance Rental Platform
 **Project Category**: Full-Stack Intelligent Cloud Application & SDC-II Capstone  
 **Document Version**: 1.0.0  
 
@@ -12,7 +12,7 @@ The rapid urban migration of students and young working professionals has fueled
 2. Clunky, static catalogs that fail to recommend relevant complementary items.
 3. Rigid relational schemas that struggle with multi-city inventory and flexible tenure pricing.
 
-**RentAI** addresses these challenges by uniting a **high-performance MongoDB NoSQL architecture**, a **Django REST backend**, an ultra-responsive **React SPA**, and a state-of-the-art **Explainable Machine Learning Engine (LightGBM + SHAP)**. RentAI transforms the appliance rental lifecycle into a smart, data-driven, and highly engaging consumer experience.
+**Rentora** addresses these challenges by uniting a **high-performance MongoDB NoSQL architecture**, a **Django REST backend**, an ultra-responsive **React SPA**, and a state-of-the-art **Explainable Machine Learning Engine (LightGBM + SHAP)**. Rentora transforms the appliance rental lifecycle into a smart, data-driven, and highly engaging consumer experience.
 
 ---
 

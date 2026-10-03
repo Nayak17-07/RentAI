@@ -1,5 +1,5 @@
 # AI / ML-Specific Engineering Document
-## Project: RentAI – Smart Appliance Rental Platform
+## Project: Rentora – Smart Appliance Rental Platform
 **Subsystems**: Predictive Churn Classification, TreeSHAP Explainability, and Content-Aware Recommender  
 **Version**: 1.0.0  
 
@@ -7,7 +7,7 @@
 
 ## 1. Machine Learning Architectural Blueprint
 
-The RentAI intelligence tier is architected to decouple analytical model training from live transactional web operations. Analytical extraction, gradient boosted tree inference, and vector space transformations occur asynchronously, synchronizing predictions directly to MongoDB collections (`user_churn_scores` and `appliance_recommendations`).
+The Rentora intelligence tier is architected to decouple analytical model training from live transactional web operations. Analytical extraction, gradient boosted tree inference, and vector space transformations occur asynchronously, synchronizing predictions directly to MongoDB collections (`user_churn_scores` and `appliance_recommendations`).
 
 ```mermaid
 graph TB
@@ -94,7 +94,7 @@ lgb_params = {
 ## 4. Explainable AI (XAI) via TreeSHAP
 
 ### 4.1 Theoretical Foundation
-To make black-box tree predictions interpretable for retention operations, RentAI implements **TreeSHAP** based on cooperative game theory:
+To make black-box tree predictions interpretable for retention operations, Rentora implements **TreeSHAP** based on cooperative game theory:
 $$\phi_i(x) = \sum_{S \subseteq F \setminus \{i\}} \frac{|S|!(|F| - |S| - 1)!}{|F|!} \left[ f_x(S \cup \{i\}) - f_x(S) \right]$$
 where $F$ is the complete feature set and $S$ is a feature subset.
 
