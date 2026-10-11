@@ -66,6 +66,11 @@ function App() {
           path="/owner" 
           element={isAuthenticated ? <OwnerDashboard onLogout={handleLogout} /> : <Navigate to="/login" />} 
         />
+        {/* Fallback Catch-All Route: Redirect unknown routes to Home or Login */}
+        <Route 
+          path="*" 
+          element={<Navigate to="/" replace />} 
+        />
       </Routes>
       <RentoraConcierge />
     </Router>
