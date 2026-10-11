@@ -288,6 +288,7 @@ router.get('/admin/kyc/', async (req, res) => {
         address_proof_preview: doc.address_proof_preview || doc.address_proof_mock_url || '',
         status: doc.status || 'in_review',
         confidence_score: doc.confidence_score || 98.4,
+        verification_audit: doc.verification_audit || null,
         submitted_at: doc.submitted_at instanceof Date ? doc.submitted_at.toISOString() : doc.submitted_at,
         reviewed_at: doc.reviewed_at instanceof Date ? doc.reviewed_at.toISOString() : doc.reviewed_at,
         rejection_reason: doc.rejection_reason || null

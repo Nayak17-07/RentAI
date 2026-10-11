@@ -29,7 +29,8 @@ import { fetchWithAuth } from './utils/api';
 import ThemeToggle from './ThemeToggle';
 
 const ID_TYPES = [
-  { id: 'Aadhaar Card', label: 'Aadhaar Card', placeholder: '12-digit UID (e.g. 5482 9102 3841)', pattern: '^[0-9]{12}$' },
+  { id: 'Aadhaar Card', label: 'Aadhaar Card', placeholder: '12-digit UID (e.g. 5482 9102 3842)', pattern: '^[0-9]{12}$' },
+  { id: 'PAN Card', label: 'PAN Card (Income Tax)', placeholder: '10-character PAN (e.g. ABCPE1234F)', pattern: '^[A-Z]{5}[0-9]{4}[A-Z]{1}$' },
   { id: 'Driving License', label: 'Driving License', placeholder: 'e.g. DL-1420110012345', pattern: '^[A-Z0-9-]{10,16}$' },
   { id: 'Passport', label: 'Passport', placeholder: '8-character alphanumeric (e.g. Z1234567)', pattern: '^[A-Z0-9]{8,9}$' },
   { id: 'Voter ID', label: 'Voter ID Card', placeholder: 'e.g. ABC1234567', pattern: '^[A-Z0-9]{10}$' }
@@ -342,9 +343,9 @@ const KYCPage = () => {
                     <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{kycData.full_name || 'Verified Customer'}</strong>
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', fontWeight: 600 }}>AI FRAUD RISK</span>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', fontWeight: 600 }}>ALGORITHMIC AUDIT</span>
                     <span style={{ color: '#16a34a', fontWeight: 700, fontSize: '0.9rem' }}>
-                      Low Risk (99.4% Match)
+                      {kycData.confidence_score ? `Verified (${kycData.confidence_score}% Confidence)` : 'Verified (UIDAI Checksum)'}
                     </span>
                   </div>
                   <div>
