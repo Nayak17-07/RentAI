@@ -2,7 +2,7 @@ const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
 const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/';
-const dbName = process.env.MONGO_DB_NAME || 'rentai_db';
+const dbName = process.env.MONGO_DB_NAME || 'rentora_db';
 
 let client = null;
 let db = null;

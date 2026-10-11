@@ -3,10 +3,149 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { getDb } = require('../db');
 const { makePassword, checkPassword, generateTokens, SECRET_KEY, authenticateJWT } = require('../auth');
+const { sendOtpEmail } = require('../mailer');
 
 const router = express.Router();
 
-// POST /api/users/ (User Registration)
+// POST /api/auth/send-signup-otp/ (Real-Time Gmail OTP Request for Registration)
+router.post('/auth/send-signup-otp/', async (req, res) => {
+  try {
+    const { username, email, password, phone_num, role } = req.body;
+    const db = getDb();
+
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: 'Username, email, and password are required' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanUsername = username.trim();
+
+    // Check if username already exists
+    const existingUser = await db.collection('users').findOne({ 
+      username: { $regex: new RegExp(`^${cleanUsername}$`, 'i') } 
+    });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Username is already taken. Please choose another.' });
+    }
+
+    // Check if email already registered
+    const existingEmail = await db.collection('users').findOne({ 
+      email: cleanEmail 
+    });
+    if (existingEmail) {
+      return res.status(400).json({ error: 'An account with this email already exists. Please log in.' });
+    }
+
+    // Generate secure 6-digit OTP
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 10 * 60 * 1000); // 10 minutes expiry
+
+    // Save pending registration payload with OTP
+    await db.collection('signup_otps').updateOne(
+      { email: cleanEmail },
+      {
+        $set: {
+          username: cleanUsername,
+          email: cleanEmail,
+          password: makePassword(password),
+          phone_num: phone_num ? phone_num.trim() : '',
+          role: role || 'customer',
+          otp,
+          created_at: now,
+          expires_at: expiresAt
+        }
+      },
+      { upsert: true }
+    );
+
+    // Send real-time OTP to the user's Gmail
+    const mailResult = await sendOtpEmail(cleanEmail, otp, 'signup');
+
+    return res.status(200).json({
+      success: 'Real-time 6-digit verification code sent to your Gmail',
+      email: cleanEmail,
+      simulated: mailResult.simulated,
+      mock_otp: mailResult.simulated ? otp : undefined
+    });
+  } catch (err) {
+    console.error('Send signup OTP error:', err);
+    return res.status(500).json({ error: 'Failed to dispatch Gmail verification code' });
+  }
+});
+
+// POST /api/auth/verify-signup-otp/ (Verify OTP and Create Account)
+router.post('/auth/verify-signup-otp/', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      return res.status(400).json({ error: 'Email and 6-digit verification code are required' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanOtp = String(otp).trim();
+    const db = getDb();
+
+    const record = await db.collection('signup_otps').findOne({
+      email: cleanEmail,
+      otp: cleanOtp
+    });
+
+    if (!record) {
+      return res.status(400).json({ error: 'Invalid verification code. Please check your Gmail and try again.' });
+    }
+
+    if (new Date() > new Date(record.expires_at)) {
+      return res.status(400).json({ error: 'Verification code has expired. Please request a new one.' });
+    }
+
+    // Check if account was created concurrently
+    const existing = await db.collection('users').findOne({
+      $or: [{ username: record.username }, { email: record.email }]
+    });
+    if (existing) {
+      return res.status(400).json({ error: 'Account already registered. Please log in.' });
+    }
+
+    const userId = crypto.randomUUID();
+    const userDoc = {
+      _id: userId,
+      username: record.username,
+      email: record.email,
+      password: record.password,
+      phone_num: record.phone_num,
+      role: record.role || 'customer',
+      email_verified: true,
+      email_verified_at: new Date(),
+      kyc_verified: false,
+      kyc_status: 'pending',
+      created_at: new Date()
+    };
+
+    await db.collection('users').insertOne(userDoc);
+    await db.collection('signup_otps').deleteOne({ email: cleanEmail });
+
+    const tokens = generateTokens(userId);
+
+    return res.status(201).json({
+      success: 'Gmail verified successfully! Account created.',
+      ...tokens,
+      user: {
+        id: userId,
+        username: userDoc.username,
+        email: userDoc.email,
+        role: userDoc.role,
+        email_verified: true,
+        kyc_verified: false
+      }
+    });
+  } catch (err) {
+    console.error('Verify signup OTP error:', err);
+    return res.status(500).json({ error: 'Verification failed due to a server error' });
+  }
+});
+
+// POST /api/users/ (Legacy direct registration fallback)
 router.post('/users/', async (req, res) => {
   try {
     const { username, email, password, phone_num, role } = req.body;
@@ -130,10 +269,13 @@ router.post('/auth/password-reset-request/', async (req, res) => {
       { upsert: true }
     );
 
+    const mailResult = await sendOtpEmail(email, otp, 'reset');
+
     return res.status(200).json({
-      success: 'Verification code has been sent to your email',
+      success: 'Verification code has been sent to your Gmail',
       email,
-      mock_otp: otp
+      simulated: mailResult.simulated,
+      mock_otp: mailResult.simulated ? otp : undefined
     });
   } catch (err) {
     console.error('Password reset request error:', err);

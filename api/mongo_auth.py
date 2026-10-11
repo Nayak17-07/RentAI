@@ -2,7 +2,7 @@ import os
 import jwt
 from datetime import datetime, timedelta
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-o!q0=y&+y5v47g9c6xi#^40$k=47kcml-9o_h_&u%t4x(@quq9')
+SECRET_KEY = os.getenv('SECRET_KEY', 'rentora-secret-key-high-performance-jwt-token-984210a')
 
 def generate_tokens(user_id):
     """

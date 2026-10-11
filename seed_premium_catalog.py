@@ -2,7 +2,7 @@ import os
 import sys
 import uuid
 
-# Setup Django environment
+# Native MongoDB connection
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from api.mongo_client import get_mongo_db

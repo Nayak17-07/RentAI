@@ -124,18 +124,23 @@ export default function UNLMTDSubscriptionModal({ isOpen, onClose, appliances = 
         justifyContent: 'center',
         padding: '1.25rem'
       }}>
-      <div style={{
-        background: '#ffffff',
-        borderRadius: '24px',
-        maxWidth: '1080px',
-        width: '100%',
-        maxHeight: '92vh',
-        overflowY: 'auto',
-        position: 'relative',
-        boxShadow: '0 25px 60px -15px rgba(0,0,0,0.3)',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
+      <div 
+        className="modal-content panel"
+        style={{
+          background: 'var(--surface-color)',
+          border: '1px solid var(--border-color)',
+          color: 'var(--text-primary)',
+          borderRadius: '24px',
+          maxWidth: '1080px',
+          width: '100%',
+          maxHeight: '92vh',
+          overflowY: 'auto',
+          position: 'relative',
+          boxShadow: '0 25px 60px -15px rgba(0,0,0,0.5)',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -143,8 +148,8 @@ export default function UNLMTDSubscriptionModal({ isOpen, onClose, appliances = 
             position: 'absolute',
             top: '1.25rem',
             right: '1.25rem',
-            background: '#f3f4f6',
-            border: 'none',
+            background: 'rgba(255, 255, 255, 0.15)',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
             borderRadius: '50%',
             width: '36px',
             height: '36px',
@@ -153,12 +158,13 @@ export default function UNLMTDSubscriptionModal({ isOpen, onClose, appliances = 
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 10,
-            transition: 'background 0.2s'
+            transition: 'background 0.2s',
+            color: '#ffffff'
           }}
-          onMouseOver={(e) => { e.currentTarget.style.background = '#e5e7eb'; }}
-          onMouseOut={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+          onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)'; }}
+          onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'; }}
         >
-          <X size={18} color="#4b5563" />
+          <X size={18} color="#ffffff" />
         </button>
 
         {/* Modal Header */}
@@ -221,10 +227,10 @@ export default function UNLMTDSubscriptionModal({ isOpen, onClose, appliances = 
           {/* Step 1: Select Plan Tier */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <div style={{ fontSize: '1rem', fontWeight: 800, color: '#111827' }}>
+              <div style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                 1. Choose your UNLMTD Plan Tier
               </div>
-              <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>Cancel or swap anytime</span>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Cancel or swap anytime</span>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
@@ -235,13 +241,13 @@ export default function UNLMTDSubscriptionModal({ isOpen, onClose, appliances = 
                     key={tier.id}
                     onClick={() => handleTierChange(tier)}
                     style={{
-                      border: isSelected ? '2px solid #e23744' : '1px solid #e5e7eb',
-                      background: isSelected ? '#fff5f5' : '#ffffff',
+                      border: isSelected ? '2px solid var(--primary-color)' : '1px solid var(--border-color)',
+                      background: isSelected ? 'rgba(239, 68, 68, 0.1)' : 'var(--surface-color)',
                       borderRadius: '16px',
                       padding: '1.25rem',
                       cursor: 'pointer',
                       position: 'relative',
-                      boxShadow: isSelected ? '0 8px 24px rgba(226,55,68,0.12)' : '0 1px 3px rgba(0,0,0,0.02)',
+                      boxShadow: isSelected ? '0 8px 24px rgba(226,55,68,0.18)' : 'var(--card-shadow)',
                       transition: 'all 0.2s ease'
                     }}
                   >
@@ -250,7 +256,7 @@ export default function UNLMTDSubscriptionModal({ isOpen, onClose, appliances = 
                         position: 'absolute',
                         top: '-10px',
                         right: '16px',
-                        background: '#e23744',
+                        background: 'var(--primary-color)',
                         color: '#ffffff',
                         fontSize: '0.65rem',
                         fontWeight: 800,
@@ -262,18 +268,18 @@ export default function UNLMTDSubscriptionModal({ isOpen, onClose, appliances = 
                       </span>
                     )}
 
-                    <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#111827', marginBottom: '0.25rem' }}>
+                    <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
                       {tier.name}
                     </div>
-                    <div style={{ fontSize: '0.8rem', color: '#6b7280', marginBottom: '0.75rem', minHeight: '36px' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.75rem', minHeight: '36px' }}>
                       {tier.tagline}
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem', marginBottom: '0.5rem' }}>
-                      <span style={{ fontSize: '1.5rem', fontWeight: 900, color: '#e23744' }}>
+                      <span style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--primary-color)' }}>
                         ₹{tier.monthlyPrice.toLocaleString('en-IN')}
                       </span>
-                      <span style={{ fontSize: '0.8rem', color: '#9ca3af', textDecoration: 'line-through' }}>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>
                         ₹{tier.originalPrice}
                       </span>
                       <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 700 }}>
@@ -287,8 +293,8 @@ export default function UNLMTDSubscriptionModal({ isOpen, onClose, appliances = 
                       gap: '0.35rem',
                       fontSize: '0.75rem',
                       fontWeight: 700,
-                      color: isSelected ? '#e23744' : '#4b5563',
-                      background: isSelected ? 'rgba(226,55,68,0.1)' : '#f3f4f6',
+                      color: isSelected ? 'var(--primary-color)' : 'var(--text-secondary)',
+                      background: isSelected ? 'rgba(226,55,68,0.15)' : 'var(--surface-muted)',
                       padding: '0.25rem 0.65rem',
                       borderRadius: '6px'
                     }}>
@@ -303,8 +309,8 @@ export default function UNLMTDSubscriptionModal({ isOpen, onClose, appliances = 
 
           {/* Step 2: Basket Status Bar */}
           <div style={{
-            background: '#f8fafc',
-            border: '1px solid #e2e8f0',
+            background: 'var(--surface-muted)',
+            border: '1px solid var(--border-color)',
             borderRadius: '16px',
             padding: '1.25rem 1.5rem',
             display: 'flex',
@@ -314,10 +320,10 @@ export default function UNLMTDSubscriptionModal({ isOpen, onClose, appliances = 
             gap: '1rem'
           }}>
             <div>
-              <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#111827' }}>
+              <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                 2. Select Your {maxItems} Items ({selectedItems.length}/{maxItems} Chosen)
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.2rem' }}>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
                 {isComplete 
                   ? "🎉 Your suite is fully assembled and ready for checkout!" 
                   : `Select ${maxItems - selectedItems.length} more item(s) from the catalog below.`}
@@ -335,8 +341,8 @@ export default function UNLMTDSubscriptionModal({ isOpen, onClose, appliances = 
                       width: '42px',
                       height: '42px',
                       borderRadius: '10px',
-                      border: item ? '2px solid #e23744' : '2px dashed #cbd5e1',
-                      background: item ? '#ffffff' : '#ffffff',
+                      border: item ? '2px solid var(--primary-color)' : '2px dashed var(--border-color)',
+                      background: item ? 'var(--surface-color)' : 'var(--surface-color)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -348,7 +354,7 @@ export default function UNLMTDSubscriptionModal({ isOpen, onClose, appliances = 
                     {item ? (
                       <img src={item.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700 }}>{index + 1}</span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700 }}>{index + 1}</span>
                     )}
                   </div>
                 );

@@ -17,10 +17,10 @@ graph TB
         Axios[Axios HTTP Client with Interceptors]
     end
 
-    subgraph ApplicationTier [Application Tier (Django REST Framework)]
-        Gateway[Django WSGI / ASGI Gateway]
-        AuthMiddleware[MongoJWTAuthentication Middleware]
-        Router[Django URL Dispatcher]
+    subgraph ApplicationTier [Application Tier (Node.js & Express 5)]
+        Gateway[Node.js HTTP / WebSocket Gateway]
+        AuthMiddleware[JWT Authentication Middleware]
+        Router[Express Modular Route Controllers]
         
         subgraph ViewControllers [View Controllers]
             V_Auth[Register / Login / Refresh]
@@ -69,7 +69,7 @@ The Rentora ecosystem is decomposed into 8 highly cohesive, loosely coupled func
 
 ### 2.1 Module 1: User Authentication & Profile Management
 - **Role**: Manages user registration, login authentication, token renewal, and profile identity records.
-- **Security**: Cryptographically hashes passwords using PBKDF2 SHA-256 (`django.contrib.auth.hashers.make_password`). Generates and verifies custom JWTs (`api/mongo_auth.py`) containing the user's UUID, email, and role.
+- **Security**: Cryptographically hashes passwords using PBKDF2 with SHA-256 (Node.js `crypto.pbkdf2Sync`, 1,000,000 iterations). Generates and verifies custom JWTs containing the user's UUID, email, and role.
 - **Data Collections**: Interacts directly with the `users` collection in MongoDB.
 
 ### 2.2 Module 2: Appliance Inventory Management
@@ -156,7 +156,7 @@ graph TD
 ## 4. Scalability, High Availability, and Fault Tolerance
 
 ### 4.1 Horizontal Scaling
-- **Stateless Web Tier**: Django processes maintain no in-memory user session state; user identity is decoded on-the-fly from signed JWT tokens. Multiple Gunicorn worker processes can be scaled horizontally behind an Nginx load balancer without sticky sessions.
+- **Stateless Web Tier**: Node.js processes maintain no in-memory user session state; user identity is decoded on-the-fly from signed JWT tokens. Multiple Node.js cluster worker processes can be scaled horizontally behind an Nginx load balancer without sticky sessions.
 - **NoSQL Sharding**: MongoDB natively supports horizontal sharding across distributed replica sets using hashed shard keys (`user_id` or `city`).
 
 ### 4.2 Decoupled Analytical Computation

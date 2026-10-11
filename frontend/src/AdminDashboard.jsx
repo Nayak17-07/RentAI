@@ -47,9 +47,11 @@ import {
 } from 'recharts';
 import { getSocket, joinAdminRoom } from './utils/socket';
 import { downloadCsv, exportViaServer } from './utils/exportCsv';
+import BusinessIntelligenceTab from './BusinessIntelligenceTab';
+import SmartIoTFleetTab from './SmartIoTFleetTab';
 
 const AdminDashboard = ({ onLogout }) => {
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'inventory' | 'users' | 'rentals' | 'complaints'
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'bi_analytics' | 'iot_fleet' | 'inventory' | 'users' | 'rentals' | 'complaints'
   const [socketConnected, setSocketConnected] = useState(false);
   const [liveAlert, setLiveAlert] = useState(null);
   
@@ -734,6 +736,8 @@ const AdminDashboard = ({ onLogout }) => {
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               {[
                 { id: 'overview', label: 'Analytics & Churn', icon: TrendingUp },
+                { id: 'bi_analytics', label: 'Business Intelligence (BI)', icon: BarChart2 },
+                { id: 'iot_fleet', label: 'Smart IoT & Predictive Maintenance', icon: Wifi },
                 { id: 'inventory', label: `Appliance Inventory (${appliances.length})`, icon: ShoppingBag },
                 { id: 'users', label: `Users (${usersList.length})`, icon: Users },
                 { id: 'rentals', label: `Bookings (${allRentals.length})`, icon: PackageCheck },
@@ -2003,6 +2007,20 @@ const AdminDashboard = ({ onLogout }) => {
               </div>
             </div>
           </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* TAB 7: BUSINESS INTELLIGENCE (BI) SUITE */}
+        {/* ========================================================================= */}
+        {activeTab === 'bi_analytics' && (
+          <BusinessIntelligenceTab onExport={handleExportCSV} />
+        )}
+
+        {/* ========================================================================= */}
+        {/* TAB 8: SMART IOT FLEET & SERIALIZED INVENTORY REFURBISHMENT */}
+        {/* ========================================================================= */}
+        {activeTab === 'iot_fleet' && (
+          <SmartIoTFleetTab onStockUpdated={fetchInventory} />
         )}
 
       </main>

@@ -32,8 +32,15 @@ export default function ThemeToggle({ style = {}, className = '' }) {
   }, [theme]);
 
   const toggleTheme = (e) => {
-    e.stopPropagation();
+    if (e && e.stopPropagation) e.stopPropagation();
+
+    // Smooth global theme transition
+    document.documentElement.classList.add('theme-transitioning');
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+
+    setTimeout(() => {
+      document.documentElement.classList.remove('theme-transitioning');
+    }, 400);
   };
 
   const isDark = theme === 'dark';
@@ -62,27 +69,29 @@ export default function ThemeToggle({ style = {}, className = '' }) {
               ? '#fbbf24'
               : '#e23744'
             : isDark
-            ? '#2d3e5f'
+            ? 'var(--border-color)'
             : '#e2e8f0'
         }`,
         background: isHovered
           ? isDark
-            ? 'rgba(251, 191, 36, 0.12)'
-            : 'rgba(226, 55, 68, 0.06)'
+            ? 'rgba(251, 191, 36, 0.15)'
+            : 'rgba(226, 55, 68, 0.08)'
           : isDark
-          ? '#172138'
+          ? 'var(--surface-elevated)'
           : '#f8fafc',
         color: isDark ? '#fbbf24' : '#475569',
         cursor: 'pointer',
         transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-        transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+        transform: isHovered ? 'scale(1.06)' : 'scale(1)',
         boxShadow: isHovered
           ? isDark
-            ? '0 0 14px rgba(251, 191, 36, 0.3)'
-            : '0 2px 8px rgba(0, 0, 0, 0.06)'
-          : 'none',
+            ? '0 0 16px rgba(251, 191, 36, 0.35)'
+            : '0 4px 12px rgba(226, 55, 68, 0.12)'
+          : '0 1px 3px rgba(0, 0, 0, 0.04)',
         flexShrink: 0,
         padding: 0,
+        outline: 'none',
+        userSelect: 'none',
         ...style
       }}
     >
@@ -90,7 +99,7 @@ export default function ThemeToggle({ style = {}, className = '' }) {
         <Sun
           size={18}
           style={{
-            transform: isHovered ? 'rotate(45deg)' : 'rotate(0deg)',
+            transform: isHovered ? 'rotate(45deg) scale(1.08)' : 'rotate(0deg) scale(1)',
             transition: 'transform 0.3s ease',
             color: '#fbbf24'
           }}
@@ -99,7 +108,7 @@ export default function ThemeToggle({ style = {}, className = '' }) {
         <Moon
           size={18}
           style={{
-            transform: isHovered ? 'rotate(-15deg)' : 'rotate(0deg)',
+            transform: isHovered ? 'rotate(-18deg) scale(1.08)' : 'rotate(0deg) scale(1)',
             transition: 'transform 0.3s ease',
             color: '#475569'
           }}

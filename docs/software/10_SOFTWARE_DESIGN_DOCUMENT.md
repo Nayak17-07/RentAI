@@ -13,21 +13,25 @@ This Low-Level Software Design Document outlines the detailed class hierarchies,
 
 ```
 Rentora/
-├── api/                           # Backend Django REST Application
-│   ├── mongo_client.py            # Singleton MongoDB Connection Pool
-│   ├── mongo_auth.py              # Custom JWT Authentication Handler
-│   ├── views.py                   # API View Controllers & Business Logic
-│   ├── models.py                  # Declarative ORM Stubs for Django Admin
-│   └── urls.py                    # RESTful URL Route Definitions
-├── ml_pipeline/                   # Data Science & Inference Pipeline
+├── server/                        # Backend Node.js & Express 5 Application
+│   ├── src/
+│   │   ├── app.js                 # Express Application & Middleware Pipeline
+│   │   ├── auth.js                # Custom PBKDF2 & JWT Authentication Engine
+│   │   ├── db.js                  # Native MongoDB Connection Pool
+│   │   ├── socket.js              # Real-Time Socket.io WebSocket Gateway
+│   │   └── routes/                # High-Throughput RESTful Controllers
+│   └── index.js                   # HTTP Server Entry Point (:8000)
+├── ml_pipeline/                   # Data Science & Predictive Analytics Tier
 │   ├── etl_pipeline.py            # Behavioral Data Extraction & Vectorization
-│   ├── train_model.py             # LightGBM & TF-IDF Training Harness
-│   └── evaluate_models.py         # Synthetic Benchmark & Validation Suite
-└── frontend/                      # Client Presentation Tier
+│   ├── train_model.py             # LightGBM Churn & TF-IDF Recommender
+│   ├── train_predictive_maintenance.py # Random Forest AI Telemetry Engine
+│   └── evaluate_models.py         # Multi-Model Benchmark Suite
+└── frontend/                      # Presentation Tier (React 18 + Vite)
     ├── src/
-    │   ├── CitySelectionModal.jsx # Location-aware City Filtering
-    │   ├── App.jsx                # SPA Root & State Management
-    │   └── ...                    # Components & Modular Views
+    │   ├── App.jsx                # SPA Root & Routing
+    │   ├── BusinessIntelligenceTab.jsx # Executive BI Dashboard
+    │   ├── SmartIoTFleetTab.jsx   # Fleet Telemetry & Refurbishment
+    │   └── ...                    # Interactive Views & Modals
 ```
 
 ---
@@ -35,7 +39,7 @@ Rentora/
 ## 2. Design Patterns Implemented
 
 ### 2.1 Singleton Pattern: MongoDB Connection Manager
-To prevent connection exhaustion and reduce socket initialization overhead, MongoDB connection handles are encapsulated via a thread-safe Singleton pattern in `api/mongo_client.py`:
+To prevent connection exhaustion and reduce socket initialization overhead, MongoDB connection handles are encapsulated via a thread-safe Singleton pattern with connection pooling in `server/src/db.js` (and `api/mongo_client.py` for Python ML jobs):
 
 ```mermaid
 classDiagram
@@ -48,22 +52,18 @@ classDiagram
 
 ```python
 # Low-level Singleton Implementation (api/mongo_client.py)
+import os
 from pymongo import MongoClient
-from django.conf import settings
-
-_client = None
-_db = None
 
 def get_mongo_db():
-    global _client, _db
-    if _db is None:
-        _client = MongoClient(settings.MONGO_URI, maxPoolSize=50, waitQueueTimeoutMS=2500)
-        _db = _client[settings.MONGO_DB_NAME]
-    return _db
+    uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
+    db_name = os.getenv('MONGO_DB_NAME', 'rentora_db')
+    client = MongoClient(uri, maxPoolSize=50)
+    return client[db_name]
 ```
 
 ### 2.2 Strategy Pattern: Custom JWT Authentication
-Rentora avoids tight coupling to Django's default SQL authentication middleware by implementing a custom Strategy (`MongoJWTAuthentication` in `api/mongo_auth.py`) conforming to DRF's `BaseAuthentication`:
+Rentora implements stateless JWT authentication decoding user credentials on-the-fly (`server/src/auth.js`):
 
 ```mermaid
 sequenceDiagram

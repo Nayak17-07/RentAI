@@ -1,7 +1,7 @@
 # Rentora: Smart Appliance Rental Platform
 ## Master Documentation Index
 
-Welcome to the comprehensive documentation suite for **Rentora**, an enterprise-grade, AI-driven smart appliance rental platform powered by a high-performance MongoDB NoSQL architecture, Django REST Framework, Vite React frontend, and asynchronous Machine Learning pipelines (LightGBM churn prediction with SHAP explainability and TF-IDF collaborative item recommendation).
+Welcome to the comprehensive documentation suite for **Rentora**, an enterprise-grade, AI-driven smart appliance rental platform powered by a high-performance MongoDB NoSQL architecture, Node.js + Express 5 REST API & Socket.io WebSockets, Vite React frontend, and asynchronous Machine Learning pipelines (LightGBM churn prediction with SHAP explainability, Random Forest predictive maintenance, and TF-IDF collaborative item recommendation).
 
 This documentation suite fulfills all academic, engineering, and research requirements and is organized into two primary categories: **Software Engineering Documentation** and **Research Documentation**.
 
@@ -80,8 +80,8 @@ Rentora/
 
 ## 🛠️ Technology Stack Summary
 
-- **Frontend**: React 18, Vite, Modern Responsive Glassmorphic CSS Design, Axios, React Icons, Chart.js.
-- **Backend**: Django 5.2, Django REST Framework (DRF), Custom PyMongo & MongoEngine drivers.
-- **Database**: MongoDB NoSQL (Collections: `users`, `appliances`, `rentals`, `carts`, `user_churn_scores`, `appliance_recommendations`).
-- **Machine Learning**: Python 3.11, LightGBM, SHAP (SHapley Additive exPlanations), Scikit-Learn (TF-IDF Vectorizer, Cosine Similarity), Pandas, NumPy.
-- **Security**: Custom Mongo-backed JWT Authentication, CORS Headers, Role-Based Access Control (Customer vs. Admin).
+- **Frontend**: React 18, Vite, Modern Responsive Glassmorphic CSS Design, Recharts, Lucide Icons, Socket.io Client.
+- **Backend**: Node.js, Express 5, Socket.io Real-Time Engine, Native MongoDB Connection Pool.
+- **Database**: MongoDB NoSQL (Collections: `users`, `appliances`, `rentals`, `carts`, `payments`, `complaints`, `user_churn_scores`, `appliance_recommendations`, `iot_device_telemetry`, `serialized_inventory_units`).
+- **Machine Learning**: Python 3.11, LightGBM, Random Forest, SHAP, Scikit-Learn (TF-IDF Vectorizer, Cosine Similarity), Pandas, NumPy.
+- **Security**: Custom Mongo-backed JWT Authentication, PBKDF2 Password Hashing, CORS, Role-Based Access Control (Customer, Owner, Admin).

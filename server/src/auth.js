@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { getDb } = require('./db');
 
-const SECRET_KEY = process.env.SECRET_KEY || 'django-insecure-o!q0=y&+y5v47g9c6xi#^40$k=47kcml-9o_h_&u%t4x(@quq9';
+const SECRET_KEY = process.env.SECRET_KEY || 'rentora-secret-key-high-performance-jwt-token-984210a';
 
 function makePassword(password) {
   const salt = crypto.randomBytes(16).toString('base64').replace(/=/g, '');

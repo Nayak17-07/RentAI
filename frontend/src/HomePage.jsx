@@ -117,7 +117,16 @@ const HomePage = ({ onLogout }) => {
   const [searchFocused, setSearchFocused] = useState(false);
   const [recentSearches, setRecentSearches] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem('rentora_recent_searches') || '["Washing Machine", "Double Bed"]');
+      const raw = localStorage.getItem('rentora_recent_searches');
+      if (!raw) return ["Washing Machine", "Double Bed"];
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        const sanitized = parsed
+          .map(item => (typeof item === 'string' ? item : (item?.label || item?.query || '')))
+          .filter(Boolean);
+        return sanitized.length > 0 ? sanitized : ["Washing Machine", "Double Bed"];
+      }
+      return ["Washing Machine", "Double Bed"];
     } catch {
       return ["Washing Machine", "Double Bed"];
     }
@@ -187,18 +196,28 @@ const HomePage = ({ onLogout }) => {
   }, [showUserMenu, searchFocused]);
 
   const handleExecuteSearch = (term) => {
-    const query = typeof term === 'string' ? term : searchQuery;
-    if (!query || !query.trim()) return;
-    const cleanQuery = query.trim();
+    const raw = typeof term === 'string' ? term : searchQuery;
+    const cleanQuery = (typeof raw === 'string' ? raw : '').trim();
+    if (!cleanQuery) return;
+
     setSearchQuery(cleanQuery);
     setSearchFocused(false);
     setSelectedCategory('All');
     setActiveSubCategory('');
 
-    // Save to recent searches (up to 6, deduplicated)
+    // Save to recent searches (up to 6, deduplicated, strings only)
     setRecentSearches(prev => {
-      const updated = [cleanQuery, ...prev.filter(s => s.toLowerCase() !== cleanQuery.toLowerCase())].slice(0, 6);
-      localStorage.setItem('rentora_recent_searches', JSON.stringify(updated));
+      const safePrev = Array.isArray(prev)
+        ? prev
+            .map(item => (typeof item === 'string' ? item : (item?.label || item?.query || String(item || ''))))
+            .filter(Boolean)
+        : [];
+      const updated = [cleanQuery, ...safePrev.filter(s => typeof s === 'string' && s.toLowerCase() !== cleanQuery.toLowerCase())].slice(0, 6);
+      try {
+        localStorage.setItem('rentora_recent_searches', JSON.stringify(updated));
+      } catch (err) {
+        console.error('Failed to save recent searches:', err);
+      }
       return updated;
     });
 
@@ -209,16 +228,25 @@ const HomePage = ({ onLogout }) => {
   };
 
   const handleClearRecentSearches = (e) => {
-    e.stopPropagation();
+    if (e && e.stopPropagation) e.stopPropagation();
     setRecentSearches([]);
-    localStorage.removeItem('rentora_recent_searches');
+    try {
+      localStorage.removeItem('rentora_recent_searches');
+    } catch {}
   };
 
   const handleRemoveRecentSearch = (e, itemToRemove) => {
-    e.stopPropagation();
+    if (e && e.stopPropagation) e.stopPropagation();
+    const targetString = typeof itemToRemove === 'string' ? itemToRemove : (itemToRemove?.label || itemToRemove?.query || String(itemToRemove || ''));
     setRecentSearches(prev => {
-      const updated = prev.filter(s => s !== itemToRemove);
-      localStorage.setItem('rentora_recent_searches', JSON.stringify(updated));
+      const safePrev = Array.isArray(prev) ? prev : [];
+      const updated = safePrev.filter(s => {
+        const str = typeof s === 'string' ? s : (s?.label || s?.query || String(s || ''));
+        return str !== targetString;
+      });
+      try {
+        localStorage.setItem('rentora_recent_searches', JSON.stringify(updated));
+      } catch {}
       return updated;
     });
   };
@@ -443,8 +471,9 @@ const HomePage = ({ onLogout }) => {
   };
 
   // Filter logic with tokenized multi-word matching
-  const filteredAppliances = appliances.filter(app => {
-    const activeQuery = (searchQuery || "").toLowerCase().trim();
+  const filteredAppliances = (Array.isArray(appliances) ? appliances : []).filter(app => {
+    if (!app) return false;
+    const activeQuery = (typeof searchQuery === 'string' ? searchQuery : "").toLowerCase().trim();
 
     // 1. Search Query: Match across ALL fields using multi-word tokens
     if (activeQuery) {
@@ -455,19 +484,21 @@ const HomePage = ({ onLogout }) => {
     }
 
     // 2. Category Filter: Apply only if NOT doing an active freeform search
-    if (!activeQuery && selectedCategory !== "All") {
-      if (selectedCategory === "Furniture") {
+    if (!activeQuery && selectedCategory && selectedCategory !== "All") {
+      const selCatLower = String(selectedCategory).toLowerCase();
+      const appCatLower = String(app.category_id || '').toLowerCase();
+      if (selCatLower === "furniture") {
         const furnCats = ["living room", "bedroom", "dining room", "office"];
-        if (!furnCats.includes(app.category_id?.toLowerCase())) return false;
-      } else if (app.category_id?.toLowerCase() !== selectedCategory.toLowerCase()) {
+        if (!furnCats.includes(appCatLower)) return false;
+      } else if (appCatLower !== selCatLower) {
         return false;
       }
     }
 
     // 3. Stock Status
     const inStock = (app.stock_quantity || 0) > 0;
-    if (statusFilter.inStock && !statusFilter.outOfStock && !inStock) return false;
-    if (statusFilter.outOfStock && !statusFilter.inStock && inStock) return false;
+    if (statusFilter?.inStock && !statusFilter?.outOfStock && !inStock) return false;
+    if (statusFilter?.outOfStock && !statusFilter?.inStock && inStock) return false;
 
     // 4. Budget
     const price = app.monthly_price || 0;
@@ -480,8 +511,9 @@ const HomePage = ({ onLogout }) => {
   });
 
   // Autocomplete matching items for the live header dropdown with multi-word tokens
-  const searchMatches = searchQuery.trim().length > 0
+  const searchMatches = (typeof searchQuery === 'string' && searchQuery.trim().length > 0 && Array.isArray(appliances))
     ? appliances.filter(app => {
+        if (!app) return false;
         const words = searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
         const fullText = `${app.rental_name || ''} ${app.category_id || ''} ${app.sub_category || ''} ${app.brand || ''} ${app.description || ''}`.toLowerCase();
         return words.every(word => fullText.includes(word));
@@ -971,10 +1003,10 @@ const HomePage = ({ onLogout }) => {
                 onMouseDown={(e) => e.stopPropagation()}
               >
                 {/* 1. If user typed nothing yet: Show Recent Searches, Trending Keywords & Quick Categories */}
-                {!searchQuery.trim() ? (
+                {!(typeof searchQuery === 'string' && searchQuery.trim().length > 0) ? (
                   <div>
                     {/* A. Recent Searches Section (like Amazon / Flipkart / Blinkit) */}
-                    {recentSearches && recentSearches.length > 0 && (
+                    {Array.isArray(recentSearches) && recentSearches.length > 0 && (
                       <div style={{ marginBottom: '1.15rem' }}>
                         <div style={{ 
                           display: 'flex', 
@@ -1016,35 +1048,39 @@ const HomePage = ({ onLogout }) => {
                         </div>
 
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
-                          {recentSearches.map((term, i) => (
-                            <div
-                              key={i}
-                              className="search-recent-item"
-                              onClick={() => handleExecuteSearch(term)}
-                            >
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                <History size={13} color="#94a3b8" />
-                                <span style={{ fontWeight: 600 }}>{term}</span>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={(e) => handleRemoveRecentSearch(e, term)}
-                                style={{
-                                  background: 'none',
-                                  border: 'none',
-                                  color: '#94a3b8',
-                                  cursor: 'pointer',
-                                  padding: '0 0 0 6px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  lineHeight: 1
-                                }}
-                                title="Remove from recent searches"
+                          {recentSearches.map((term, i) => {
+                            const termLabel = typeof term === 'string' ? term : (term?.label || term?.query || String(term || ''));
+                            if (!termLabel) return null;
+                            return (
+                              <div
+                                key={i}
+                                className="search-recent-item"
+                                onClick={() => handleExecuteSearch(termLabel)}
                               >
-                                <X size={12} />
-                              </button>
-                            </div>
-                          ))}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                  <History size={13} color="#94a3b8" />
+                                  <span style={{ fontWeight: 600 }}>{termLabel}</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleRemoveRecentSearch(e, term)}
+                                  style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: '#94a3b8',
+                                    cursor: 'pointer',
+                                    padding: '0 0 0 6px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    lineHeight: 1
+                                  }}
+                                  title="Remove from recent searches"
+                                >
+                                  <X size={12} />
+                                </button>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
@@ -1179,57 +1215,60 @@ const HomePage = ({ onLogout }) => {
                       </span>
                     </div>
 
-                    {searchMatches.length > 0 ? (
+                    {Array.isArray(searchMatches) && searchMatches.length > 0 ? (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', maxHeight: '320px', overflowY: 'auto' }}>
-                        {searchMatches.map((item) => (
-                          <div
-                            key={item.appliance_id}
-                            onClick={() => {
-                              setSelectedProduct(item);
-                              setSearchFocused(false);
-                            }}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              padding: '0.5rem 0.65rem',
-                              borderRadius: '10px',
-                              cursor: 'pointer',
-                              transition: 'background 0.15s ease'
-                            }}
-                            onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; }}
-                            onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                              <img 
-                                src={item.image_url} 
-                                alt={item.rental_name} 
-                                style={{ width: '42px', height: '42px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e2e8f0' }} 
-                              />
-                              <div>
-                                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>
-                                  {item.rental_name}
-                                </div>
-                                <div style={{ fontSize: '0.72rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '3px' }}>
-                                  <span style={{ background: '#f1f5f9', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>{item.category_id}</span>
-                                  {item.sub_category && <span>• {item.sub_category}</span>}
-                                  <span style={{ color: (item.stock_quantity || 0) > 0 ? '#16a34a' : '#d97706', fontWeight: 700 }}>
-                                    • {(item.stock_quantity || 0) > 0 ? '🟢 In Stock' : '⚡ Express 72h'}
-                                  </span>
+                        {searchMatches.map((item, idx) => {
+                          if (!item) return null;
+                          return (
+                            <div
+                              key={item.appliance_id || idx}
+                              onClick={() => {
+                                setSelectedProduct(item);
+                                setSearchFocused(false);
+                              }}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                padding: '0.5rem 0.65rem',
+                                borderRadius: '10px',
+                                cursor: 'pointer',
+                                transition: 'background 0.15s ease'
+                              }}
+                              onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; }}
+                              onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                <img 
+                                  src={item.image_url || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=200'} 
+                                  alt={item.rental_name || 'Appliance'} 
+                                  style={{ width: '42px', height: '42px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e2e8f0' }} 
+                                />
+                                <div>
+                                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>
+                                    {item.rental_name || 'Rental Item'}
+                                  </div>
+                                  <div style={{ fontSize: '0.72rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '3px' }}>
+                                    <span style={{ background: '#f1f5f9', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>{item.category_id || 'Appliance'}</span>
+                                    {item.sub_category && <span>• {item.sub_category}</span>}
+                                    <span style={{ color: (item.stock_quantity || 0) > 0 ? '#16a34a' : '#d97706', fontWeight: 700 }}>
+                                      • {(item.stock_quantity || 0) > 0 ? '🟢 In Stock' : '⚡ Express 72h'}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
 
-                            <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                              <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#e23744' }}>
-                                ₹{item.monthly_price}/mo
+                              <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#e23744' }}>
+                                  ₹{item.monthly_price || 0}/mo
+                                </div>
+                                <span style={{ fontSize: '0.7rem', color: '#2563eb', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+                                  View <ArrowRight size={10} />
+                                </span>
                               </div>
-                              <span style={{ fontSize: '0.7rem', color: '#2563eb', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
-                                View <ArrowRight size={10} />
-                              </span>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
 
                         {/* View all matching items in catalog button */}
                         <button
@@ -1675,10 +1714,10 @@ const HomePage = ({ onLogout }) => {
         
         {/* Title Header with Red Line */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.75rem' }}>
-          <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: 0, color: '#111827' }}>
-            Explore <span style={{ color: '#e23744' }}>our Top Categories</span>
+          <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+            Explore <span style={{ color: 'var(--primary-color)' }}>our Top Categories</span>
           </h1>
-          <div style={{ width: '48px', height: '4px', background: '#e23744', borderRadius: '2px', marginLeft: '0.25rem' }} />
+          <div style={{ width: '48px', height: '4px', background: 'var(--primary-color)', borderRadius: '2px', marginLeft: '0.25rem' }} />
         </div>
 
         {/* 2-Column Hero: Left Promo Banner + Right 4x4 Grid */}
@@ -1766,10 +1805,11 @@ const HomePage = ({ onLogout }) => {
               {TOP_CATEGORIES.map((cat, idx) => (
                 <div
                   key={idx}
+                  className="category-tile panel"
                   onClick={() => handleCategoryTileClick(cat)}
                   style={{
-                    background: '#ffffff',
-                    border: '1px solid #ebebeb',
+                    background: 'var(--surface-color)',
+                    border: '1px solid var(--border-color)',
                     borderRadius: '16px',
                     padding: '1rem 0.6rem',
                     display: 'flex',
@@ -1778,18 +1818,18 @@ const HomePage = ({ onLogout }) => {
                     justifyContent: 'center',
                     cursor: 'pointer',
                     transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                    boxShadow: '0 1px 4px rgba(0,0,0,0.02)',
+                    boxShadow: 'var(--card-shadow)',
                     minHeight: '104px'
                   }}
                   onMouseOver={(e) => {
                     e.currentTarget.style.transform = 'translateY(-3px)';
-                    e.currentTarget.style.borderColor = '#d1d5db';
-                    e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.06)';
+                    e.currentTarget.style.borderColor = 'var(--primary-color)';
+                    e.currentTarget.style.boxShadow = 'var(--card-shadow-hover)';
                   }}
                   onMouseOut={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.borderColor = '#ebebeb';
-                    e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.02)';
+                    e.currentTarget.style.borderColor = 'var(--border-color)';
+                    e.currentTarget.style.boxShadow = 'var(--card-shadow)';
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '48px', marginBottom: '0.4rem' }}>
@@ -1798,7 +1838,7 @@ const HomePage = ({ onLogout }) => {
                   <span style={{
                     fontSize: '0.8rem',
                     fontWeight: 600,
-                    color: '#1f2937',
+                    color: 'var(--text-primary)',
                     textAlign: 'center',
                     lineHeight: 1.2
                   }}>
@@ -1964,31 +2004,34 @@ const HomePage = ({ onLogout }) => {
       <section id="catalog-listing-section" style={{ maxWidth: '1280px', margin: '4rem auto 0', padding: '0 1.5rem' }}>
         
         {/* Dual Mode Storefront Switcher: Rent vs Buy Refurbished (Rentora Dual Model) */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          background: '#ffffff',
-          border: '1px solid #e5e7eb',
-          borderRadius: '16px',
-          padding: '1rem 1.5rem',
-          marginBottom: '2rem',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
-        }}>
+        <div 
+          className="store-mode-switcher panel"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            background: 'var(--surface-color)',
+            border: '1px solid var(--border-color)',
+            borderRadius: '16px',
+            padding: '1rem 1.5rem',
+            marginBottom: '2rem',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            boxShadow: 'var(--card-shadow)'
+          }}
+        >
           <div>
-            <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#111827' }}>
+            <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>
               Choose Your Shopping Mode:
             </div>
-            <div style={{ fontSize: '0.825rem', color: '#6b7280', marginTop: '0.2rem' }}>
+            <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
               {storeMode === 'rent' 
                 ? '🛋️ Renting: Flexible monthly subscription, free servicing, style swap anytime' 
                 : '🏷️ Buy Certified Refurbished: Gently pre-loved items at 65% off with 1-Year Warranty & Assured Buyback'}
             </div>
           </div>
 
-          <div style={{ display: 'flex', background: '#f1f5f9', padding: '4px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', background: 'var(--surface-muted)', padding: '4px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
             <button
               type="button"
               onClick={() => {
@@ -1997,8 +2040,8 @@ const HomePage = ({ onLogout }) => {
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }}
               style={{
-                background: storeMode === 'rent' ? '#e23744' : 'transparent',
-                color: storeMode === 'rent' ? '#ffffff' : '#475569',
+                background: storeMode === 'rent' ? 'var(--primary-color)' : 'transparent',
+                color: storeMode === 'rent' ? '#ffffff' : 'var(--text-secondary)',
                 border: 'none',
                 borderRadius: '8px',
                 padding: '0.55rem 1.4rem',
@@ -2022,8 +2065,8 @@ const HomePage = ({ onLogout }) => {
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }}
               style={{
-                background: storeMode === 'refurbished' ? '#111827' : 'transparent',
-                color: storeMode === 'refurbished' ? '#ffffff' : '#475569',
+                background: storeMode === 'refurbished' ? 'var(--secondary-color)' : 'transparent',
+                color: storeMode === 'refurbished' ? 'var(--bg-color)' : 'var(--text-secondary)',
                 border: 'none',
                 borderRadius: '8px',
                 padding: '0.55rem 1.4rem',
@@ -2037,7 +2080,7 @@ const HomePage = ({ onLogout }) => {
                 transition: 'all 0.2s ease'
               }}
             >
-              <Award size={14} color={storeMode === 'refurbished' ? '#f59e0b' : '#64748b'} />
+              <Award size={14} color={storeMode === 'refurbished' ? '#f59e0b' : 'var(--text-muted)'} />
               <span>🏷️ Buy Pre-Loved Refurbished</span>
               <span style={{ fontSize: '0.65rem', background: '#f59e0b', color: '#111827', padding: '0.1rem 0.35rem', borderRadius: '4px', fontWeight: 800 }}>65% OFF</span>
             </button>
@@ -2046,8 +2089,8 @@ const HomePage = ({ onLogout }) => {
 
         {/* Dynamic Mode Confirmation Strip */}
         <div style={{
-          background: storeMode === 'rent' ? '#fff1f2' : '#f8fafc',
-          border: `1px solid ${storeMode === 'rent' ? '#fecaca' : '#e2e8f0'}`,
+          background: storeMode === 'rent' ? 'rgba(239, 68, 68, 0.08)' : 'var(--surface-muted)',
+          border: `1px solid ${storeMode === 'rent' ? 'rgba(239, 68, 68, 0.25)' : 'var(--border-color)'}`,
           borderRadius: '12px',
           padding: '0.75rem 1.25rem',
           marginBottom: '1.5rem',
@@ -2057,7 +2100,7 @@ const HomePage = ({ onLogout }) => {
           flexWrap: 'wrap',
           gap: '0.75rem',
           fontSize: '0.85rem',
-          color: storeMode === 'rent' ? '#991b1b' : '#1e293b'
+          color: 'var(--text-primary)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
             <span>{storeMode === 'rent' ? '🛋️' : '🏷️'}</span>
@@ -2074,8 +2117,8 @@ const HomePage = ({ onLogout }) => {
             letterSpacing: '0.04em',
             padding: '0.2rem 0.6rem', 
             borderRadius: '6px', 
-            background: storeMode === 'rent' ? '#e23744' : '#111827', 
-            color: '#ffffff' 
+            background: storeMode === 'rent' ? 'var(--primary-color)' : 'var(--secondary-color)', 
+            color: storeMode === 'rent' ? '#ffffff' : 'var(--bg-color)' 
           }}>
             {storeMode === 'rent' ? 'Rent Mode' : 'Buy Mode'}
           </span>
@@ -2087,18 +2130,18 @@ const HomePage = ({ onLogout }) => {
           alignItems: 'center',
           gap: '0.4rem',
           fontSize: '0.825rem',
-          color: '#6b7280',
+          color: 'var(--text-secondary)',
           marginBottom: '1.25rem'
         }}>
-          <Link to="/" style={{ color: '#6b7280', textDecoration: 'none' }}>Home</Link>
+          <Link to="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Home</Link>
           <ChevronRight size={13} />
-          <span style={{ color: '#6b7280', cursor: 'pointer' }} onClick={() => setSelectedCategory('Appliances')}>
+          <span style={{ color: 'var(--text-secondary)', cursor: 'pointer' }} onClick={() => setSelectedCategory('Appliances')}>
             {selectedCategory}
           </span>
           {activeSubCategory && (
             <>
               <ChevronRight size={13} />
-              <span style={{ color: '#111827', fontWeight: 600 }}>{activeSubCategory}</span>
+              <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{activeSubCategory}</span>
             </>
           )}
         </div>
@@ -2118,6 +2161,7 @@ const HomePage = ({ onLogout }) => {
             return (
               <button
                 key={idx}
+                className="main-category-pill"
                 onClick={() => {
                   setSelectedCategory(cat);
                   setActiveSubCategory(cat);
@@ -2126,9 +2170,9 @@ const HomePage = ({ onLogout }) => {
                 style={{
                   padding: '0.55rem 1.4rem',
                   borderRadius: '999px',
-                  border: isActive ? 'none' : '1px solid #e0e0e0',
-                  background: isActive ? '#e23744' : '#ffffff',
-                  color: isActive ? '#ffffff' : '#4b5563',
+                  border: isActive ? 'none' : '1px solid var(--border-color)',
+                  background: isActive ? 'var(--primary-color)' : 'var(--surface-color)',
+                  color: isActive ? '#ffffff' : 'var(--text-secondary)',
                   fontSize: '0.875rem',
                   fontWeight: isActive ? 700 : 500,
                   cursor: 'pointer',
@@ -2154,17 +2198,22 @@ const HomePage = ({ onLogout }) => {
           scrollbarWidth: 'none'
         }}>
           {SUB_CATEGORY_ICONS.map((sub, idx) => {
-            const isActive = activeSubCategory.toLowerCase() === sub.name.toLowerCase() || searchQuery.toLowerCase().includes(sub.query.toLowerCase());
+            const subName = String(sub?.name || '').toLowerCase();
+            const subQuery = String(sub?.query || '').toLowerCase();
+            const currSubCat = String(activeSubCategory || '').toLowerCase();
+            const currQuery = String(searchQuery || '').toLowerCase();
+            const isActive = (currSubCat === subName) || (currQuery.length > 0 && subQuery.length > 0 && currQuery.includes(subQuery));
             return (
               <div
                 key={idx}
+                className="sub-category-tile panel"
                 onClick={() => handleSubCategoryClick(sub)}
                 style={{
                   minWidth: '105px',
                   padding: '0.75rem 0.5rem',
                   borderRadius: '14px',
-                  border: isActive ? '2px solid #e23744' : '1px solid #ebebeb',
-                  background: isActive ? '#fff5f5' : '#ffffff',
+                  border: isActive ? '2px solid var(--primary-color)' : '1px solid var(--border-color)',
+                  background: isActive ? 'rgba(239, 68, 68, 0.12)' : 'var(--surface-color)',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
@@ -2180,7 +2229,7 @@ const HomePage = ({ onLogout }) => {
                 <span style={{
                   fontSize: '0.75rem',
                   fontWeight: isActive ? 700 : 500,
-                  color: isActive ? '#e23744' : '#4b5563',
+                  color: isActive ? 'var(--primary-color)' : 'var(--text-primary)',
                   textAlign: 'center',
                   lineHeight: 1.15
                 }}>
@@ -2195,21 +2244,24 @@ const HomePage = ({ onLogout }) => {
         <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '2.5rem', alignItems: 'start' }}>
           
           {/* ==================== LEFT FILTER SIDEBAR ==================== */}
-          <aside style={{
-            background: '#ffffff',
-            border: '1px solid #ebebeb',
-            borderRadius: '16px',
-            padding: '1.5rem',
-            position: 'sticky',
-            top: '80px',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.02)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #f0f0f0', paddingBottom: '0.75rem' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: '#111827' }}>Filters</h3>
+          <aside 
+            className="filters-sidebar panel"
+            style={{
+              background: 'var(--surface-color)',
+              border: '1px solid var(--border-color)',
+              borderRadius: '16px',
+              padding: '1.5rem',
+              position: 'sticky',
+              top: '80px',
+              boxShadow: 'var(--card-shadow)'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>Filters</h3>
               {(budgetFilter !== 'all' || searchQuery) && (
                 <button 
                   onClick={() => { setBudgetFilter('all'); setSearchQuery(''); }}
-                  style={{ background: 'transparent', border: 'none', color: '#e23744', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+                  style={{ background: 'transparent', border: 'none', color: 'var(--primary-color)', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
                 >
                   Reset
                 </button>
@@ -2218,36 +2270,36 @@ const HomePage = ({ onLogout }) => {
 
             {/* Filter Section: Product Status */}
             <div style={{ marginBottom: '2rem' }}>
-              <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#111827', marginBottom: '0.85rem' }}>
+              <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.85rem' }}>
                 Product Status
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', fontSize: '0.875rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
                     <input 
                       type="checkbox"
                       checked={statusFilter.inStock}
                       onChange={(e) => setStatusFilter(prev => ({ ...prev, inStock: e.target.checked }))}
-                      style={{ accentColor: '#e23744', width: '16px', height: '16px' }}
+                      style={{ accentColor: 'var(--primary-color)', width: '16px', height: '16px' }}
                     />
                     <span>In Stock</span>
                   </div>
-                  <span style={{ fontSize: '0.75rem', background: '#f3f4f6', color: '#4b5563', padding: '0.15rem 0.55rem', borderRadius: '6px', fontWeight: 600 }}>
+                  <span style={{ fontSize: '0.75rem', background: 'var(--surface-muted)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)', padding: '0.15rem 0.55rem', borderRadius: '6px', fontWeight: 600 }}>
                     {inStockCount}
                   </span>
                 </label>
 
                 <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', fontSize: '0.875rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
                     <input 
                       type="checkbox"
                       checked={statusFilter.outOfStock}
                       onChange={(e) => setStatusFilter(prev => ({ ...prev, outOfStock: e.target.checked }))}
-                      style={{ accentColor: '#e23744', width: '16px', height: '16px' }}
+                      style={{ accentColor: 'var(--primary-color)', width: '16px', height: '16px' }}
                     />
                     <span>Out of Stock</span>
                   </div>
-                  <span style={{ fontSize: '0.75rem', background: '#f3f4f6', color: '#4b5563', padding: '0.15rem 0.55rem', borderRadius: '6px', fontWeight: 600 }}>
+                  <span style={{ fontSize: '0.75rem', background: 'var(--surface-muted)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)', padding: '0.15rem 0.55rem', borderRadius: '6px', fontWeight: 600 }}>
                     {outOfStockCount}
                   </span>
                 </label>
@@ -2256,7 +2308,7 @@ const HomePage = ({ onLogout }) => {
 
             {/* Filter Section: Monthly Budget */}
             <div>
-              <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#111827', marginBottom: '0.85rem' }}>
+              <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.85rem' }}>
                 Monthly Budget
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -2268,17 +2320,17 @@ const HomePage = ({ onLogout }) => {
                   { label: "₹5001+", val: "5001+", count: count5001_plus }
                 ].map((b, idx) => (
                   <label key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', fontSize: '0.875rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
                       <input 
                         type="radio" 
                         name="budget"
                         checked={budgetFilter === b.val}
                         onChange={() => setBudgetFilter(b.val)}
-                        style={{ accentColor: '#e23744', width: '16px', height: '16px' }}
+                        style={{ accentColor: 'var(--primary-color)', width: '16px', height: '16px' }}
                       />
                       <span>{b.label}</span>
                     </div>
-                    <span style={{ fontSize: '0.75rem', background: '#f3f4f6', color: '#4b5563', padding: '0.15rem 0.55rem', borderRadius: '6px', fontWeight: 600 }}>
+                    <span style={{ fontSize: '0.75rem', background: 'var(--surface-muted)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)', padding: '0.15rem 0.55rem', borderRadius: '6px', fontWeight: 600 }}>
                       {b.count}
                     </span>
                   </label>
@@ -2287,6 +2339,7 @@ const HomePage = ({ onLogout }) => {
             </div>
 
           </aside>
+
 
           {/* ==================== RIGHT PRODUCT GRID ==================== */}
           <main>
@@ -2383,24 +2436,26 @@ const HomePage = ({ onLogout }) => {
                   return (
                     <div 
                       key={item.appliance_id || idx}
-                      className="product-card"
+                      className="product-card panel"
                       onClick={() => setSelectedProduct(item)}
                       style={{
-                        background: '#ffffff',
-                        border: '1px solid #ebebeb',
+                        background: 'var(--surface-color)',
+                        border: '1px solid var(--border-color)',
                         borderRadius: '16px',
                         overflow: 'hidden',
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
-                        position: 'relative'
+                        position: 'relative',
+                        boxShadow: 'var(--card-shadow)',
+                        transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)'
                       }}
                     >
                       {/* Image Container with Badges */}
                       <div style={{
                         position: 'relative',
                         height: '220px',
-                        background: '#f9f9f9',
+                        background: 'var(--surface-muted)',
                         overflow: 'hidden'
                       }}>
                         {/* Best Seller / Popular Badge */}
@@ -2428,8 +2483,8 @@ const HomePage = ({ onLogout }) => {
                             top: '12px',
                             right: '12px',
                             zIndex: 2,
-                            background: '#ffffff',
-                            border: '1px solid rgba(0,0,0,0.08)',
+                            background: 'var(--surface-elevated)',
+                            border: '1px solid var(--border-color)',
                             borderRadius: '50%',
                             width: '34px',
                             height: '34px',
@@ -2437,13 +2492,13 @@ const HomePage = ({ onLogout }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             cursor: 'pointer',
-                            boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
+                            boxShadow: 'var(--card-shadow)'
                           }}
                         >
                           <Heart 
                             size={16} 
-                            color={isWishlisted ? '#e23744' : '#6b7280'} 
-                            fill={isWishlisted ? '#e23744' : 'none'} 
+                            color={isWishlisted ? 'var(--primary-color)' : 'var(--text-muted)'} 
+                            fill={isWishlisted ? 'var(--primary-color)' : 'none'} 
                           />
                         </button>
 
@@ -2467,19 +2522,20 @@ const HomePage = ({ onLogout }) => {
                           bottom: 0,
                           left: 0,
                           right: 0,
-                          background: 'rgba(255, 255, 255, 0.96)',
+                          background: 'var(--surface-color)',
+                          opacity: 0.95,
                           backdropFilter: 'blur(4px)',
-                          borderTop: '1px solid #f0f0f0',
+                          borderTop: '1px solid var(--border-color)',
                           padding: '0.4rem 0.75rem',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           gap: '0.4rem',
                           fontSize: '0.75rem',
-                          color: '#6b7280',
+                          color: 'var(--text-secondary)',
                           fontWeight: 500
                         }}>
-                          <Truck size={14} color="#6b7280" />
+                          <Truck size={14} color="var(--text-secondary)" />
                           <span>Delivery in 3-5 days</span>
                         </div>
                       </div>
@@ -2489,7 +2545,7 @@ const HomePage = ({ onLogout }) => {
                         <div style={{
                           fontSize: '0.925rem',
                           fontWeight: 600,
-                          color: '#111827',
+                          color: 'var(--text-primary)',
                           marginBottom: '1rem',
                           height: '42px',
                           display: '-webkit-box',
@@ -2506,8 +2562,8 @@ const HomePage = ({ onLogout }) => {
                           <div>
                             {storeMode === 'rent' ? (
                               <>
-                                <span style={{ fontSize: '0.7rem', color: '#9ca3af', display: 'block', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Monthly rent</span>
-                                <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#111827' }}>
+                                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Monthly rent</span>
+                                <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                                   ₹{item.monthly_price}/mo
                                 </span>
                               </>
@@ -2517,10 +2573,10 @@ const HomePage = ({ onLogout }) => {
                                   <span style={{ fontSize: '0.68rem', color: '#b45309', fontWeight: 700, textTransform: 'uppercase' }}>Certified Pre-Loved</span>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem' }}>
-                                  <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#111827' }}>
+                                  <span style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--text-primary)' }}>
                                     ₹{Math.round(item.monthly_price * 5.2).toLocaleString('en-IN')}
                                   </span>
-                                  <span style={{ fontSize: '0.75rem', color: '#9ca3af', textDecoration: 'line-through' }}>
+                                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>
                                     ₹{Math.round(item.monthly_price * 5.2 * 2.8).toLocaleString('en-IN')}
                                   </span>
                                 </div>
@@ -2534,7 +2590,7 @@ const HomePage = ({ onLogout }) => {
                               setSelectedProduct(item);
                             }}
                             style={{
-                              background: isAdded ? '#16a34a' : storeMode === 'rent' ? '#e23744' : '#111827',
+                              background: isAdded ? '#16a34a' : storeMode === 'rent' ? 'var(--primary-color)' : 'var(--secondary-color)',
                               color: '#ffffff',
                               border: 'none',
                               borderRadius: '8px',
@@ -2545,7 +2601,7 @@ const HomePage = ({ onLogout }) => {
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: '0.3rem',
-                              boxShadow: isAdded ? '0 2px 6px rgba(22, 163, 74, 0.3)' : storeMode === 'rent' ? '0 2px 6px rgba(226, 55, 68, 0.25)' : '0 2px 6px rgba(0, 0, 0, 0.25)',
+                              boxShadow: isAdded ? '0 2px 6px rgba(22, 163, 74, 0.3)' : '0 2px 6px rgba(226, 55, 68, 0.25)',
                               transition: 'all 0.15s ease'
                             }}
                           >
@@ -2558,28 +2614,33 @@ const HomePage = ({ onLogout }) => {
                 })}
               </div>
             ) : (
-              <div style={{
-                background: '#ffffff',
-                border: '1px solid #ebebeb',
-                borderRadius: '16px',
-                padding: '4rem 2rem',
-                textAlign: 'center'
-              }}>
-                <Package size={48} color="#9ca3af" style={{ margin: '0 auto 1rem' }} />
-                <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem' }}>No products match your criteria</h3>
-                <p style={{ color: '#6b7280', fontSize: '0.875rem', maxWidth: '380px', margin: '0 auto 1.5rem' }}>
+              <div 
+                className="panel"
+                style={{
+                  background: 'var(--surface-color)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '16px',
+                  padding: '4rem 2rem',
+                  textAlign: 'center',
+                  boxShadow: 'var(--card-shadow)'
+                }}
+              >
+                <Package size={48} color="var(--text-muted)" style={{ margin: '0 auto 1rem' }} />
+                <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem', color: 'var(--text-primary)' }}>No products match your criteria</h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', maxWidth: '380px', margin: '0 auto 1.5rem' }}>
                   Try resetting your filters or search keywords to browse our full inventory in {city}.
                 </p>
                 <button
                   onClick={() => { setSelectedCategory('All'); setActiveSubCategory('All'); setSearchQuery(''); setBudgetFilter('all'); }}
                   style={{
-                    background: '#e23744',
+                    background: 'var(--primary-color)',
                     color: 'white',
                     border: 'none',
                     padding: '0.65rem 1.5rem',
                     borderRadius: '8px',
                     fontWeight: 600,
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px var(--primary-glow)'
                   }}
                 >
                   Clear All Filters
@@ -2613,10 +2674,10 @@ const HomePage = ({ onLogout }) => {
           }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                <div style={{ background: '#fef2f2', padding: '0.4rem', borderRadius: '8px' }}>
-                  <Sparkles size={20} color="#e23744" />
+                <div style={{ background: 'var(--primary-glow)', padding: '0.4rem', borderRadius: '8px' }}>
+                  <Sparkles size={20} color="var(--primary-color)" />
                 </div>
-                <h2 style={{ fontSize: '1.6rem', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>
+                <h2 style={{ fontSize: '1.6rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
                   AI Recommendation Hub
                 </h2>
                 <span style={{
@@ -2632,7 +2693,7 @@ const HomePage = ({ onLogout }) => {
                   Hybrid Engine 2.0
                 </span>
               </div>
-              <p style={{ color: '#64748b', fontSize: '0.88rem', margin: 0 }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', margin: 0 }}>
                 Context-aware suggestions based on your cart, room setups, and popular trends in <strong>{city}</strong>.
               </p>
             </div>
@@ -2640,7 +2701,8 @@ const HomePage = ({ onLogout }) => {
             {/* Filter Tabs */}
             <div style={{
               display: 'flex',
-              background: '#f1f5f9',
+              background: 'var(--surface-muted)',
+              border: '1px solid var(--border-color)',
               padding: '0.25rem',
               borderRadius: '10px',
               gap: '0.35rem'
@@ -2655,15 +2717,15 @@ const HomePage = ({ onLogout }) => {
                   type="button"
                   onClick={() => fetchFilteredRecommendations(tab.id)}
                   style={{
-                    background: activeRecFilter === tab.id ? '#ffffff' : 'transparent',
-                    color: activeRecFilter === tab.id ? '#0f172a' : '#64748b',
-                    border: 'none',
+                    background: activeRecFilter === tab.id ? 'var(--surface-color)' : 'transparent',
+                    color: activeRecFilter === tab.id ? 'var(--text-primary)' : 'var(--text-secondary)',
+                    border: activeRecFilter === tab.id ? '1px solid var(--border-color)' : '1px solid transparent',
                     padding: '0.5rem 0.9rem',
                     borderRadius: '8px',
                     fontSize: '0.82rem',
                     fontWeight: 700,
                     cursor: 'pointer',
-                    boxShadow: activeRecFilter === tab.id ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                    boxShadow: activeRecFilter === tab.id ? 'var(--card-shadow)' : 'none',
                     transition: 'all 0.15s ease'
                   }}
                 >
@@ -2675,8 +2737,8 @@ const HomePage = ({ onLogout }) => {
 
           {/* Cards Grid */}
           {recLoading ? (
-            <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
-              <Loader2 size={32} className="animate-spin" style={{ margin: '0 auto 0.5rem', color: '#e23744' }} />
+            <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+              <Loader2 size={32} className="animate-spin" style={{ margin: '0 auto 0.5rem', color: 'var(--primary-color)' }} />
               <div style={{ fontSize: '0.85rem' }}>Recalculating real-time hybrid scores...</div>
             </div>
           ) : (
@@ -2695,24 +2757,24 @@ const HomePage = ({ onLogout }) => {
                   <div
                     key={rec.recommendation_id || idx}
                     onClick={() => setSelectedProduct(app)}
-                    className="product-card"
+                    className="product-card panel"
                     style={{
-                      background: '#ffffff',
-                      border: '1px solid #e2e8f0',
+                      background: 'var(--surface-color)',
+                      border: '1px solid var(--border-color)',
                       borderRadius: '16px',
                       overflow: 'hidden',
                       cursor: 'pointer',
                       display: 'flex',
                       flexDirection: 'column',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
-                      transition: 'all 0.2s ease',
+                      boxShadow: 'var(--card-shadow)',
+                      transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                       position: 'relative'
                     }}
-                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.08)'; }}
-                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.03)'; }}
+                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = 'var(--card-shadow-hover)'; }}
+                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'var(--card-shadow)'; }}
                   >
                     {/* Image Container with Badges */}
-                    <div style={{ height: '195px', background: '#f8fafc', overflow: 'hidden', position: 'relative' }}>
+                    <div style={{ height: '195px', background: 'var(--surface-muted)', overflow: 'hidden', position: 'relative' }}>
                       {/* Match Score Badge */}
                       <span style={{
                         position: 'absolute',
@@ -2736,9 +2798,9 @@ const HomePage = ({ onLogout }) => {
                           position: 'absolute',
                           top: '10px',
                           right: '10px',
-                          background: '#ecfdf5',
-                          color: '#059669',
-                          border: '1px solid #a7f3d0',
+                          background: 'rgba(16, 185, 129, 0.15)',
+                          color: '#10b981',
+                          border: '1px solid rgba(16, 185, 129, 0.3)',
                           fontSize: '0.7rem',
                           fontWeight: 700,
                           padding: '0.2rem 0.55rem',
@@ -2759,7 +2821,7 @@ const HomePage = ({ onLogout }) => {
                     {/* Card Content */}
                     <div style={{ padding: '1.15rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.35rem' }}>
-                        <span style={{ color: '#64748b', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                           {app.category_id || 'Appliances'}
                         </span>
                         {app.rating && (
@@ -2773,7 +2835,7 @@ const HomePage = ({ onLogout }) => {
                       <h3 style={{
                         fontSize: '0.95rem',
                         fontWeight: 700,
-                        color: '#0f172a',
+                        color: 'var(--text-primary)',
                         margin: '0 0 0.6rem',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -2784,29 +2846,29 @@ const HomePage = ({ onLogout }) => {
 
                       {/* Explainable AI (XAI) Reason Pill */}
                       <div style={{
-                        background: '#f8fafc',
-                        border: '1px solid #e2e8f0',
+                        background: 'var(--surface-muted)',
+                        border: '1px solid var(--border-color)',
                         borderRadius: '8px',
                         padding: '0.45rem 0.65rem',
                         fontSize: '0.75rem',
-                        color: '#334155',
+                        color: 'var(--text-secondary)',
                         marginBottom: '0.85rem',
                         display: 'flex',
                         alignItems: 'flex-start',
                         gap: '0.35rem',
                         lineHeight: 1.35
                       }}>
-                        <Sparkles size={13} color="#e23744" style={{ flexShrink: 0, marginTop: '2px' }} />
+                        <Sparkles size={13} color="var(--primary-color)" style={{ flexShrink: 0, marginTop: '2px' }} />
                         <span>{rec.recommendation_reason}</span>
                       </div>
 
                       {/* Pricing & 1-Click Action Buttons */}
                       <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
                         <div>
-                          <span style={{ fontSize: '0.7rem', color: '#64748b', display: 'block' }}>Monthly Rent</span>
-                          <span style={{ fontWeight: 900, fontSize: '1.15rem', color: '#0f172a' }}>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block' }}>Monthly Rent</span>
+                          <span style={{ fontWeight: 900, fontSize: '1.15rem', color: 'var(--text-primary)' }}>
                             ₹{app.monthly_price}
-                            <span style={{ fontSize: '0.75rem', fontWeight: 500, color: '#64748b' }}>/mo</span>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-secondary)' }}>/mo</span>
                           </span>
                         </div>
 
@@ -2885,21 +2947,24 @@ const HomePage = ({ onLogout }) => {
 
         {/* Help Popover */}
         {helpOpen && (
-          <div style={{
-            position: 'absolute',
-            bottom: '60px',
-            left: '0',
-            width: '280px',
-            background: '#ffffff',
-            borderRadius: '16px',
-            border: '1px solid #ebebeb',
-            boxShadow: '0 16px 36px rgba(0,0,0,0.15)',
-            padding: '1.25rem',
-            animation: 'fadeIn 0.2s ease-out'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #f0f0f0', paddingBottom: '0.5rem' }}>
-              <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>Rentora Support</div>
-              <button onClick={() => setHelpOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af' }}>
+          <div 
+            className="panel"
+            style={{
+              position: 'absolute',
+              bottom: '60px',
+              left: '0',
+              width: '280px',
+              background: 'var(--surface-color)',
+              borderRadius: '16px',
+              border: '1px solid var(--border-color)',
+              boxShadow: 'var(--card-shadow-hover)',
+              padding: '1.25rem',
+              animation: 'fadeIn 0.2s ease-out'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>Rentora Support</div>
+              <button onClick={() => setHelpOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
                 <X size={16} />
               </button>
             </div>
@@ -2914,8 +2979,9 @@ const HomePage = ({ onLogout }) => {
                   gap: '0.75rem',
                   padding: '0.65rem 0.85rem',
                   borderRadius: '10px',
-                  background: '#f0fdf4',
-                  color: '#16a34a',
+                  background: 'rgba(16, 185, 129, 0.12)',
+                  color: '#10b981',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
                   textDecoration: 'none',
                   fontSize: '0.85rem',
                   fontWeight: 600
@@ -2932,8 +2998,9 @@ const HomePage = ({ onLogout }) => {
                   gap: '0.75rem',
                   padding: '0.65rem 0.85rem',
                   borderRadius: '10px',
-                  background: '#eff6ff',
-                  color: '#2563eb',
+                  background: 'rgba(37, 99, 235, 0.12)',
+                  color: '#3b82f6',
+                  border: '1px solid rgba(37, 99, 235, 0.2)',
                   textDecoration: 'none',
                   fontSize: '0.85rem',
                   fontWeight: 600

@@ -81,25 +81,36 @@ export default function CuratedRoomCombos({ onRentCombo }) {
   };
 
   return (
-    <section style={{ maxWidth: '1280px', margin: '4rem auto 0', padding: '0 1.5rem' }}>
+    <section className="curated-combos-section" style={{ maxWidth: '1280px', margin: '4rem auto 0', padding: '0 1.5rem' }}>
       
       {/* Section Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#e23744', fontSize: '0.8rem', fontWeight: 800, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: 'var(--primary-color)', fontSize: '0.8rem', fontWeight: 800, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
             <Sparkles size={14} />
             <span>RENTORA 1-CLICK ROOM BUNDLES</span>
           </div>
-          <h2 style={{ fontSize: '1.85rem', fontWeight: 800, margin: 0, color: '#111827' }}>
-            Curated <span style={{ color: '#e23744' }}>Room Combos</span>
+          <h2 style={{ fontSize: '1.85rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+            Curated <span style={{ color: 'var(--primary-color)' }}>Room Combos</span>
           </h2>
-          <p style={{ color: '#6b7280', fontSize: '0.9rem', margin: '0.3rem 0 0' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '0.3rem 0 0' }}>
             Furnish entire rooms in a single click with pre-bundled discounts and zero hassle.
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#fef2f2', border: '1px solid #fee2e2', padding: '0.45rem 0.9rem', borderRadius: '999px', fontSize: '0.8rem', color: '#b91c1c', fontWeight: 700 }}>
-          <ShieldCheck size={16} color="#e23744" />
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          background: 'var(--surface-muted)',
+          border: '1px solid var(--border-color)',
+          padding: '0.45rem 0.9rem',
+          borderRadius: '999px',
+          fontSize: '0.8rem',
+          color: 'var(--text-primary)',
+          fontWeight: 700
+        }}>
+          <ShieldCheck size={16} color="var(--primary-color)" />
           <span>Includes Free Assembly & ₹10,000 Damage Cover</span>
         </div>
       </div>
@@ -117,23 +128,24 @@ export default function CuratedRoomCombos({ onRentCombo }) {
           return (
             <div
               key={combo.id}
+              className="curated-combo-card panel"
               style={{
-                background: '#ffffff',
+                background: 'var(--surface-color)',
                 borderRadius: '20px',
-                border: '1px solid #e5e7eb',
+                border: '1px solid var(--border-color)',
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                boxShadow: 'var(--card-shadow)',
                 transition: 'transform 0.25s ease, box-shadow 0.25s ease'
               }}
               onMouseOver={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.boxShadow = '0 16px 32px rgba(0,0,0,0.08)';
+                e.currentTarget.style.boxShadow = 'var(--card-shadow-hover)';
               }}
               onMouseOut={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.03)';
+                e.currentTarget.style.boxShadow = 'var(--card-shadow)';
               }}
             >
               {/* Image Header with Badges */}
@@ -149,7 +161,7 @@ export default function CuratedRoomCombos({ onRentCombo }) {
                   position: 'absolute',
                   top: '12px',
                   left: '12px',
-                  background: '#e23744',
+                  background: 'var(--primary-color)',
                   color: '#ffffff',
                   fontSize: '0.7rem',
                   fontWeight: 800,
@@ -176,21 +188,21 @@ export default function CuratedRoomCombos({ onRentCombo }) {
 
               {/* Content */}
               <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <span style={{ fontSize: '0.75rem', color: '#9ca3af', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   {combo.room}
                 </span>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#111827', margin: '0.25rem 0 0.85rem', lineHeight: 1.3 }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.25rem 0 0.85rem', lineHeight: 1.3 }}>
                   {combo.title}
                 </h3>
 
                 {/* Items in Combo */}
-                <div style={{ background: '#f9fafb', borderRadius: '10px', padding: '0.75rem', marginBottom: '1.25rem' }}>
-                  <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.4rem' }}>
+                <div style={{ background: 'var(--surface-muted)', border: '1px solid var(--border-subtle)', borderRadius: '10px', padding: '0.75rem', marginBottom: '1.25rem' }}>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.4rem' }}>
                     What's Included:
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                     {combo.itemsIncluded.map((item, idx) => (
-                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: '#374151' }}>
+                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                         <Check size={14} color="#16a34a" />
                         <span>{item}</span>
                       </div>
@@ -199,13 +211,13 @@ export default function CuratedRoomCombos({ onRentCombo }) {
                 </div>
 
                 {/* Price & Action Button */}
-                <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid #f3f4f6' }}>
+                <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid var(--border-color)' }}>
                   <div>
-                    <div style={{ fontSize: '0.75rem', color: '#9ca3af', textDecoration: 'line-through' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>
                       ₹{combo.originalPrice}/mo
                     </div>
-                    <div style={{ fontSize: '1.35rem', fontWeight: 900, color: '#111827', lineHeight: 1.1 }}>
-                      ₹{combo.monthlyPrice.toLocaleString('en-IN')}<span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#6b7280' }}>/mo</span>
+                    <div style={{ fontSize: '1.35rem', fontWeight: 900, color: 'var(--text-primary)', lineHeight: 1.1 }}>
+                      ₹{combo.monthlyPrice.toLocaleString('en-IN')}<span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>/mo</span>
                     </div>
                   </div>
 

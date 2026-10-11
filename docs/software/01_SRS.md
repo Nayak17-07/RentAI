@@ -41,14 +41,14 @@ Rentora provides a full-stack, distributed web platform delivering:
 ### 2.1 Product Perspective
 Rentora operates as a cloud-native, three-tier client-server application:
 - **Presentation Tier**: Vite + React 18 single-page application (SPA).
-- **Application & API Tier**: Django 5.2 + Django REST Framework exposing stateless JSON REST endpoints.
+- **Application & API Tier**: Node.js + Express 5 + Socket.io Engine exposing stateless JSON REST & WebSocket endpoints.
 - **Data & Intelligence Tier**: MongoDB NoSQL cluster + Asynchronous Python ML Pipeline.
 
 ```mermaid
 graph TD
     User([Customer / Admin]) -->|HTTPS / WSS| FE[React Vite Client]
-    FE -->|REST API / Bearer JWT| BE[Django REST Backend]
-    BE -->|PyMongo Client| DB[(MongoDB Cluster)]
+    FE -->|REST API / Bearer JWT| BE[Node.js Express Backend]
+    BE -->|Native Connection Pool| DB[(MongoDB Cluster)]
     BE -->|Async Polling / Subprocess| ML[ML Pipeline: LightGBM + SHAP]
     ML -->|Read Transactions / Feature Store| DB
     ML -->|Write Churn Scores & Recs| DB
@@ -76,8 +76,8 @@ graph TD
 
 ### 3.1 Module 1: User Identity & Authentication (FR-AUTH)
 - **FR-AUTH-01**: The system shall allow users to register with `username`, `email`, `password`, `phone_num`, and `role`.
-- **FR-AUTH-02**: Passwords shall be hashed using Django's PBKDF2 with SHA-256 before persisting to MongoDB.
-- **FR-AUTH-03**: The system shall issue a signed JWT Access Token (15-minute expiry) and Refresh Token (7-day expiry) upon valid credentials.
+- **FR-AUTH-02**: Passwords shall be cryptographically hashed using PBKDF2 with SHA-256 (1,000,000 iterations) before persisting to MongoDB.
+- **FR-AUTH-03**: The system shall issue a signed JWT Access Token (60-minute expiry) and Refresh Token (7-day expiry) upon valid credentials.
 - **FR-AUTH-04**: The system shall validate token authenticity on protected endpoints and handle graceful token refreshes.
 
 ### 3.2 Module 2: Appliance Catalog & Inventory (FR-CAT)
@@ -121,7 +121,7 @@ graph TD
 - **NFR-PERF-02**: Recommendation and Churn score retrieval endpoints shall execute in $\le 50 \text{ ms}$ by leveraging pre-computed MongoDB collections.
 
 ### 4.2 Scalability & Reliability
-- **NFR-SCAL-01**: The system shall scale horizontally by deploying multiple Django ASGI/WSGI instances behind an Nginx reverse proxy.
+- **NFR-SCAL-01**: The system shall scale horizontally by deploying multiple Node.js instances behind an Nginx reverse proxy.
 - **NFR-SCAL-02**: System uptime SLA shall target $99.9\%$ monthly availability excluding planned maintenance windows.
 
 ### 4.3 Security & Data Protection

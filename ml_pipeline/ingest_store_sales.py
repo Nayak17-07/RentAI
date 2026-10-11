@@ -4,7 +4,7 @@ import datetime
 import pandas as pd
 import numpy as np
 
-# Setup Django environment
+# Native MongoDB connection
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(CURRENT_DIR)
 sys.path.append(PROJECT_ROOT)

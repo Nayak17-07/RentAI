@@ -37,6 +37,7 @@ import ThemeToggle from './ThemeToggle';
 import DeliveryTrackerModal from './DeliveryTrackerModal';
 import RentToOwnModal from './RentToOwnModal';
 import OwnershipCertificateModal from './OwnershipCertificateModal';
+import SmartApplianceIoTModal from './SmartApplianceIoTModal';
 
 const MyRentalsPage = ({ onLogout }) => {
   const [rentals, setRentals] = useState([]);
@@ -53,6 +54,7 @@ const MyRentalsPage = ({ onLogout }) => {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [trackingModalRental, setTrackingModalRental] = useState(null);
+  const [iotModalRental, setIotModalRental] = useState(null);
   
   // Return & Damage Assessment State (Module 6)
   const [returnModalRental, setReturnModalRental] = useState(null);
@@ -1389,6 +1391,38 @@ const MyRentalsPage = ({ onLogout }) => {
                         </div>
                       ) : (
                         <>
+                          {/* 0. Smart IoT Health & Telemetry Button */}
+                          <button
+                            type="button"
+                            onClick={() => setIotModalRental(rental)}
+                            style={{
+                              background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                              color: '#ffffff',
+                              border: '1px solid #38bdf8',
+                              padding: '0.65rem 0.85rem',
+                              borderRadius: '8px',
+                              fontSize: '0.825rem',
+                              fontWeight: 800,
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              boxShadow: '0 2px 10px rgba(56, 189, 248, 0.25)',
+                              transition: 'all 0.15s ease'
+                            }}
+                            onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.01)'; }}
+                            onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                              <Zap size={15} color="#38bdf8" />
+                              <span>Smart IoT Health & Telemetry</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.72rem', color: '#4ade80' }}>
+                              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }} />
+                              <span>Live Sensor Hub →</span>
+                            </div>
+                          </button>
+
                           {/* 1. Track Delivery Button */}
                           <button
                             type="button"
@@ -1992,6 +2026,13 @@ const MyRentalsPage = ({ onLogout }) => {
         onClose={() => setTrackingModalRental(null)}
         rental={trackingModalRental}
         onRentalUpdated={fetchRentalsAndPayments}
+      />
+
+      {/* Smart Appliance IoT Telemetry Modal */}
+      <SmartApplianceIoTModal
+        isOpen={!!iotModalRental}
+        onClose={() => setIotModalRental(null)}
+        rental={iotModalRental}
       />
 
       {/* Rent-to-Own Buyout & Tenure Extension Modal */}
