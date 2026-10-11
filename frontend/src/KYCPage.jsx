@@ -29,11 +29,11 @@ import { fetchWithAuth } from './utils/api';
 import ThemeToggle from './ThemeToggle';
 
 const ID_TYPES = [
-  { id: 'Aadhaar Card', label: 'Aadhaar Card', placeholder: '12-digit UID (e.g. 5482 9102 3842)', pattern: '^[0-9]{12}$' },
-  { id: 'PAN Card', label: 'PAN Card (Income Tax)', placeholder: '10-character PAN (e.g. ABCPE1234F)', pattern: '^[A-Z]{5}[0-9]{4}[A-Z]{1}$' },
-  { id: 'Driving License', label: 'Driving License', placeholder: 'e.g. DL-1420110012345', pattern: '^[A-Z0-9-]{10,16}$' },
-  { id: 'Passport', label: 'Passport', placeholder: '8-character alphanumeric (e.g. Z1234567)', pattern: '^[A-Z0-9]{8,9}$' },
-  { id: 'Voter ID', label: 'Voter ID Card', placeholder: 'e.g. ABC1234567', pattern: '^[A-Z0-9]{10}$' }
+  { id: 'Aadhaar Card', label: 'Aadhaar Card', placeholder: '12-digit UID (e.g. 5482 9102 3842)', pattern: '^[0-9]{12}$', maxLength: 12, digitsOnly: true },
+  { id: 'PAN Card', label: 'PAN Card (Income Tax)', placeholder: '10-character PAN (e.g. ABCPE1234F)', pattern: '^[A-Z]{5}[0-9]{4}[A-Z]{1}$', maxLength: 10, uppercase: true },
+  { id: 'Driving License', label: 'Driving License', placeholder: 'e.g. DL-1420110012345', pattern: '^[A-Z0-9-]{10,16}$', maxLength: 16, uppercase: true },
+  { id: 'Passport', label: 'Passport', placeholder: '8-character alphanumeric (e.g. Z1234567)', pattern: '^[A-Z0-9]{8,9}$', maxLength: 8, uppercase: true },
+  { id: 'Voter ID', label: 'Voter ID Card', placeholder: 'e.g. ABC1234567', pattern: '^[A-Z0-9]{10}$', maxLength: 10, uppercase: true }
 ];
 
 const KYCPage = () => {
@@ -111,6 +111,20 @@ const KYCPage = () => {
     reader.readAsDataURL(file);
   };
 
+  const handleIdNumberChange = (e) => {
+    let val = e.target.value;
+    const config = ID_TYPES.find(t => t.id === idType) || { maxLength: 12 };
+    if (config.digitsOnly || idType === 'Aadhaar Card') {
+      // Only digits allowed, capped strictly at maximum 12 digits
+      val = val.replace(/\D/g, '').slice(0, 12);
+    } else if (config.uppercase) {
+      val = val.toUpperCase().slice(0, config.maxLength || 12);
+    } else {
+      val = val.slice(0, config.maxLength || 12);
+    }
+    setIdNumber(val);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!fullName.trim()) {
@@ -119,6 +133,10 @@ const KYCPage = () => {
     }
     if (!idNumber.trim()) {
       setErrorMessage('Please enter your Government Document / ID number.');
+      return;
+    }
+    if (idType === 'Aadhaar Card' && idNumber.trim().length !== 12) {
+      setErrorMessage('Aadhaar number must contain exactly 12 numerical digits (cannot exceed or be less than 12 digits).');
       return;
     }
     if (!idPreview && !idFile) {
@@ -678,13 +696,24 @@ const KYCPage = () => {
 
                 {/* 3. Document ID Number */}
                 <div style={{ marginBottom: '1.5rem' }}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#1e293b', marginBottom: '0.4rem' }}>
-                    3. {idType} Number *
-                  </label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                    <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1e293b' }}>
+                      3. {idType} Number *
+                    </label>
+                    <span style={{ 
+                      fontSize: '0.75rem', 
+                      fontWeight: 700, 
+                      color: idNumber.length === (ID_TYPES.find(t => t.id === idType)?.maxLength || 12) ? '#16a34a' : '#64748b' 
+                    }}>
+                      {idNumber.length} / {idType === 'Aadhaar Card' ? '12 digits max' : (ID_TYPES.find(t => t.id === idType)?.maxLength || 12) + ' chars max'}
+                    </span>
+                  </div>
                   <input
                     type="text"
+                    inputMode={idType === 'Aadhaar Card' ? 'numeric' : 'text'}
+                    maxLength={ID_TYPES.find(t => t.id === idType)?.maxLength || 12}
                     value={idNumber}
-                    onChange={(e) => setIdNumber(e.target.value)}
+                    onChange={handleIdNumberChange}
                     placeholder={ID_TYPES.find(t => t.id === idType)?.placeholder || 'Enter ID number...'}
                     required
                     style={{
@@ -698,6 +727,11 @@ const KYCPage = () => {
                       boxSizing: 'border-box'
                     }}
                   />
+                  <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '0.3rem' }}>
+                    {idType === 'Aadhaar Card' 
+                      ? '• Only numerical digits allowed. Cannot exceed 12 numbers. Validated via UIDAI Verhoeff algorithm.'
+                      : `• Strictly capped at ${ID_TYPES.find(t => t.id === idType)?.maxLength || 12} characters maximum.`}
+                  </div>
                 </div>
 
                 {/* 4. Residential Address */}
