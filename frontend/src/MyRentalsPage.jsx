@@ -38,6 +38,7 @@ import DeliveryTrackerModal from './DeliveryTrackerModal';
 import RentToOwnModal from './RentToOwnModal';
 import OwnershipCertificateModal from './OwnershipCertificateModal';
 import SmartApplianceIoTModal from './SmartApplianceIoTModal';
+import EscrowLedgerModal from './EscrowLedgerModal';
 
 const MyRentalsPage = ({ onLogout }) => {
   const [rentals, setRentals] = useState([]);
@@ -55,6 +56,7 @@ const MyRentalsPage = ({ onLogout }) => {
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [trackingModalRental, setTrackingModalRental] = useState(null);
   const [iotModalRental, setIotModalRental] = useState(null);
+  const [escrowModalRental, setEscrowModalRental] = useState(null);
   
   // Return & Damage Assessment State (Module 6)
   const [returnModalRental, setReturnModalRental] = useState(null);
@@ -1287,9 +1289,21 @@ const MyRentalsPage = ({ onLogout }) => {
 
                     {/* Escrow Deposit Badge & Tax Invoice Link */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc', padding: '0.6rem 0.75rem', borderRadius: '8px', fontSize: '0.78rem', marginBottom: '1rem', border: '1px solid #e2e8f0' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#059669', fontWeight: 600 }}>
-                        <ShieldCheck size={14} /> Deposit: ₹{rental.security_deposit || 750} (Escrow)
-                      </div>
+                      <button 
+                        type="button"
+                        onClick={() => setEscrowModalRental(rental)}
+                        style={{ background: 'none', border: 'none', padding: 0, color: '#059669', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem', textAlign: 'left' }}
+                        title="Open RBI-Compliant Escrow Ledger & Damage Waiver Details"
+                      >
+                        <ShieldCheck size={14} color="#059669" />
+                        <span>Deposit: ₹{rental.security_deposit || 750}</span>
+                        {rental.deposit_discount_applied && (
+                          <span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.68rem', padding: '0.1rem 0.35rem', borderRadius: '4px', fontWeight: 800 }}>
+                            50% KYC OFF
+                          </span>
+                        )}
+                        <span style={{ color: '#059669', fontSize: '0.72rem', textDecoration: 'underline' }}>Ledger ↗</span>
+                      </button>
                       <button 
                         type="button"
                         onClick={() => handleViewInvoice(rental)}
@@ -1420,6 +1434,38 @@ const MyRentalsPage = ({ onLogout }) => {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.72rem', color: '#4ade80' }}>
                               <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }} />
                               <span>Live Sensor Hub →</span>
+                            </div>
+                          </button>
+
+                          {/* 0.5. Escrow Deposit & Refund Ledger Button */}
+                          <button
+                            type="button"
+                            onClick={() => setEscrowModalRental(rental)}
+                            style={{
+                              background: 'linear-gradient(135deg, #064e3b 0%, #065f46 100%)',
+                              color: '#ffffff',
+                              border: '1px solid #34d399',
+                              padding: '0.65rem 0.85rem',
+                              borderRadius: '8px',
+                              fontSize: '0.825rem',
+                              fontWeight: 800,
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              boxShadow: '0 2px 10px rgba(5, 150, 105, 0.25)',
+                              transition: 'all 0.15s ease'
+                            }}
+                            onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.01)'; }}
+                            onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                              <ShieldCheck size={15} color="#34d399" />
+                              <span>Escrow Deposit & Refund Ledger</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.72rem', color: '#a7f3d0' }}>
+                              <span>{rental.escrow_id ? rental.escrow_id.substring(0, 11) : 'ESC-RBI'}</span>
+                              <span>→</span>
                             </div>
                           </button>
 
@@ -2033,6 +2079,14 @@ const MyRentalsPage = ({ onLogout }) => {
         isOpen={!!iotModalRental}
         onClose={() => setIotModalRental(null)}
         rental={iotModalRental}
+      />
+
+      {/* Interactive Escrow Ledger Modal */}
+      <EscrowLedgerModal
+        isOpen={!!escrowModalRental}
+        onClose={() => setEscrowModalRental(null)}
+        rental={escrowModalRental}
+        onDepositSettled={fetchRentalsAndPayments}
       />
 
       {/* Rent-to-Own Buyout & Tenure Extension Modal */}

@@ -367,12 +367,21 @@ const CartPage = ({ onLogout }) => {
     return item.appliance.pricing ? item.appliance.pricing[tenure] : (item.appliance.monthly_price || Math.round(item.appliance.daily_price * 30));
   };
   
-  const getSecurityDeposit = (item) => {
+  const isKycApproved = kycData?.status === 'approved';
+
+  const getStandardDeposit = (item) => {
     return item.appliance.security_deposit || Math.round((item.appliance.monthly_price || Math.round(item.appliance.daily_price * 30)) * 1.5);
   };
 
+  const getSecurityDeposit = (item) => {
+    const std = getStandardDeposit(item);
+    return isKycApproved ? Math.round(std * 0.5) : std;
+  };
+
+  const standardTotalDeposit = cartItems.reduce((acc, item) => acc + getStandardDeposit(item), 0);
   const totalMonthly = cartItems.reduce((acc, item) => acc + getMonthlyRent(item), 0);
   const totalDeposit = cartItems.reduce((acc, item) => acc + getSecurityDeposit(item), 0);
+  const kycDepositSavings = Math.max(0, standardTotalDeposit - totalDeposit);
   const totalTax = Math.round(totalMonthly * 0.18);
   const totalDue = totalMonthly + totalDeposit + totalTax;
 
@@ -1044,8 +1053,32 @@ const CartPage = ({ onLogout }) => {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.85rem', color: '#059669', fontSize: '0.9rem' }}>
                 <span>Security Deposit (Refundable)</span>
-                <span>₹{totalDeposit.toLocaleString('en-IN')}</span>
+                <div style={{ textAlign: 'right' }}>
+                  {isKycApproved && kycDepositSavings > 0 && (
+                    <span style={{ textDecoration: 'line-through', color: '#94a3b8', fontSize: '0.8rem', marginRight: '0.45rem' }}>
+                      ₹{standardTotalDeposit.toLocaleString('en-IN')}
+                    </span>
+                  )}
+                  <span style={{ fontWeight: 700 }}>₹{totalDeposit.toLocaleString('en-IN')}</span>
+                </div>
               </div>
+              {isKycApproved && kycDepositSavings > 0 && (
+                <div style={{
+                  background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+                  border: '1px solid #a7f3d0',
+                  borderRadius: '8px',
+                  padding: '0.45rem 0.65rem',
+                  fontSize: '0.74rem',
+                  color: '#065f46',
+                  fontWeight: 700,
+                  marginBottom: '0.85rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem'
+                }}>
+                  <span>💎 KYC Privilege: 50% Security Deposit Discount (-₹{kycDepositSavings.toLocaleString('en-IN')})</span>
+                </div>
+              )}
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.85rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                 <span>GST (18% on rent)</span>
                 <span>₹{totalTax.toLocaleString('en-IN')}</span>

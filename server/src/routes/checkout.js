@@ -60,6 +60,7 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
     const rentals = [];
     let totalRent = 0.0;
     let totalDeposit = 0.0;
+    let totalDepositSavings = 0.0;
     const itemsSummary = [];
 
     const now = new Date();
@@ -72,7 +73,7 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
       const tenureStr = String(item.tenure || '3');
 
       let itemPrice = 500.0;
-      let itemDeposit = 750.0;
+      let standardDeposit = 750.0;
       let rentalName = 'Appliance';
       let categoryId = 'Appliance';
       let imageUrl = '';
@@ -80,18 +81,24 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
       if (app) {
         const pricing = app.pricing || {};
         itemPrice = parseFloat(pricing[tenureStr] || app.monthly_price || 500);
-        itemDeposit = parseFloat(app.security_deposit || Math.round(itemPrice * 1.5));
+        standardDeposit = parseFloat(app.security_deposit || Math.round(itemPrice * 1.5));
         rentalName = app.rental_name || 'Appliance';
         categoryId = app.category_id || 'Appliance';
         imageUrl = app.image_url || '';
       } else {
-        itemDeposit = Math.round(itemPrice * 1.5);
+        standardDeposit = Math.round(itemPrice * 1.5);
       }
+
+      // KYC-Linked Smart Deposit Privilege: 50% discount on security deposit for verified tenants!
+      const itemDeposit = Math.round(standardDeposit * 0.5);
+      const depositSavings = standardDeposit - itemDeposit;
 
       totalRent += itemPrice;
       totalDeposit += itemDeposit;
+      totalDepositSavings += depositSavings;
 
       const rentalId = crypto.randomUUID();
+      const escrowId = 'ESC-BLR-' + String(rentalId).slice(0, 8).toUpperCase();
       const trackingId = 'TRK-' + Math.floor(100000 + Math.random() * 900000);
       const deliveryOtp = String(Math.floor(1000 + Math.random() * 9000));
       const estDays = finalAddress?.delivery_slot?.includes('Express') ? 1 : 2;
@@ -157,7 +164,12 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
         appliance_id: item.appliance_id,
         tenure: tenureStr,
         monthly_rent: itemPrice,
+        standard_deposit: standardDeposit,
         security_deposit: itemDeposit,
+        deposit_discount_applied: true,
+        deposit_discount_amount: depositSavings,
+        escrow_id: escrowId,
+        escrow_held_at: now,
         deposit_status: 'HELD',
         amount_paid: parseFloat((itemPrice + itemDeposit).toFixed(2)),
         transaction_id: transactionId,
