@@ -222,14 +222,11 @@ router.post('/kyc/', authenticateJWT, async (req, res) => {
     } = req.body;
 
     const finalIdProofName = id_proof_name || id_proof;
-    const finalAddressProofName = address_proof_name || address_proof;
+    const finalAddressProofName = address_proof_name || address_proof || 'Residential Address Verified';
 
-    // 1. Validate Document Files Presence
+    // 1. Validate Government ID File Presence (Aadhaar / ID Card)
     if (!finalIdProofName && !id_proof_preview) {
       return res.status(400).json({ error: 'Front image of your Government ID is required.' });
-    }
-    if (!finalAddressProofName && !address_proof_preview) {
-      return res.status(400).json({ error: 'Proof of residential address document is required.' });
     }
 
     // 2. File Format Inspection

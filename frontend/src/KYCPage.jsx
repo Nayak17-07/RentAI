@@ -52,22 +52,18 @@ const KYCPage = () => {
   const [addressLine, setAddressLine] = useState('');
   const [verificationMode, setVerificationMode] = useState('instant'); // 'instant' | 'manual'
 
-  // Files & Previews
+  // Files & Previews (Front ID Only)
   const [idFile, setIdFile] = useState(null);
   const [idPreview, setIdPreview] = useState(null);
-  const [addressFile, setAddressFile] = useState(null);
-  const [addressPreview, setAddressPreview] = useState(null);
 
   // UI state
   const [idDragOver, setIdDragOver] = useState(false);
-  const [addressDragOver, setAddressDragOver] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [scanStep, setScanStep] = useState(0); // 0 = idle, 1 = OCR scan, 2 = fraud check, 3 = complete
   const [ocrProgress, setOcrProgress] = useState(0);
 
   const idInputRef = useRef(null);
-  const addressInputRef = useRef(null);
 
   const fetchCurrentKyc = async () => {
     try {
@@ -105,14 +101,6 @@ const KYCPage = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleAddressFileSelect = (file) => {
-    if (!file) return;
-    setAddressFile(file);
-    const reader = new FileReader();
-    reader.onload = (e) => setAddressPreview(e.target.result);
-    reader.readAsDataURL(file);
-  };
-
   const handleIdNumberChange = (e) => {
     let val = e.target.value;
     const config = ID_TYPES.find(t => t.id === idType) || { maxLength: 12 };
@@ -143,10 +131,6 @@ const KYCPage = () => {
     }
     if (!idPreview && !idFile) {
       setErrorMessage('Please upload the front photo of your Government ID.');
-      return;
-    }
-    if (!addressPreview && !addressFile) {
-      setErrorMessage('Please upload an address proof document (Utility Bill or Rental Agreement).');
       return;
     }
 
@@ -182,8 +166,8 @@ const KYCPage = () => {
         address_line: addressLine.trim() || 'Doorstep Delivery Address',
         id_proof_name: idFile?.name || 'government_id.png',
         id_proof_preview: idPreview || '',
-        address_proof_name: addressFile?.name || 'address_proof.png',
-        address_proof_preview: addressPreview || '',
+        address_proof_name: 'Self-Declared Residence (Doorstep Delivery)',
+        address_proof_preview: idPreview || '',
         verification_mode: verificationMode,
         ocr_audit: {
           verified: true,
@@ -778,152 +762,80 @@ const KYCPage = () => {
                   />
                 </div>
 
-                {/* 5. Document Upload Section (Front ID & Address Proof) */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '1.75rem' }}>
-                  {/* ID Front Upload */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#1e293b', marginBottom: '0.4rem' }}>
-                      5. Front of {idType} *
-                    </label>
-                    <input
-                      type="file"
-                      ref={idInputRef}
-                      style={{ display: 'none' }}
-                      accept="image/*,.pdf"
-                      onChange={(e) => handleIdFileSelect(e.target.files[0])}
-                    />
+                {/* 5. Document Upload Section (Front ID Only) */}
+                <div style={{ marginBottom: '1.75rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#1e293b', marginBottom: '0.4rem' }}>
+                    5. Front of {idType} (Identity Card) *
+                  </label>
+                  <input
+                    type="file"
+                    ref={idInputRef}
+                    style={{ display: 'none' }}
+                    accept="image/*,.pdf"
+                    onChange={(e) => handleIdFileSelect(e.target.files[0])}
+                  />
 
-                    {idPreview ? (
-                      <div style={{
-                        border: '1.5px solid #bbf7d0',
-                        background: '#f0fdf4',
-                        borderRadius: '0.875rem',
-                        padding: '0.85rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.75rem'
-                      }}>
-                        <img 
-                          src={idPreview} 
-                          alt="ID preview" 
-                          style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '0.5rem', border: '1px solid #86efac' }} 
-                        />
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#166534', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {idFile?.name || 'Government_ID_Front.jpg'}
-                          </span>
-                          <span style={{ fontSize: '0.75rem', color: '#15803d' }}>Ready for OCR scan</span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => { setIdFile(null); setIdPreview(null); }}
-                          style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '50%', width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b' }}
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    ) : (
-                      <div
-                        onClick={() => idInputRef.current?.click()}
-                        onDragOver={(e) => { e.preventDefault(); setIdDragOver(true); }}
-                        onDragLeave={() => setIdDragOver(false)}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          setIdDragOver(false);
-                          if (e.dataTransfer.files?.[0]) handleIdFileSelect(e.dataTransfer.files[0]);
-                        }}
-                        style={{
-                          border: idDragOver ? '2px dashed #ef4444' : '2px dashed #cbd5e1',
-                          background: idDragOver ? '#fff5f5' : '#f8fafc',
-                          borderRadius: '0.875rem',
-                          padding: '1.25rem 1rem',
-                          textAlign: 'center',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s ease'
-                        }}
-                      >
-                        <UploadCloud size={24} color="#ef4444" style={{ margin: '0 auto 0.4rem' }} />
-                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155', display: 'block' }}>
-                          Upload Front of ID
+                  {idPreview ? (
+                    <div style={{
+                      border: '1.5px solid #bbf7d0',
+                      background: '#f0fdf4',
+                      borderRadius: '0.875rem',
+                      padding: '1rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.85rem'
+                    }}>
+                      <img 
+                        src={idPreview} 
+                        alt="ID preview" 
+                        style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: '0.5rem', border: '1px solid #86efac' }} 
+                      />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#166534', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {idFile?.name || 'Government_ID_Front.jpg'}
                         </span>
-                        <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>PNG, JPG or PDF</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Address Proof Upload */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#1e293b', marginBottom: '0.4rem' }}>
-                      6. Address Proof (Utility Bill / Agreement) *
-                    </label>
-                    <input
-                      type="file"
-                      ref={addressInputRef}
-                      style={{ display: 'none' }}
-                      accept="image/*,.pdf"
-                      onChange={(e) => handleAddressFileSelect(e.target.files[0])}
-                    />
-
-                    {addressPreview ? (
-                      <div style={{
-                        border: '1.5px solid #bbf7d0',
-                        background: '#f0fdf4',
-                        borderRadius: '0.875rem',
-                        padding: '0.85rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.75rem'
-                      }}>
-                        <img 
-                          src={addressPreview} 
-                          alt="Address preview" 
-                          style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '0.5rem', border: '1px solid #86efac' }} 
-                        />
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#166534', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {addressFile?.name || 'Address_Proof.pdf'}
-                          </span>
-                          <span style={{ fontSize: '0.75rem', color: '#15803d' }}>Ready for verification</span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => { setAddressFile(null); setAddressPreview(null); }}
-                          style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '50%', width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b' }}
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    ) : (
-                      <div
-                        onClick={() => addressInputRef.current?.click()}
-                        onDragOver={(e) => { e.preventDefault(); setAddressDragOver(true); }}
-                        onDragLeave={() => setAddressDragOver(false)}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          setAddressDragOver(false);
-                          if (e.dataTransfer.files?.[0]) handleAddressFileSelect(e.dataTransfer.files[0]);
-                        }}
-                        style={{
-                          border: addressDragOver ? '2px dashed #ef4444' : '2px dashed #cbd5e1',
-                          background: addressDragOver ? '#fff5f5' : '#f8fafc',
-                          borderRadius: '0.875rem',
-                          padding: '1.25rem 1rem',
-                          textAlign: 'center',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s ease'
-                        }}
-                      >
-                        <UploadCloud size={24} color="#ef4444" style={{ margin: '0 auto 0.4rem' }} />
-                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155', display: 'block' }}>
-                          Upload Address Proof
+                        <span style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: 600 }}>
+                          Ready for Optical Character Recognition (OCR) scan
                         </span>
-                        <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Electricity, Gas, or Rent Doc</span>
                       </div>
-                    )}
-                  </div>
+                      <button
+                        type="button"
+                        onClick={() => { setIdFile(null); setIdPreview(null); }}
+                        style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b' }}
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => idInputRef.current?.click()}
+                      onDragOver={(e) => { e.preventDefault(); setIdDragOver(true); }}
+                      onDragLeave={() => setIdDragOver(false)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setIdDragOver(false);
+                        if (e.dataTransfer.files?.[0]) handleIdFileSelect(e.dataTransfer.files[0]);
+                      }}
+                      style={{
+                        border: idDragOver ? '2px dashed #ef4444' : '2px dashed #cbd5e1',
+                        background: idDragOver ? '#fff5f5' : '#f8fafc',
+                        borderRadius: '0.875rem',
+                        padding: '1.5rem 1rem',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <UploadCloud size={28} color="#ef4444" style={{ margin: '0 auto 0.5rem' }} />
+                      <span style={{ fontSize: '0.92rem', fontWeight: 700, color: '#334155', display: 'block' }}>
+                        Upload Front of {idType}
+                      </span>
+                      <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Supports PNG, JPG or PDF • AI OCR Verified</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* 7. Verification Mode Selector */}
+                {/* 6. Verification Mode Selector */}
                 <div style={{
                   background: '#f8fafc',
                   borderRadius: '1rem',
