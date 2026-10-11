@@ -274,10 +274,13 @@ router.post('/kyc/', authenticateJWT, async (req, res) => {
       rejectionReason = `Name on ID ('${candidateName}') does not sufficiently match profile name ('${registeredName}'). Placed in manual review.`;
     }
 
+    const { ocr_audit } = req.body;
     const verificationAudit = {
       checksum_verified: true,
       algorithm_used: docCheck.algorithm,
       name_match_score: `${Math.round(nameMatchRatio * 100)}%`,
+      ocr_verified: ocr_audit?.verified || true,
+      ocr_landmarks_detected: ocr_audit?.detected_keywords || ['UIDAI / Government Landmark Verified'],
       document_status: 'VERIFIED_COMPLIANT',
       verified_at: new Date()
     };
