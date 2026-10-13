@@ -809,74 +809,49 @@ const AdminDashboard = ({ onLogout }) => {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc', paddingBottom: '4rem' }}>
-      {/* Top Navbar */}
-      <nav style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-              <div style={{ background: '#e23744', padding: '0.45rem', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-color)', color: 'var(--text-primary)', paddingBottom: '4rem' }}>
+      {/* Tier 1: Executive Top Bar */}
+      <header className="dashboard-header">
+        <div style={{ maxWidth: '1360px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 1.5rem', gap: '1rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #e23744 0%, #b91c1c 100%)',
+                color: 'white',
+                width: '36px',
+                height: '36px',
+                borderRadius: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(226, 55, 68, 0.35)'
+              }}>
                 <Activity size={20} color="white" />
               </div>
-              <h2 style={{ margin: 0, fontSize: '1.35rem', color: '#0f172a' }}>
-                Rentora <span style={{ color: '#e23744' }}>Admin Control</span>
-              </h2>
-            </div>
-
-            {/* Navigation Tabs */}
-            <div style={{ display: 'flex', gap: '0.35rem', overflowX: 'auto', paddingBottom: '2px' }}>
-              {[
-                { id: 'overview', label: 'Analytics', icon: TrendingUp },
-                { id: 'bi_analytics', label: 'Executive BI', icon: BarChart2 },
-                { id: 'inventory', label: 'Inventory', badge: appliances.length, icon: ShoppingBag },
-                { id: 'users', label: 'Users', badge: usersList.length, icon: Users },
-                { id: 'rentals', label: 'Bookings', badge: allRentals.length, icon: PackageCheck },
-                { id: 'complaints', label: 'Support', badge: complaintsList.filter(c => c.status === 'OPEN').length, icon: MessageSquare, badgeAlert: true },
-                { id: 'kyc', label: 'KYC', badge: kycStats.pending || kycList.length, icon: ShieldCheck, badgeAlert: kycStats.pending > 0 }
-              ].map(tab => {
-                const Icon = tab.icon;
-                const isSelected = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.35rem',
-                      padding: '0.45rem 0.75rem',
-                      borderRadius: '8px',
-                      border: 'none',
-                      background: isSelected ? '#fee2e2' : 'transparent',
-                      color: isSelected ? '#dc2626' : '#64748b',
-                      fontWeight: isSelected ? 700 : 500,
-                      fontSize: '0.825rem',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      transition: 'all 0.15s ease'
-                    }}
-                  >
-                    <Icon size={15} />
-                    <span>{tab.label}</span>
-                    {tab.badge !== undefined && tab.badge > 0 && (
-                      <span style={{
-                        fontSize: '0.68rem',
-                        padding: '1px 5px',
-                        borderRadius: '999px',
-                        background: isSelected ? '#dc2626' : (tab.badgeAlert ? '#fee2e2' : '#f1f5f9'),
-                        color: isSelected ? '#ffffff' : (tab.badgeAlert ? '#dc2626' : '#475569'),
-                        fontWeight: 700
-                      }}>
-                        {tab.badge}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em', lineHeight: 1 }}>
+                    Rent<span style={{ color: 'var(--primary-color)' }}>ora</span>
+                  </span>
+                  <span style={{
+                    background: 'var(--surface-muted)',
+                    color: 'var(--text-secondary)',
+                    border: '1px solid var(--border-color)',
+                    padding: '0.15rem 0.55rem',
+                    borderRadius: '6px',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em'
+                  }}>
+                    Admin Console
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             {/* Live WebSocket Status Indicator */}
             <div style={{
               display: 'inline-flex',
@@ -884,22 +859,22 @@ const AdminDashboard = ({ onLogout }) => {
               gap: '0.4rem',
               padding: '0.35rem 0.75rem',
               borderRadius: '999px',
-              background: socketConnected ? '#ecfdf5' : '#fef2f2',
-              border: `1px solid ${socketConnected ? '#a7f3d0' : '#fecaca'}`,
-              color: socketConnected ? '#059669' : '#dc2626',
+              background: socketConnected ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+              border: `1px solid ${socketConnected ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+              color: socketConnected ? '#10b981' : '#ef4444',
               fontSize: '0.75rem',
               fontWeight: 700
             }}>
               <span style={{
-                width: '8px',
-                height: '8px',
+                width: '7px',
+                height: '7px',
                 borderRadius: '50%',
                 background: socketConnected ? '#10b981' : '#ef4444',
                 boxShadow: socketConnected ? '0 0 8px #10b981' : 'none',
                 display: 'inline-block'
               }} />
               <Wifi size={13} />
-              <span>{socketConnected ? 'Live Socket Connected' : 'Connecting Socket...'}</span>
+              <span>{socketConnected ? 'Live Socket Active' : 'Connecting...'}</span>
             </div>
 
             <button
@@ -908,17 +883,65 @@ const AdminDashboard = ({ onLogout }) => {
                 navigate('/');
               }}
               className="nav-action-btn"
-              style={{ cursor: 'pointer' }}
               title="Return to consumer storefront"
             >
               <ArrowLeft size={15} />
-              <span>Exit to Storefront</span>
+              <span>Consumer Storefront</span>
             </button>
+
             <ThemeToggle />
-            <button onClick={handleLogout} className="btn-secondary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+
+            <button onClick={handleLogout} className="btn-secondary" style={{ padding: '0.45rem 0.85rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <LogOut size={15} />
-              Logout
+              <span>Logout</span>
             </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Tier 2: Segmented Subnav Navigation Rail */}
+      <nav className="dashboard-subnav">
+        <div style={{ maxWidth: '1360px', margin: '0 auto', padding: '0 1.5rem' }}>
+          <div className="dashboard-nav-pills">
+            {[
+              { id: 'overview', label: 'Analytics & Churn', icon: TrendingUp },
+              { id: 'bi_analytics', label: 'Executive BI', icon: BarChart2 },
+              { id: 'inventory', label: 'Inventory', badge: appliances.length, icon: ShoppingBag },
+              { id: 'users', label: 'Users & Roles', badge: usersList.length, icon: Users },
+              { id: 'rentals', label: 'Bookings & Dispatch', badge: allRentals.length, icon: PackageCheck },
+              { id: 'complaints', label: 'Support Complaints', badge: complaintsList.filter(c => c.status === 'OPEN').length, icon: MessageSquare, badgeAlert: true },
+              { id: 'kyc', label: 'KYC Moderation', badge: kycStats.pending || kycList.length, icon: ShieldCheck, badgeAlert: kycStats.pending > 0 }
+            ].map(tab => {
+              const Icon = tab.icon;
+              const isSelected = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`dashboard-pill ${isSelected ? 'active' : ''}`}
+                >
+                  <Icon size={16} />
+                  <span>{tab.label}</span>
+                  {tab.badge !== undefined && tab.badge > 0 && (
+                    <span style={{
+                      fontSize: '0.68rem',
+                      padding: '2px 6px',
+                      borderRadius: '999px',
+                      background: isSelected 
+                        ? 'var(--primary-color)' 
+                        : (tab.badgeAlert ? 'rgba(239, 68, 68, 0.15)' : 'var(--surface-muted)'),
+                      color: isSelected 
+                        ? '#ffffff' 
+                        : (tab.badgeAlert ? 'var(--primary-color)' : 'var(--text-secondary)'),
+                      fontWeight: 700,
+                      lineHeight: 1
+                    }}>
+                      {tab.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </nav>
@@ -977,8 +1000,8 @@ const AdminDashboard = ({ onLogout }) => {
           <div className="animate-fade-in">
             <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
-                <h1 style={{ fontSize: '1.75rem', marginBottom: '0.35rem', color: '#0f172a' }}>Enterprise Analytics & Churn Retention</h1>
-                <p style={{ color: '#64748b', margin: 0, fontSize: '0.9rem' }}>
+                <h1 style={{ fontSize: '1.75rem', marginBottom: '0.35rem', color: 'var(--text-primary)' }}>Enterprise Analytics & Churn Retention</h1>
+                <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.9rem' }}>
                   Live rental metrics, store sales insights ({sales.appliance_furniture_records ? `${sales.appliance_furniture_records.toLocaleString()} records` : 'active'}), and ML-driven churn predictions.
                 </p>
               </div>
@@ -986,14 +1009,16 @@ const AdminDashboard = ({ onLogout }) => {
                 <button
                   type="button"
                   onClick={() => handleExportCSV('rentals')}
+                  className="btn-secondary"
                   style={{
-                    background: '#0f172a', color: '#ffffff', border: 'none', padding: '0.5rem 0.95rem',
-                    borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: '0.45rem',
-                    boxShadow: '0 2px 6px rgba(15, 23, 42, 0.2)', transition: 'all 0.15s ease'
+                    padding: '0.5rem 0.95rem',
+                    borderRadius: '8px',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.45rem'
                   }}
-                  onMouseOver={(e) => { e.currentTarget.style.background = '#1e293b'; }}
-                  onMouseOut={(e) => { e.currentTarget.style.background = '#0f172a'; }}
                 >
                   <Download size={14} color="#38bdf8" />
                   <span>Export Rentals</span>
@@ -1001,14 +1026,16 @@ const AdminDashboard = ({ onLogout }) => {
                 <button
                   type="button"
                   onClick={() => handleExportCSV('financials')}
+                  className="btn-secondary"
                   style={{
-                    background: '#0f172a', color: '#ffffff', border: 'none', padding: '0.5rem 0.95rem',
-                    borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: '0.45rem',
-                    boxShadow: '0 2px 6px rgba(15, 23, 42, 0.2)', transition: 'all 0.15s ease'
+                    padding: '0.5rem 0.95rem',
+                    borderRadius: '8px',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.45rem'
                   }}
-                  onMouseOver={(e) => { e.currentTarget.style.background = '#1e293b'; }}
-                  onMouseOut={(e) => { e.currentTarget.style.background = '#0f172a'; }}
                 >
                   <Download size={14} color="#10b981" />
                   <span>Export Financials</span>
@@ -1016,23 +1043,25 @@ const AdminDashboard = ({ onLogout }) => {
                 <button
                   type="button"
                   onClick={() => handleExportCSV('churn')}
+                  className="btn-secondary"
                   style={{
-                    background: '#0f172a', color: '#ffffff', border: 'none', padding: '0.5rem 0.95rem',
-                    borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: '0.45rem',
-                    boxShadow: '0 2px 6px rgba(15, 23, 42, 0.2)', transition: 'all 0.15s ease'
+                    padding: '0.5rem 0.95rem',
+                    borderRadius: '8px',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.45rem'
                   }}
-                  onMouseOver={(e) => { e.currentTarget.style.background = '#1e293b'; }}
-                  onMouseOut={(e) => { e.currentTarget.style.background = '#0f172a'; }}
                 >
                   <Download size={14} color="#f43f5e" />
                   <span>Export Churn</span>
                 </button>
 
                 {sales.dataset_name && (
-                  <div style={{ background: '#f1f5f9', border: '1px solid #e2e8f0', padding: '0.45rem 0.8rem', borderRadius: '0.5rem', fontSize: '0.8rem', color: '#475569', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <div style={{ background: 'var(--surface-muted)', border: '1px solid var(--border-color)', padding: '0.45rem 0.8rem', borderRadius: '0.5rem', fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                     <PackageCheck size={14} color="#0284c7" />
-                    Dataset: <strong>{sales.dataset_name}</strong>
+                    Dataset: <strong style={{ color: 'var(--text-primary)' }}>{sales.dataset_name}</strong>
                   </div>
                 )}
               </div>
@@ -1040,43 +1069,43 @@ const AdminDashboard = ({ onLogout }) => {
 
             {/* Primary Operational KPIs */}
             <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
-              <div className="panel" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-                <div style={{ background: '#f0fdf4', padding: '0.75rem', borderRadius: '0.75rem' }}>
+              <div className="panel" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem', background: 'var(--surface-color)', border: '1px solid var(--border-color)', borderRadius: '16px' }}>
+                <div style={{ background: 'rgba(22, 163, 74, 0.12)', padding: '0.75rem', borderRadius: '0.75rem' }}>
                   <DollarSign size={26} color="#16a34a" />
                 </div>
                 <div>
-                  <p style={{ color: '#64748b', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.2rem' }}>Gross Rental Revenue</p>
-                  <h3 style={{ fontSize: '1.5rem', margin: 0, color: '#0f172a' }}>₹{dashboardData.total_revenue.toLocaleString()}</h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.2rem' }}>Gross Rental Revenue</p>
+                  <h3 style={{ fontSize: '1.5rem', margin: 0, color: 'var(--text-primary)' }}>₹{dashboardData.total_revenue.toLocaleString()}</h3>
                 </div>
               </div>
 
-              <div className="panel" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-                <div style={{ background: '#eff6ff', padding: '0.75rem', borderRadius: '0.75rem' }}>
+              <div className="panel" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem', background: 'var(--surface-color)', border: '1px solid var(--border-color)', borderRadius: '16px' }}>
+                <div style={{ background: 'rgba(37, 99, 235, 0.12)', padding: '0.75rem', borderRadius: '0.75rem' }}>
                   <Package size={26} color="#2563eb" />
                 </div>
                 <div>
-                  <p style={{ color: '#64748b', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.2rem' }}>Active Customer Leases</p>
-                  <h3 style={{ fontSize: '1.5rem', margin: 0, color: '#0f172a' }}>{dashboardData.active_rentals}</h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.2rem' }}>Active Customer Leases</p>
+                  <h3 style={{ fontSize: '1.5rem', margin: 0, color: 'var(--text-primary)' }}>{dashboardData.active_rentals}</h3>
                 </div>
               </div>
 
-              <div className="panel" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-                <div style={{ background: '#fef2f2', padding: '0.75rem', borderRadius: '0.75rem' }}>
+              <div className="panel" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem', background: 'var(--surface-color)', border: '1px solid var(--border-color)', borderRadius: '16px' }}>
+                <div style={{ background: 'rgba(226, 55, 68, 0.12)', padding: '0.75rem', borderRadius: '0.75rem' }}>
                   <AlertTriangle size={26} color="#e23744" />
                 </div>
                 <div>
-                  <p style={{ color: '#64748b', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.2rem' }}>At-Risk Churn Profiles</p>
-                  <h3 style={{ fontSize: '1.5rem', margin: 0, color: '#0f172a' }}>{dashboardData.at_risk_customers.length}</h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.2rem' }}>At-Risk Churn Profiles</p>
+                  <h3 style={{ fontSize: '1.5rem', margin: 0, color: 'var(--text-primary)' }}>{dashboardData.at_risk_customers.length}</h3>
                 </div>
               </div>
 
-              <div className="panel" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-                <div style={{ background: '#faf5ff', padding: '0.75rem', borderRadius: '0.75rem' }}>
+              <div className="panel" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem', background: 'var(--surface-color)', border: '1px solid var(--border-color)', borderRadius: '16px' }}>
+                <div style={{ background: 'rgba(147, 51, 234, 0.12)', padding: '0.75rem', borderRadius: '0.75rem' }}>
                   <TrendingUp size={26} color="#9333ea" />
                 </div>
                 <div>
-                  <p style={{ color: '#64748b', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.2rem' }}>Market Sales Volume</p>
-                  <h3 style={{ fontSize: '1.5rem', margin: 0, color: '#0f172a' }}>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.2rem' }}>Market Sales Volume</p>
+                  <h3 style={{ fontSize: '1.5rem', margin: 0, color: 'var(--text-primary)' }}>
                     {sales.total_sales_volume ? `₹${(sales.total_sales_volume / 10000000).toFixed(1)} Cr` : '₹0'}
                   </h3>
                 </div>
@@ -1084,16 +1113,16 @@ const AdminDashboard = ({ onLogout }) => {
             </section>
 
             {/* Interactive MRR & Category Cashflow Analysis (Executive BI via Recharts) */}
-            <section className="panel" style={{ padding: '1.75rem', marginBottom: '2.5rem', background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 2px 12px rgba(0,0,0,0.03)' }}>
+            <section className="panel" style={{ padding: '1.75rem', marginBottom: '2.5rem', background: 'var(--surface-color)', borderRadius: '16px', border: '1px solid var(--border-color)', boxShadow: 'var(--card-shadow)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <BarChart2 size={20} color="#e23744" />
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                    <BarChart2 size={20} color="var(--primary-color)" />
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
                       Monthly Recurring Revenue (MRR) & Category Velocity
                     </h3>
                   </div>
-                  <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '0.25rem 0 0' }}>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0.25rem 0 0' }}>
                     Live interactive portfolio performance across active leases, auto-renewals, and buyout equity conversions.
                   </p>
                 </div>

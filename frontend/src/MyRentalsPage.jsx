@@ -584,56 +584,89 @@ const MyRentalsPage = ({ onLogout }) => {
       )}
 
       {/* Top Navigation */}
-      <nav style={{ background: '#ffffff', borderBottom: '1px solid #ebebeb', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 1.5rem' }}>
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none' }}>
+      <header className="dashboard-header">
+        <div style={{ maxWidth: '1360px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 1.5rem', gap: '1rem', flexWrap: 'wrap' }}>
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}>
             <div style={{
-              background: '#e23744',
+              background: 'linear-gradient(135deg, #e23744 0%, #b91c1c 100%)',
               color: 'white',
               width: '36px',
               height: '36px',
-              borderRadius: '8px',
+              borderRadius: '10px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: '900',
               fontSize: '1.25rem',
-              fontFamily: "'Outfit', sans-serif"
+              fontFamily: "'Outfit', sans-serif",
+              boxShadow: '0 4px 10px rgba(226, 55, 68, 0.3)'
             }}>
               R
             </div>
-            <span style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--secondary-color, #111827)', letterSpacing: '-0.02em' }}>
-              Rent<span style={{ color: '#e23744' }}>ora</span>
+            <span style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+              Rent<span style={{ color: 'var(--primary-color)' }}>ora</span>
             </span>
           </Link>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             <Link 
               to="/" 
               className="nav-action-btn"
-              style={{ cursor: 'pointer' }}
             >
-              ← Back to Catalog
+              <ArrowLeft size={15} />
+              <span>Catalog</span>
             </Link>
             <Link 
               to="/cart" 
               className="nav-cart-btn"
-              style={{ cursor: 'pointer' }}
             >
-              Cart
+              <span>Cart</span>
             </Link>
+            <Link 
+              to="/kyc" 
+              className="nav-cart-btn"
+            >
+              <span>KYC</span>
+            </Link>
+
+            {/* Live Socket Tracker status */}
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              background: socketConnected ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+              border: `1px solid ${socketConnected ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+              padding: '0.35rem 0.75rem',
+              borderRadius: '999px',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              color: socketConnected ? '#10b981' : '#ef4444'
+            }}>
+              <span style={{
+                width: '7px',
+                height: '7px',
+                borderRadius: '50%',
+                background: socketConnected ? '#10b981' : '#94a3b8',
+                display: 'inline-block',
+                boxShadow: socketConnected ? '0 0 6px #10b981' : 'none'
+              }} />
+              <Wifi size={13} />
+              <span>{socketConnected ? 'Live Tracker Active' : 'Connecting...'}</span>
+            </div>
+
             <ThemeToggle />
+
             <button 
-              onClick={handleLogout} 
+              onClick={onLogout} 
               className="btn-secondary" 
-              style={{ padding: '0.45rem 0.9rem', fontSize: '0.85rem', cursor: 'pointer' }}
+              style={{ padding: '0.45rem 0.9rem', fontSize: '0.85rem' }}
             >
               <LogOut size={15} />
-              Logout
+              <span>Logout</span>
             </button>
           </div>
         </div>
-      </nav>
+      </header>
 
       <main style={{ maxWidth: '1200px', margin: '2.5rem auto 0', padding: '0 1.5rem' }}>
         
@@ -825,8 +858,8 @@ const MyRentalsPage = ({ onLogout }) => {
         {/* Top Header & Assurance */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: 0, color: '#111827' }}>My Subscriptions & Billing</h1>
-            <p style={{ color: '#6b7280', fontSize: '0.9rem', margin: '0.35rem 0 0' }}>
+            <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>My Subscriptions & Billing</h1>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '0.35rem 0 0' }}>
               Manage active leases, track escrow security deposits, book maintenance, and download GST tax invoices.
             </p>
           </div>
@@ -1036,125 +1069,71 @@ const MyRentalsPage = ({ onLogout }) => {
         {/* Navigation Tabs: Active Leases vs Owned Assets vs Payment History */}
         <div style={{
           display: 'flex',
-          gap: '1rem',
-          borderBottom: '1px solid #e5e7eb',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          borderBottom: '1px solid var(--border-color)',
           marginBottom: '2rem',
-          flexWrap: 'wrap'
+          flexWrap: 'wrap',
+          gap: '1rem'
         }}>
-          <button
-            onClick={() => setActiveTab('rentals')}
-            style={{
-              padding: '0.75rem 1.25rem',
-              border: 'none',
-              background: 'none',
-              fontSize: '0.95rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              color: activeTab === 'rentals' ? '#e23744' : '#6b7280',
-              borderBottom: activeTab === 'rentals' ? '3px solid #e23744' : '3px solid transparent',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              transition: 'all 0.15s'
-            }}
-          >
-            <Package size={18} />
-            <span>Active Leases</span>
-            <span style={{
-              background: activeTab === 'rentals' ? '#fee2e2' : '#f3f4f6',
-              color: activeTab === 'rentals' ? '#dc2626' : '#6b7280',
-              padding: '0.1rem 0.5rem',
-              borderRadius: '9999px',
-              fontSize: '0.75rem'
-            }}>
-              {rentals.filter(r => r.status !== 'OWNED').length}
-            </span>
-          </button>
+          <div className="dashboard-nav-pills">
+            <button
+              onClick={() => setActiveTab('rentals')}
+              className={`dashboard-pill ${activeTab === 'rentals' ? 'active' : ''}`}
+            >
+              <Package size={17} />
+              <span>Active Leases</span>
+              <span className="dashboard-badge" style={{
+                background: activeTab === 'rentals' ? 'var(--primary-color)' : 'var(--surface-muted)',
+                color: activeTab === 'rentals' ? '#ffffff' : 'var(--text-secondary)'
+              }}>
+                {rentals.filter(r => r.status !== 'OWNED').length}
+              </span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('owned')}
-            style={{
-              padding: '0.75rem 1.25rem',
-              border: 'none',
-              background: 'none',
-              fontSize: '0.95rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              color: activeTab === 'owned' ? '#4338ca' : '#6b7280',
-              borderBottom: activeTab === 'owned' ? '3px solid #4338ca' : '3px solid transparent',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              transition: 'all 0.15s'
-            }}
-          >
-            <Award size={18} color={activeTab === 'owned' ? '#4338ca' : '#6b7280'} />
-            <span>Owned Assets (Buyouts)</span>
-            <span style={{
-              background: activeTab === 'owned' ? '#e0e7ff' : '#f3f4f6',
-              color: activeTab === 'owned' ? '#3730a3' : '#6b7280',
-              padding: '0.1rem 0.5rem',
-              borderRadius: '9999px',
-              fontSize: '0.75rem',
-              fontWeight: 800
-            }}>
-              {rentals.filter(r => r.status === 'OWNED').length}
-            </span>
-          </button>
+            <button
+              onClick={() => setActiveTab('owned')}
+              className={`dashboard-pill ${activeTab === 'owned' ? 'active' : ''}`}
+            >
+              <Award size={17} />
+              <span>Owned Assets (Buyouts)</span>
+              <span className="dashboard-badge" style={{
+                background: activeTab === 'owned' ? '#4338ca' : 'var(--surface-muted)',
+                color: activeTab === 'owned' ? '#ffffff' : 'var(--text-secondary)'
+              }}>
+                {rentals.filter(r => r.status === 'OWNED').length}
+              </span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('payments')}
-            style={{
-              padding: '0.75rem 1.25rem',
-              border: 'none',
-              background: 'none',
-              fontSize: '0.95rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              color: activeTab === 'payments' ? '#e23744' : '#6b7280',
-              borderBottom: activeTab === 'payments' ? '3px solid #e23744' : '3px solid transparent',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              transition: 'all 0.15s'
-            }}
-          >
-            <Receipt size={18} />
-            <span>Payment History & Tax Invoices</span>
-            <span style={{
-              background: activeTab === 'payments' ? '#fee2e2' : '#f3f4f6',
-              color: activeTab === 'payments' ? '#dc2626' : '#6b7280',
-              padding: '0.1rem 0.5rem',
-              borderRadius: '9999px',
-              fontSize: '0.75rem'
-            }}>
-              {payments.length}
-            </span>
-          </button>
+            <button
+              onClick={() => setActiveTab('payments')}
+              className={`dashboard-pill ${activeTab === 'payments' ? 'active' : ''}`}
+            >
+              <Receipt size={17} />
+              <span>Payment History & Tax Invoices</span>
+              <span className="dashboard-badge" style={{
+                background: activeTab === 'payments' ? 'var(--primary-color)' : 'var(--surface-muted)',
+                color: activeTab === 'payments' ? '#ffffff' : 'var(--text-secondary)'
+              }}>
+                {payments.length}
+              </span>
+            </button>
+          </div>
 
           <button
             type="button"
             onClick={handleExportCustomerData}
+            className="btn-secondary"
             style={{
-              marginLeft: 'auto',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              background: '#ffffff',
-              border: '1px solid #d1d5db',
               padding: '0.45rem 0.85rem',
-              borderRadius: '8px',
               fontSize: '0.8rem',
               fontWeight: 700,
-              color: '#374151',
-              cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-              transition: 'all 0.15s ease'
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem'
             }}
-            onMouseOver={(e) => { e.currentTarget.style.background = '#f9fafb'; }}
-            onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; }}
           >
-            <Download size={14} color="#4b5563" />
+            <Download size={14} />
             <span>Export {activeTab === 'payments' ? 'Payments' : 'Leases'} (CSV)</span>
           </button>
         </div>

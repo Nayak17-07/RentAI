@@ -346,113 +346,111 @@ const OwnerDashboard = ({ onLogout }) => {
   const bookings = dashboardData?.active_bookings || [];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc', color: '#1e293b' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-color)', color: 'var(--text-primary)', paddingBottom: '4rem' }}>
       {/* Top Navigation */}
-      <header style={{
-        background: '#ffffff',
-        borderBottom: '1px solid #e2e8f0',
-        padding: '0.9rem 2rem',
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '1.4rem', fontWeight: 900, color: '#10b981', letterSpacing: '-0.5px' }}>Rentora</span>
-            <span style={{
-              background: '#ecfdf5',
-              color: '#059669',
-              border: '1px solid #a7f3d0',
-              padding: '0.2rem 0.6rem',
-              borderRadius: '6px',
-              fontSize: '0.75rem',
-              fontWeight: 800,
-              textTransform: 'uppercase'
-            }}>Owner Hub</span>
-          </Link>
+      <header className="dashboard-header">
+        <div style={{ maxWidth: '1360px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 1.5rem', gap: '1rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #e23744 0%, #b91c1c 100%)',
+                color: 'white',
+                width: '36px',
+                height: '36px',
+                borderRadius: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: '900',
+                fontSize: '1.25rem',
+                fontFamily: "'Outfit', sans-serif",
+                boxShadow: '0 4px 10px rgba(226, 55, 68, 0.3)'
+              }}>
+                R
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+                  Rent<span style={{ color: 'var(--primary-color)' }}>ora</span>
+                </span>
+                <span style={{
+                  background: 'rgba(16, 185, 129, 0.12)',
+                  color: '#10b981',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  padding: '0.15rem 0.55rem',
+                  borderRadius: '6px',
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em'
+                }}>Partner Hub</span>
+              </div>
+            </Link>
 
-          <div style={{ height: '20px', width: '1px', background: '#cbd5e1' }} />
-          
-          <Link to="/" className="nav-action-btn" style={{ cursor: 'pointer' }}>
-            <ArrowLeft size={16} />
-            <span>Browse Catalog</span>
-          </Link>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          {/* Live WebSocket Status Indicator */}
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            padding: '0.35rem 0.75rem',
-            borderRadius: '999px',
-            background: socketConnected ? '#ecfdf5' : '#fef2f2',
-            border: `1px solid ${socketConnected ? '#a7f3d0' : '#fecaca'}`,
-            color: socketConnected ? '#059669' : '#dc2626',
-            fontSize: '0.75rem',
-            fontWeight: 700
-          }}>
-            <span style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              background: socketConnected ? '#10b981' : '#ef4444',
-              boxShadow: socketConnected ? '0 0 8px #10b981' : 'none',
-              display: 'inline-block'
-            }} />
-            <Wifi size={13} />
-            <span>{socketConnected ? 'Live Socket: Connected' : 'Connecting Socket...'}</span>
+            <Link to="/" className="nav-action-btn">
+              <ArrowLeft size={15} />
+              <span>Catalog</span>
+            </Link>
           </div>
 
-          <button
-            onClick={switchToCustomer}
-            style={{
-              background: '#f1f5f9',
-              color: '#475569',
-              border: '1px solid #cbd5e1',
-              padding: '0.5rem 1rem',
-              borderRadius: '8px',
-              fontSize: '0.85rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'flex',
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            {/* Live WebSocket Status Indicator */}
+            <div style={{
+              display: 'inline-flex',
               alignItems: 'center',
               gap: '0.4rem',
-              transition: 'all 0.2s'
-            }}
-            title="Switch your active role to Customer to rent items"
-          >
-            <span>Switch to Customer</span>
-            <ChevronRight size={14} />
-          </button>
+              padding: '0.35rem 0.75rem',
+              borderRadius: '999px',
+              background: socketConnected ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+              border: `1px solid ${socketConnected ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+              color: socketConnected ? '#10b981' : '#ef4444',
+              fontSize: '0.75rem',
+              fontWeight: 700
+            }}>
+              <span style={{
+                width: '7px',
+                height: '7px',
+                borderRadius: '50%',
+                background: socketConnected ? '#10b981' : '#ef4444',
+                boxShadow: socketConnected ? '0 0 8px #10b981' : 'none',
+                display: 'inline-block'
+              }} />
+              <Wifi size={13} />
+              <span>{socketConnected ? 'Live Socket Active' : 'Connecting...'}</span>
+            </div>
 
-          <ThemeToggle />
+            <button
+              onClick={switchToCustomer}
+              className="nav-action-btn"
+              title="Switch your active role to Customer to rent items"
+            >
+              <span>Customer View</span>
+              <ChevronRight size={14} />
+            </button>
 
-          <button
-            onClick={handleOpenAdd}
-            style={{
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              color: '#ffffff',
-              border: 'none',
-              padding: '0.55rem 1.25rem',
-              borderRadius: '8px',
-              fontSize: '0.875rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)'
-            }}
-          >
-            <PlusCircle size={17} />
-            <span>+ List New Appliance</span>
-          </button>
+            <ThemeToggle />
+
+            <button
+              onClick={handleOpenAdd}
+              style={{
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: '#ffffff',
+                border: 'none',
+                padding: '0.5rem 1rem',
+                borderRadius: '8px',
+                fontSize: '0.85rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <PlusCircle size={16} />
+              <span>+ List Appliance</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -528,10 +526,10 @@ const OwnerDashboard = ({ onLogout }) => {
 
         {/* Hero Title & Welcome */}
         <div style={{ marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.4rem 0' }}>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 0.4rem 0' }}>
             Welcome back, {dashboardData?.owner?.username || 'Owner'} 👋
           </h1>
-          <p style={{ margin: 0, color: '#64748b', fontSize: '0.95rem' }}>
+          <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
             Monetize your appliances and furniture. Rentora manages customer verification, KYC, doorstep logistics, and escrows.
           </p>
         </div>
@@ -545,19 +543,19 @@ const OwnerDashboard = ({ onLogout }) => {
         }}>
           {/* Card 1: Total Earnings */}
           <div style={{
-            background: '#ffffff',
-            borderRadius: '14px',
+            background: 'var(--surface-color)',
+            borderRadius: '16px',
             padding: '1.4rem',
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+            border: '1px solid var(--border-color)',
+            boxShadow: 'var(--card-shadow)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Total Net Earnings</span>
-              <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <DollarSign size={20} color="#059669" />
+              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Total Net Earnings</span>
+              <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <DollarSign size={20} color="#10b981" />
               </div>
             </div>
-            <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0f172a' }}>
+            <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>
               ₹{metrics.total_earnings.toLocaleString()}
             </div>
             <div style={{ fontSize: '0.775rem', color: '#10b981', fontWeight: 600, marginTop: '0.35rem' }}>
@@ -567,20 +565,20 @@ const OwnerDashboard = ({ onLogout }) => {
 
           {/* Card 2: Projected Monthly Payout */}
           <div style={{
-            background: '#ffffff',
-            borderRadius: '14px',
+            background: 'var(--surface-color)',
+            borderRadius: '16px',
             padding: '1.4rem',
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+            border: '1px solid var(--border-color)',
+            boxShadow: 'var(--card-shadow)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Monthly Passive Run-Rate</span>
-              <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Monthly Passive Run-Rate</span>
+              <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'rgba(37, 99, 235, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <TrendingUp size={20} color="#2563eb" />
               </div>
             </div>
-            <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0f172a' }}>
-              ₹{metrics.monthly_projected_payout.toLocaleString()}<span style={{ fontSize: '1rem', fontWeight: 500, color: '#64748b' }}>/mo</span>
+            <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+              ₹{metrics.monthly_projected_payout.toLocaleString()}<span style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-secondary)' }}>/mo</span>
             </div>
             <div style={{ fontSize: '0.775rem', color: '#2563eb', fontWeight: 600, marginTop: '0.35rem' }}>
               From {metrics.active_rented_units} actively rented unit(s)
@@ -589,19 +587,19 @@ const OwnerDashboard = ({ onLogout }) => {
 
           {/* Card 3: Active Rented Units */}
           <div style={{
-            background: '#ffffff',
-            borderRadius: '14px',
+            background: 'var(--surface-color)',
+            borderRadius: '16px',
             padding: '1.4rem',
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+            border: '1px solid var(--border-color)',
+            boxShadow: 'var(--card-shadow)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Currently Rented Units</span>
-              <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Currently Rented Units</span>
+              <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'rgba(217, 119, 6, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Users size={20} color="#d97706" />
               </div>
             </div>
-            <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0f172a' }}>
+            <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>
               {metrics.active_rented_units}
             </div>
             <div style={{ fontSize: '0.775rem', color: '#d97706', fontWeight: 600, marginTop: '0.35rem' }}>
@@ -611,19 +609,19 @@ const OwnerDashboard = ({ onLogout }) => {
 
           {/* Card 4: Total Listed Appliances */}
           <div style={{
-            background: '#ffffff',
-            borderRadius: '14px',
+            background: 'var(--surface-color)',
+            borderRadius: '16px',
             padding: '1.4rem',
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+            border: '1px solid var(--border-color)',
+            boxShadow: 'var(--card-shadow)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>My Total Listings</span>
-              <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#f5f3ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>My Total Listings</span>
+              <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'rgba(124, 58, 237, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Package size={20} color="#7c3aed" />
               </div>
             </div>
-            <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0f172a' }}>
+            <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>
               {metrics.total_listings}
             </div>
             <div style={{ fontSize: '0.775rem', color: '#7c3aed', fontWeight: 600, marginTop: '0.35rem' }}>
@@ -634,56 +632,46 @@ const OwnerDashboard = ({ onLogout }) => {
 
         {/* Tab Navigation */}
         <div style={{
-          display: 'flex',
-          borderBottom: '1px solid #e2e8f0',
-          gap: '1rem',
-          marginBottom: '1.5rem'
+          borderBottom: '1px solid var(--border-color)',
+          marginBottom: '2rem'
         }}>
-          <button
-            onClick={() => setActiveTab('inventory')}
-            style={{
-              padding: '0.75rem 1.25rem',
-              background: 'none',
-              border: 'none',
-              borderBottom: activeTab === 'inventory' ? '3px solid #10b981' : '3px solid transparent',
-              color: activeTab === 'inventory' ? '#10b981' : '#64748b',
-              fontWeight: 700,
-              fontSize: '0.95rem',
-              cursor: 'pointer'
-            }}
-          >
-            My Listed Appliances ({appliances.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('bookings')}
-            style={{
-              padding: '0.75rem 1.25rem',
-              background: 'none',
-              border: 'none',
-              borderBottom: activeTab === 'bookings' ? '3px solid #10b981' : '3px solid transparent',
-              color: activeTab === 'bookings' ? '#10b981' : '#64748b',
-              fontWeight: 700,
-              fontSize: '0.95rem',
-              cursor: 'pointer'
-            }}
-          >
-            Customer Bookings & Rentals ({bookings.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('payouts')}
-            style={{
-              padding: '0.75rem 1.25rem',
-              background: 'none',
-              border: 'none',
-              borderBottom: activeTab === 'payouts' ? '3px solid #10b981' : '3px solid transparent',
-              color: activeTab === 'payouts' ? '#10b981' : '#64748b',
-              fontWeight: 700,
-              fontSize: '0.95rem',
-              cursor: 'pointer'
-            }}
-          >
-            Payout Policy & Escrow
-          </button>
+          <div className="dashboard-nav-pills">
+            <button
+              onClick={() => setActiveTab('inventory')}
+              className={`dashboard-pill ${activeTab === 'inventory' ? 'active' : ''}`}
+            >
+              <Package size={17} />
+              <span>My Listed Appliances</span>
+              <span className="dashboard-badge" style={{
+                background: activeTab === 'inventory' ? 'var(--primary-color)' : 'var(--surface-muted)',
+                color: activeTab === 'inventory' ? '#ffffff' : 'var(--text-secondary)'
+              }}>
+                {appliances.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('bookings')}
+              className={`dashboard-pill ${activeTab === 'bookings' ? 'active' : ''}`}
+            >
+              <Users size={17} />
+              <span>Customer Bookings</span>
+              <span className="dashboard-badge" style={{
+                background: activeTab === 'bookings' ? 'var(--primary-color)' : 'var(--surface-muted)',
+                color: activeTab === 'bookings' ? '#ffffff' : 'var(--text-secondary)'
+              }}>
+                {bookings.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('payouts')}
+              className={`dashboard-pill ${activeTab === 'payouts' ? 'active' : ''}`}
+            >
+              <DollarSign size={17} />
+              <span>Payout Policy & Escrow</span>
+            </button>
+          </div>
         </div>
 
         {/* Tab 1: Appliance Listings */}
