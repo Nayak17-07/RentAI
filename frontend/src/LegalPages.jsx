@@ -7,7 +7,7 @@ import ThemeToggle from './ThemeToggle';
    Shared shell used by all legal pages.
    Accepts { title, icon, badge, lastUpdated, children }.
    ──────────────────────────────────────────────────────────────────────── */
-const LegalShell = ({ title, icon: Icon, badge, lastUpdated, description, children }) => (
+const LegalShell = ({ title, icon: Icon = FileText, badge, lastUpdated, description, children }) => (
   <>
     <title>{title} | Rentora</title>
     <meta name="description" content={description} />
