@@ -2530,7 +2530,6 @@ const HomePage = ({ onLogout }) => {
                 { id: 'for_you', label: '🌟 For You' },
                 { id: 'room_bundles', label: '🛋️ Room Combos' },
                 { id: 'eco_saver', label: '⚡ Eco Savers' },
-                { id: 'smart_iot', label: '📡 Smart IoT Fleet' },
                 { id: 'trending', label: `📍 Popular in ${city}` }
               ].map(tab => (
                 <button
@@ -2613,12 +2612,12 @@ const HomePage = ({ onLogout }) => {
                         {rec.match_percentage || (rec.similarity_score * 100).toFixed(0)}% Match ⚡
                       </span>
 
-                      {/* Bundle / Smart Add-on / Eco / IoT Badges */}
+                      {/* Bundle / Smart Add-on / Eco Badges */}
                       <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end', zIndex: 2 }}>
                         {rec.bundle_badge && (
                           <span style={{
-                            background: rec.bundle_badge.includes('5★') ? 'rgba(16, 185, 129, 0.9)' : (rec.bundle_badge.includes('IoT') ? 'rgba(99, 102, 241, 0.9)' : 'rgba(16, 185, 129, 0.15)'),
-                            color: (rec.bundle_badge.includes('5★') || rec.bundle_badge.includes('IoT')) ? '#ffffff' : '#10b981',
+                            background: rec.bundle_badge.includes('5★') ? 'rgba(16, 185, 129, 0.9)' : 'rgba(16, 185, 129, 0.15)',
+                            color: rec.bundle_badge.includes('5★') ? '#ffffff' : '#10b981',
                             border: '1px solid rgba(16, 185, 129, 0.3)',
                             fontSize: '0.68rem',
                             fontWeight: 800,

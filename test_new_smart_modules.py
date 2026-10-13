@@ -8,7 +8,7 @@ BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000/api")
 
 def run_tests():
     print("=" * 80)
-    print("  VERIFYING SMART APPLIANCE, IOT, BI & REAL-TIME TRACKING MODULES")
+    print("  VERIFYING SERIALIZED INVENTORY, BI & REAL-TIME TRACKING MODULES")
     print("=" * 80)
 
     from api.mongo_client import get_mongo_db
@@ -18,34 +18,7 @@ def run_tests():
     db.users.insert_one({"_id": admin_id, "username": f"adm_{admin_id[:6]}", "email": f"adm_{admin_id[:6]}@rentora.com", "role": "admin"})
     admin_auth = {"Authorization": f"Bearer {generate_tokens(admin_id)['access']}"}
 
-    # 1. Test IoT Telemetry Endpoint
-    res = requests.get(f"{BASE_URL}/iot/telemetry/sample-appliance-id")
-    assert res.status_code == 200, f"IoT telemetry failed: {res.text}"
-    telemetry = res.json()
-    assert "health_score" in telemetry, "Missing health_score"
-    assert "motor_temp_c" in telemetry, "Missing motor_temp_c"
-    assert "daily_energy_kwh" in telemetry, "Missing daily_energy_kwh"
-    print(f"[OK] 1. IoT Telemetry Endpoint: Health Score {telemetry['health_score']}/100, Temp {telemetry['motor_temp_c']}°C, Daily {telemetry['daily_energy_kwh']} kWh")
-
-    # 2. Test Remote IoT Smart Controls
-    res = requests.patch(f"{BASE_URL}/iot/controls/sample-appliance-id", json={"action": "TOGGLE_ECO"}, headers=admin_auth)
-    assert res.status_code == 200, f"IoT eco toggle failed: {res.text}"
-    print(f"[OK] 2. Remote IoT Controls (Eco-Saver Toggle): {res.json()['message']}")
-
-    # 3. Test Proactive Preventive Maintenance Booking
-    res = requests.post(f"{BASE_URL}/iot/proactive-service/sample-appliance-id", json={
-        "preferred_slot": "Express Slot (Next 24 Hours)",
-        "notes": "Automated test predictive maintenance booking"
-    })
-    assert res.status_code == 201, f"Proactive service booking failed: {res.text}"
-    print(f"[OK] 3. Proactive Service Dispatch: Ticket #{res.json()['ticket_id']} created at INR 0 cost under Rentora Shield")
-
-    # 4. Test Fleet Health Analytics
-    res = requests.get(f"{BASE_URL}/iot/fleet-health")
-    assert res.status_code == 200, f"Fleet health failed: {res.text}"
-    fleet = res.json()
-    summary = fleet["summary"]
-    print(f"[OK] 4. Fleet Health Hub: {summary['total_connected_appliances']} Connected Nodes, {summary['online_rate_pct']}% Online, Avg Health {summary['avg_fleet_health_score']}/100")
+    # Serialized Inventory & Enterprise BI verification
 
     # 5. Test Serialized Inventory Units
     res = requests.get(f"{BASE_URL}/inventory/units", headers=admin_auth)

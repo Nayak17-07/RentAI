@@ -125,7 +125,6 @@ RentAI/
 │   │   ├── CartPage.jsx             # Dynamic Tenure Checkout & 50% KYC Rebate
 │   │   ├── MyRentalsPage.jsx        # Leases, Relocation, Service & Return Hub
 │   │   ├── EscrowLedgerModal.jsx    # RBI-Compliant Escrow Ledger & Damage Waiver
-│   │   ├── SmartApplianceIoTModal.jsx # Real-time IoT Telemetry & Sensor Graphs
 │   │   ├── RentToOwnModal.jsx       # Equity Buyout & Tenure Extension
 │   │   ├── KYCPage.jsx              # OCR Identity & Document Verification
 │   │   ├── AdminDashboard.jsx       # Operations, BI Analytics & Fleet Hub

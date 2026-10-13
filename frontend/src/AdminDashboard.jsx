@@ -49,10 +49,9 @@ import {
 } from 'recharts';
 import { getSocket, joinAdminRoom } from './utils/socket';
 import BusinessIntelligenceTab from './BusinessIntelligenceTab';
-import SmartIoTFleetTab from './SmartIoTFleetTab';
 
 const AdminDashboard = ({ onLogout }) => {
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'bi_analytics' | 'iot_fleet' | 'inventory' | 'users' | 'rentals' | 'complaints'
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'bi_analytics' | 'inventory' | 'users' | 'rentals' | 'complaints'
   const [socketConnected, setSocketConnected] = useState(false);
   const [liveAlert, setLiveAlert] = useState(null);
 
@@ -829,7 +828,6 @@ const AdminDashboard = ({ onLogout }) => {
               {[
                 { id: 'overview', label: 'Analytics', icon: TrendingUp },
                 { id: 'bi_analytics', label: 'Executive BI', icon: BarChart2 },
-                { id: 'iot_fleet', label: 'IoT Fleet', icon: Wifi },
                 { id: 'inventory', label: 'Inventory', badge: appliances.length, icon: ShoppingBag },
                 { id: 'users', label: 'Users', badge: usersList.length, icon: Users },
                 { id: 'rentals', label: 'Bookings', badge: allRentals.length, icon: PackageCheck },
@@ -2395,13 +2393,6 @@ const AdminDashboard = ({ onLogout }) => {
         {/* ========================================================================= */}
         {activeTab === 'bi_analytics' && (
           <BusinessIntelligenceTab onExport={handleExportCSV} />
-        )}
-
-        {/* ========================================================================= */}
-        {/* TAB 8: SMART IOT FLEET & SERIALIZED INVENTORY REFURBISHMENT */}
-        {/* ========================================================================= */}
-        {activeTab === 'iot_fleet' && (
-          <SmartIoTFleetTab onStockUpdated={fetchInventory} />
         )}
 
       </main>

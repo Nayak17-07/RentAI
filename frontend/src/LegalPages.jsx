@@ -167,7 +167,7 @@ export const TermsPage = () => (
       <UL items={[
         'Sub-letting or transferring rented items to third parties.',
         'Using products for commercial purposes unless on a Business plan.',
-        'Tampering with IoT sensors, seals, or product identifiers.',
+        'Tampering with serial numbers, seals, or product identifiers.',
         'Providing false KYC documents.',
         'Reverse-engineering, scraping, or abusing the Rentora API.',
       ]} />
@@ -205,7 +205,6 @@ export const PrivacyPage = () => (
         'Account data: username, password hash, role, registration timestamp.',
         'Transactional data: rental history, payments, invoices, escrow records.',
         'Device & usage data: IP address, browser type, pages visited, session duration.',
-        'IoT sensor data: appliance usage metrics collected via smart sensors (opt-in).',
       ]} />
     </Section>
     <Section title="2. How We Use Your Data">

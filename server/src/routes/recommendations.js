@@ -57,7 +57,7 @@ function extractEcoEnergyInfo(item) {
 // GET /api/recommendations/
 // Supports query parameters:
 // - city: e.g. "Bangalore", "Hyderabad", "Mumbai"
-// - filter: 'for_you' | 'room_bundles' | 'trending' | 'eco_saver' | 'smart_iot'
+// - filter: 'for_you' | 'room_bundles' | 'trending' | 'eco_saver'
 // - appliance_id: optional target item to find complementary accessories for
 // - limit: max items to return (default 8)
 router.get('/recommendations/', optionalAuth, async (req, res) => {
@@ -142,10 +142,6 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
       return res.status(200).json([]);
     }
 
-    // Fetch IoT telemetry devices to mark smart IoT enabled units
-    const iotDevices = await db.collection('iot_device_telemetry').find({}).toArray();
-    const iotApplianceIds = new Set(iotDevices.map(d => String(d.appliance_id || d._id)));
-
     // 3. Compute Real-Time Filter-Specific Selection & Scoring
     let candidatePool = [...catalog];
 
@@ -158,24 +154,6 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
       });
       if (ecoItems.length >= 4) {
         candidatePool = ecoItems;
-      }
-    } else if (filter === 'smart_iot') {
-      // Prioritize smart connected appliances with IoT telemetry
-      const iotItems = candidatePool.filter(item => {
-        const itemIdStr = String(item._id);
-        const codeStr = String(item.appliance_id || '');
-        const normCat = normalizeCategory(item.category_id);
-        const normName = normalizeCategory(item.rental_name);
-        return iotApplianceIds.has(itemIdStr) || 
-               iotApplianceIds.has(codeStr) || 
-               Boolean(item.iot_device_id) ||
-               normName.includes('smart') ||
-               normName.includes('inverter') ||
-               normCat.includes('appliances') ||
-               ['washing', 'refrigerator', 'air conditioner', 'purifier'].some(k => normName.includes(k));
-      });
-      if (iotItems.length >= 4) {
-        candidatePool = iotItems;
       }
     } else if (filter === 'room_bundles') {
       // Ensure cross-category room pairing items (living room, bedroom, kitchen, laundry)
@@ -212,13 +190,6 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
       const cityMatches = requestedCity ? itemCityStr.includes(requestedCity.toLowerCase()) : true;
 
       const ecoInfo = extractEcoEnergyInfo(item);
-      const isIotEnabled = iotApplianceIds.has(itemIdStr) || 
-                           iotApplianceIds.has(applianceCodeStr) ||
-                           Boolean(item.iot_device_id) ||
-                           normalizeCategory(item.rental_name).includes('smart') ||
-                           ['washing machine', 'refrigerator', 'air conditioner'].some(cat => 
-                             normalizeCategory(item.category_id).includes(cat) || normalizeCategory(item.rental_name).includes(cat)
-                           );
 
       let affinityScore = 0.20;
       let reason = `Top trending selection in ${requestedCity} with verified 5-star reliability`;
@@ -248,11 +219,6 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
         bundleBadge = ecoInfo.star >= 5 ? '5★ Eco Champion' : 'Energy Saver';
         affinityScore = 0.85;
         reason = `⚡ ${ecoInfo.label}: Consumes up to 40% less power — saves ~₹${ecoInfo.savings}/mo`;
-      } else if (filter === 'smart_iot') {
-        recType = 'SMART_IOT';
-        bundleBadge = 'Smart IoT Node';
-        affinityScore = 0.85;
-        reason = `📡 Connected Smart Node: Real-time telemetry, 96% health score & predictive maintenance alerts`;
       } else if (filter === 'trending') {
         recType = 'CITY_TRENDING';
         bundleBadge = `Popular in ${requestedCity}`;
@@ -316,8 +282,6 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
       // Rail-specific fine-tuning
       if (filter === 'eco_saver') {
         composite += (ecoInfo.savings / 400.0) * 0.35;
-      } else if (filter === 'smart_iot') {
-        composite += (isIotEnabled ? 0.35 : -0.20);
       } else if (filter === 'room_bundles') {
         // Give slight variety offset so adjacent items are from different categories
         composite += ((itemIdx % 4) * 0.03);
@@ -344,7 +308,6 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
         recType,
         bundleBadge,
         ecoInfo,
-        isIotEnabled,
         comboDiscountPct,
         bundlePrice,
         discountAmount,
@@ -375,7 +338,6 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
         discount_amount: entry.discountAmount,
         energy_savings_est: entry.ecoInfo.savings,
         energy_star_rating: entry.ecoInfo.star,
-        is_smart_iot_enabled: entry.isIotEnabled,
         city: requestedCity,
         last_updated: new Date()
       };

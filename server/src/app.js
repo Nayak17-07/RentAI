@@ -14,7 +14,6 @@ const ownerRoutes = require('./routes/owner');
 const feedbackRoutes = require('./routes/feedback');
 const addressesRoutes = require('./routes/addresses');
 const conciergeRoutes = require('./routes/concierge');
-const iotRoutes = require('./routes/iot');
 const inventoryRoutes = require('./routes/inventory');
 const trackingRoutes = require('./routes/tracking');
 
@@ -71,7 +70,6 @@ app.use('/api', adminRoutes);
 app.use('/api/owner', ownerRoutes);
 app.use('/api', feedbackRoutes);
 app.use('/api', conciergeRoutes);
-app.use('/api', iotRoutes);
 app.use('/api', inventoryRoutes);
 app.use('/api', trackingRoutes);
 

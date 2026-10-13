@@ -37,16 +37,7 @@ import ThemeToggle from './ThemeToggle';
 import DeliveryTrackerModal from './DeliveryTrackerModal';
 import RentToOwnModal from './RentToOwnModal';
 import OwnershipCertificateModal from './OwnershipCertificateModal';
-import SmartApplianceIoTModal from './SmartApplianceIoTModal';
 import EscrowLedgerModal from './EscrowLedgerModal';
-
-const isSmartAppliance = (rental) => {
-  const name = (rental?.appliance_name || rental?.rental_name || rental?.title || '').toLowerCase();
-  const cat = (rental?.category || rental?.category_id || '').toLowerCase();
-  const sub = (rental?.sub_category || '').toLowerCase();
-  const keywords = ['refrigerator', 'fridge', 'washing machine', 'purifier', 'water purifier', 'ac', 'air conditioner', 'tv', 'television', 'microwave'];
-  return keywords.some(k => name.includes(k) || cat.includes(k) || sub.includes(k)) || cat.includes('appliance') || cat.includes('electronic');
-};
 
 const MyRentalsPage = ({ onLogout }) => {
   const [rentals, setRentals] = useState([]);
@@ -63,7 +54,6 @@ const MyRentalsPage = ({ onLogout }) => {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [trackingModalRental, setTrackingModalRental] = useState(null);
-  const [iotModalRental, setIotModalRental] = useState(null);
   const [escrowModalRental, setEscrowModalRental] = useState(null);
   
   // Return & Damage Assessment State (Module 6)
@@ -1445,8 +1435,8 @@ const MyRentalsPage = ({ onLogout }) => {
                             </div>
                           </button>
 
-                          {/* Escrow Deposit & Smart IoT Pill Badges */}
-                          <div style={{ display: 'grid', gridTemplateColumns: isSmartAppliance(rental) ? '1fr 1fr' : '1fr', gap: '0.45rem' }}>
+                          {/* Escrow Deposit Protection */}
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.45rem' }}>
                             <button
                               type="button"
                               onClick={() => setEscrowModalRental(rental)}
@@ -1472,35 +1462,6 @@ const MyRentalsPage = ({ onLogout }) => {
                               <ShieldCheck size={13} color="#059669" />
                               <span>₹{rental.security_deposit || 750} in Escrow</span>
                             </button>
-
-                            {isSmartAppliance(rental) && (
-                              <button
-                                type="button"
-                                onClick={() => setIotModalRental(rental)}
-                                style={{
-                                  background: '#f0f9ff',
-                                  color: '#0369a1',
-                                  border: '1px solid #bae6fd',
-                                  padding: '0.45rem 0.65rem',
-                                  borderRadius: '8px',
-                                  fontSize: '0.74rem',
-                                  fontWeight: 700,
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  gap: '0.35rem',
-                                  transition: 'all 0.15s ease'
-                                }}
-                                onMouseOver={(e) => { e.currentTarget.style.background = '#e0f2fe'; }}
-                                onMouseOut={(e) => { e.currentTarget.style.background = '#f0f9ff'; }}
-                                title="Smart IoT Appliance Telemetry & Diagnostics"
-                              >
-                                <Zap size={13} color="#0284c7" />
-                                <span>IoT Telemetry</span>
-                                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
-                              </button>
-                            )}
                           </div>
 
                           {/* 2. Flagship Rent-to-Own Equity Action */}
@@ -2041,13 +2002,6 @@ const MyRentalsPage = ({ onLogout }) => {
         onClose={() => setTrackingModalRental(null)}
         rental={trackingModalRental}
         onRentalUpdated={fetchRentalsAndPayments}
-      />
-
-      {/* Smart Appliance IoT Telemetry Modal */}
-      <SmartApplianceIoTModal
-        isOpen={!!iotModalRental}
-        onClose={() => setIotModalRental(null)}
-        rental={iotModalRental}
       />
 
       {/* Interactive Escrow Ledger Modal */}
