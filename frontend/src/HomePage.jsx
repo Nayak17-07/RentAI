@@ -2515,11 +2515,14 @@ const HomePage = ({ onLogout }) => {
               border: '1px solid var(--border-color)',
               padding: '0.25rem',
               borderRadius: '10px',
-              gap: '0.35rem'
+              gap: '0.35rem',
+              flexWrap: 'wrap'
             }}>
               {[
                 { id: 'for_you', label: '🌟 For You' },
                 { id: 'room_bundles', label: '🛋️ Room Combos' },
+                { id: 'eco_saver', label: '⚡ Eco Savers' },
+                { id: 'smart_iot', label: '📡 Smart IoT Fleet' },
                 { id: 'trending', label: `📍 Popular in ${city}` }
               ].map(tab => (
                 <button
@@ -2530,9 +2533,9 @@ const HomePage = ({ onLogout }) => {
                     background: activeRecFilter === tab.id ? 'var(--surface-color)' : 'transparent',
                     color: activeRecFilter === tab.id ? 'var(--text-primary)' : 'var(--text-secondary)',
                     border: activeRecFilter === tab.id ? '1px solid var(--border-color)' : '1px solid transparent',
-                    padding: '0.5rem 0.9rem',
+                    padding: '0.45rem 0.8rem',
                     borderRadius: '8px',
-                    fontSize: '0.82rem',
+                    fontSize: '0.8rem',
                     fontWeight: 700,
                     cursor: 'pointer',
                     boxShadow: activeRecFilter === tab.id ? 'var(--card-shadow)' : 'none',
@@ -2602,24 +2605,34 @@ const HomePage = ({ onLogout }) => {
                         {rec.match_percentage || (rec.similarity_score * 100).toFixed(0)}% Match ⚡
                       </span>
 
-                      {/* Bundle / Smart Add-on Badge */}
-                      {rec.bundle_badge && (
-                        <span style={{
-                          position: 'absolute',
-                          top: '10px',
-                          right: '10px',
-                          background: 'rgba(16, 185, 129, 0.15)',
-                          color: '#10b981',
-                          border: '1px solid rgba(16, 185, 129, 0.3)',
-                          fontSize: '0.7rem',
-                          fontWeight: 700,
-                          padding: '0.2rem 0.55rem',
-                          borderRadius: '6px',
-                          zIndex: 2
-                        }}>
-                          {rec.bundle_badge}
-                        </span>
-                      )}
+                      {/* Bundle / Smart Add-on / Eco / IoT Badges */}
+                      <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end', zIndex: 2 }}>
+                        {rec.bundle_badge && (
+                          <span style={{
+                            background: rec.bundle_badge.includes('5★') ? 'rgba(16, 185, 129, 0.9)' : (rec.bundle_badge.includes('IoT') ? 'rgba(99, 102, 241, 0.9)' : 'rgba(16, 185, 129, 0.15)'),
+                            color: (rec.bundle_badge.includes('5★') || rec.bundle_badge.includes('IoT')) ? '#ffffff' : '#10b981',
+                            border: '1px solid rgba(16, 185, 129, 0.3)',
+                            fontSize: '0.68rem',
+                            fontWeight: 800,
+                            padding: '0.2rem 0.55rem',
+                            borderRadius: '6px'
+                          }}>
+                            {rec.bundle_badge}
+                          </span>
+                        )}
+                        {rec.energy_savings_est > 100 && (
+                          <span style={{
+                            background: '#047857',
+                            color: '#ffffff',
+                            fontSize: '0.65rem',
+                            fontWeight: 700,
+                            padding: '0.15rem 0.45rem',
+                            borderRadius: '4px'
+                          }}>
+                            Save ~₹{rec.energy_savings_est}/mo power
+                          </span>
+                        )}
+                      </div>
 
                       <img 
                         src={app.image_url} 
@@ -2676,10 +2689,22 @@ const HomePage = ({ onLogout }) => {
                       <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
                         <div>
                           <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block' }}>Monthly Rent</span>
-                          <span style={{ fontWeight: 900, fontSize: '1.15rem', color: 'var(--text-primary)' }}>
-                            ₹{app.monthly_price}
-                            <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-secondary)' }}>/mo</span>
-                          </span>
+                          {rec.bundle_price && rec.bundle_price < app.monthly_price ? (
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem' }}>
+                              <span style={{ fontWeight: 900, fontSize: '1.15rem', color: '#10b981' }}>
+                                ₹{rec.bundle_price}
+                                <span style={{ fontSize: '0.72rem', fontWeight: 500, color: 'var(--text-secondary)' }}>/mo</span>
+                              </span>
+                              <span style={{ fontSize: '0.75rem', textDecoration: 'line-through', color: 'var(--text-muted)' }}>
+                                ₹{app.monthly_price}
+                              </span>
+                            </div>
+                          ) : (
+                            <span style={{ fontWeight: 900, fontSize: '1.15rem', color: 'var(--text-primary)' }}>
+                              ₹{app.monthly_price}
+                              <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-secondary)' }}>/mo</span>
+                            </span>
+                          )}
                         </div>
 
                         <div style={{ display: 'flex', gap: '0.35rem' }}>

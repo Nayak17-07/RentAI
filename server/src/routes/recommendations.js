@@ -1,7 +1,7 @@
 const express = require('express');
 const crypto = require('crypto');
 const { getDb } = require('../db');
-const { optionalAuth } = require('../auth');
+const { optionalAuth, authenticateJWT, requireRole } = require('../auth');
 
 const router = express.Router();
 
@@ -40,11 +40,26 @@ function findComplementaryCategories(subCategory, categoryId) {
   return [...new Set(matches)];
 }
 
+function extractEcoEnergyInfo(item) {
+  const text = `${item.rental_name || ''} ${item.description || ''} ${item.specifications || ''}`.toLowerCase();
+  if (text.includes('5 star') || text.includes('5-star') || text.includes('inverter')) {
+    return { star: 5, savings: 380, label: '5★ Inverter Eco Champion' };
+  }
+  if (text.includes('4 star') || text.includes('4-star')) {
+    return { star: 4, savings: 240, label: '4★ Energy Saver' };
+  }
+  if (text.includes('3 star') || text.includes('3-star')) {
+    return { star: 3, savings: 120, label: '3★ Efficient' };
+  }
+  return { star: 3, savings: 80, label: 'Standard Efficiency' };
+}
+
 // GET /api/recommendations/
 // Supports query parameters:
 // - city: e.g. "Bangalore", "Hyderabad", "Mumbai"
-// - filter: 'for_you' | 'room_bundles' | 'trending'
+// - filter: 'for_you' | 'room_bundles' | 'trending' | 'eco_saver' | 'smart_iot'
 // - appliance_id: optional target item to find complementary accessories for
+// - limit: max items to return (default 8)
 router.get('/recommendations/', optionalAuth, async (req, res) => {
   try {
     const db = getDb();
@@ -52,6 +67,7 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
     const requestedCity = req.query.city || 'Bangalore';
     const filter = req.query.filter || 'for_you';
     const targetApplianceId = req.query.appliance_id || null;
+    const limit = Math.min(20, Math.max(1, parseInt(req.query.limit, 10) || 8));
 
     // 1. Gather context: User Cart, User Active Rentals, and Target Appliance
     let userCartItems = [];
@@ -76,9 +92,11 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
     let rentCount = 0;
 
     for (const c of userCartItems) {
-      existingApplianceIds.add(String(c.appliance_id || c._id));
+      const aid = String(c.appliance_id || c._id);
+      existingApplianceIds.add(aid);
       if (c.appliance) {
         interactedSubCategories.push({
+          id: aid,
           name: c.appliance.rental_name,
           category: c.appliance.category_id,
           subCategory: c.appliance.sub_category
@@ -89,9 +107,11 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
     }
 
     for (const r of userActiveRentals) {
-      existingApplianceIds.add(String(r.appliance_id || r._id));
+      const aid = String(r.appliance_id || r._id);
+      existingApplianceIds.add(aid);
       if (r.appliance) {
         interactedSubCategories.push({
+          id: aid,
           name: r.appliance.rental_name,
           category: r.appliance.category_id,
           subCategory: r.appliance.sub_category
@@ -102,7 +122,9 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
     }
 
     if (targetAppliance) {
+      const aid = String(targetAppliance.appliance_id || targetAppliance._id);
       interactedSubCategories.push({
+        id: aid,
         name: targetAppliance.rental_name,
         category: targetAppliance.category_id,
         subCategory: targetAppliance.sub_category
@@ -120,20 +142,32 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
       return res.status(200).json([]);
     }
 
+    // Fetch IoT telemetry devices to mark smart IoT enabled units
+    const iotDevices = await db.collection('iot_device_telemetry').find({}).toArray();
+    const iotApplianceIds = new Set(iotDevices.map(d => String(d.appliance_id || d._id)));
+
     // 3. Compute Real-Time Hybrid Scoring for every candidate
     const scoredList = catalog.map((item) => {
       const itemIdStr = String(item._id);
-      const isAlreadyInCartOrRental = existingApplianceIds.has(itemIdStr) || existingApplianceIds.has(String(item.appliance_id));
+      const applianceCodeStr = String(item.appliance_id || '');
+      const isAlreadyInCartOrRental = existingApplianceIds.has(itemIdStr) || existingApplianceIds.has(applianceCodeStr);
 
       const itemPrice = parseFloat(item.monthly_price) || 800;
       const itemCityStr = String(item.available_cities || '').toLowerCase();
       const cityMatches = requestedCity ? itemCityStr.includes(requestedCity.toLowerCase()) : true;
 
+      const ecoInfo = extractEcoEnergyInfo(item);
+      const isIotEnabled = iotApplianceIds.has(itemIdStr) || 
+                           iotApplianceIds.has(applianceCodeStr) ||
+                           Boolean(item.iot_device_id) ||
+                           ['washing machine', 'refrigerator', 'air conditioner'].some(cat => 
+                             normalizeCategory(item.category_id).includes(cat) || normalizeCategory(item.rental_name).includes(cat)
+                           );
+
       let affinityScore = 0.20;
-      let reason = `Top trending selection in ${requestedCity} with 5-star reliability rating`;
+      let reason = `Top trending selection in ${requestedCity} with verified 5-star reliability`;
       let recType = 'CITY_TRENDING';
-      let bundleBadge = 'Smart Add-on';
-      let pairedWithItemName = null;
+      let bundleBadge = 'Top Pick';
 
       // Check Complementary Matrix against user's cart/rentals
       if (interactedSubCategories.length > 0) {
@@ -149,8 +183,7 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
           });
 
           if (isComplementary) {
-            affinityScore = Math.max(affinityScore, 0.85);
-            pairedWithItemName = interacted.name;
+            affinityScore = Math.max(affinityScore, 0.88);
             reason = `Frequently rented together with your ${interacted.name} (15% Combo Savings)`;
             recType = 'ROOM_BUNDLE';
             bundleBadge = 'Room Combo';
@@ -164,7 +197,7 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
             normalizeCategory(i.category) === normalizeCategory(item.category_id)
           );
           if (sharesCategory) {
-            affinityScore = 0.45;
+            affinityScore = 0.48;
             reason = `Matches your preference for premium ${item.category_id || 'appliances'}`;
             recType = 'SIMILAR_STYLE';
             bundleBadge = 'Style Match';
@@ -179,6 +212,9 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
       const rating = parseFloat(item.rating) || 4.6;
       let popularityScore = Math.min(0.25, (rating / 5.0) * 0.25);
 
+      // Eco energy boost
+      let ecoScore = (ecoInfo.star / 5.0) * 0.25;
+
       // Budget fit score
       let budgetScore = 0.10;
       const budgetDiffPct = Math.abs(itemPrice - avgBudget) / avgBudget;
@@ -186,25 +222,57 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
         budgetScore = 0.20;
       }
 
-      // Filter bias:
+      // Filter-specific weighting multipliers and dynamic badges
       let filterMultiplier = 1.0;
       if (filter === 'room_bundles') {
         if (recType === 'ROOM_BUNDLE') filterMultiplier = 1.6;
         else filterMultiplier = 0.6;
       } else if (filter === 'trending') {
         if (cityMatches) filterMultiplier = 1.4;
+      } else if (filter === 'eco_saver') {
+        if (ecoInfo.star >= 5) {
+          filterMultiplier = 1.8;
+          bundleBadge = '5★ Eco Champion';
+          reason = `⚡ ${ecoInfo.label}: Saves ~₹${ecoInfo.savings}/mo in electricity`;
+          recType = 'ECO_SAVER';
+        } else if (ecoInfo.star >= 4) {
+          filterMultiplier = 1.3;
+          bundleBadge = 'Energy Saver';
+        } else {
+          filterMultiplier = 0.5;
+        }
+      } else if (filter === 'smart_iot') {
+        if (isIotEnabled) {
+          filterMultiplier = 1.7;
+          bundleBadge = 'Smart IoT Fleet';
+          reason = `📡 Connected Smart Node: Proactive telemetry & remote predictive health alerts`;
+          recType = 'SMART_IOT';
+        } else {
+          filterMultiplier = 0.5;
+        }
       }
 
       // Calculate composite score (0 to 1)
-      let composite = (affinityScore * 0.40 + geoScore * 0.30 + popularityScore * 0.20 + budgetScore * 0.10) * filterMultiplier;
+      let composite = (
+        affinityScore * 0.35 + 
+        geoScore * 0.25 + 
+        popularityScore * 0.20 + 
+        ecoScore * 0.10 + 
+        budgetScore * 0.10
+      ) * filterMultiplier;
 
-      // Penalize items already in cart or rental so user sees new discovery items
+      // Penalize items already in cart or rental so user sees fresh discovery items
       if (isAlreadyInCartOrRental) {
         composite *= 0.15;
       }
 
-      // Scale to human match percentage (82% to 98%)
+      // Scale to match percentage (82% to 98%)
       const matchPercentage = Math.min(98, Math.max(82, Math.round(78 + (composite * 20))));
+
+      // Combo discount calculation
+      const comboDiscountPct = recType === 'ROOM_BUNDLE' ? 15 : 10;
+      const bundlePrice = Math.round(itemPrice * (1 - comboDiscountPct / 100));
+      const discountAmount = itemPrice - bundlePrice;
 
       return {
         item,
@@ -213,6 +281,11 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
         reason,
         recType,
         bundleBadge,
+        ecoInfo,
+        isIotEnabled,
+        comboDiscountPct,
+        bundlePrice,
+        discountAmount,
         isAlreadyInCartOrRental
       };
     });
@@ -220,10 +293,10 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
     // 4. Sort by composite score descending
     scoredList.sort((a, b) => b.composite - a.composite);
 
-    // 5. Take top 8 distinct recommendations
-    const topScored = scoredList.slice(0, 8);
+    // 5. Take top distinct recommendations
+    const topScored = scoredList.slice(0, limit);
 
-    // Format response matching both legacy & enhanced schema
+    // Format response matching schema
     const result = topScored.map((entry, idx) => {
       const app = { ...entry.item, _id: String(entry.item._id) };
       return {
@@ -235,7 +308,12 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
         recommendation_reason: entry.reason,
         recommendation_type: entry.recType,
         bundle_badge: entry.bundleBadge,
-        combo_discount_pct: entry.recType === 'ROOM_BUNDLE' ? 15 : 10,
+        combo_discount_pct: entry.comboDiscountPct,
+        bundle_price: entry.bundlePrice,
+        discount_amount: entry.discountAmount,
+        energy_savings_est: entry.ecoInfo.savings,
+        energy_star_rating: entry.ecoInfo.star,
+        is_smart_iot_enabled: entry.isIotEnabled,
         city: requestedCity,
         last_updated: new Date()
       };
@@ -251,12 +329,14 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
           match_percentage: r.match_percentage,
           recommendation_reason: r.recommendation_reason,
           recommendation_type: r.recommendation_type,
+          bundle_badge: r.bundle_badge,
+          energy_savings_est: r.energy_savings_est,
+          combo_discount_pct: r.combo_discount_pct,
           last_updated: new Date()
         }));
         await db.collection('appliance_recommendations').deleteMany({ user_id: userId });
         await db.collection('appliance_recommendations').insertMany(mongoDocs);
       } catch (saveErr) {
-        // Non-blocking background sync error
         console.warn('Sync to appliance_recommendations skipped:', saveErr.message);
       }
     }
@@ -268,4 +348,25 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
   }
 });
 
+// POST /api/recommendations/recompute (Admin trigger to rerun batch recommendation pipeline)
+router.post('/recommendations/recompute', authenticateJWT, requireRole('admin'), async (req, res) => {
+  try {
+    const { exec } = require('child_process');
+    const path = require('path');
+    const scriptPath = path.resolve(__dirname, '../../../ml_pipeline/train_model.py');
+    const venvPython = path.resolve(__dirname, '../../../venv/Scripts/python.exe');
+
+    exec(`"${venvPython}" "${scriptPath}"`, (error, stdout, stderr) => {
+      if (error) {
+        console.error('Recompute batch recommendations error:', error);
+        return res.status(500).json({ error: 'Failed to execute recommendation training pipeline', details: stderr });
+      }
+      return res.status(200).json({ message: 'Batch recommendation engine completed successfully', output: stdout });
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
+
