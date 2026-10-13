@@ -526,8 +526,8 @@ router.get('/admin/export/', async (req, res) => {
   }
 });
 
-// GET /api/admin/bi-analytics/ - Comprehensive Executive Business Intelligence Suite
-router.get('/admin/bi-analytics/', async (req, res) => {
+// GET /api/admin/bi-analytics/ & /api/admin/business-intelligence/ - Comprehensive Executive Business Intelligence Suite
+router.get(['/admin/bi-analytics/', '/admin/business-intelligence/'], async (req, res) => {
   try {
     const db = getDb();
 

@@ -188,8 +188,8 @@ router.post('/iot/proactive-service/:id', async (req, res) => {
   }
 });
 
-// GET /api/iot/fleet-health - Admin Fleet Telemetry & Predictive Maintenance Hub
-router.get('/iot/fleet-health', async (req, res) => {
+// GET /api/iot/fleet-health and /api/iot/fleet - Admin Fleet Telemetry & Predictive Maintenance Hub
+router.get(['/iot/fleet-health', '/iot/fleet'], async (req, res) => {
   try {
     const db = getDb();
     const devices = await db.collection('iot_device_telemetry').find({}).toArray();

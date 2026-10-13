@@ -65,6 +65,8 @@ function generateTokens(userId) {
   return { access, refresh };
 }
 
+const { ObjectId } = require('mongodb');
+
 async function authenticateJWT(req, res, next) {
   const authHeader = req.headers['authorization'];
   if (!authHeader) {
@@ -80,13 +82,18 @@ async function authenticateJWT(req, res, next) {
   try {
     const decoded = jwt.verify(token, SECRET_KEY, { algorithms: ['HS256'] });
     const db = getDb();
-    const user = await db.collection('users').findOne({ _id: decoded.user_id });
+    let user = await db.collection('users').findOne({ _id: decoded.user_id });
+    if (!user && ObjectId.isValid(decoded.user_id)) {
+      try {
+        user = await db.collection('users').findOne({ _id: new ObjectId(decoded.user_id) });
+      } catch (e) {}
+    }
     if (!user) {
       return res.status(401).json({ detail: 'User not found' });
     }
 
     req.user = {
-      id: user._id,
+      id: String(user._id),
       _id: user._id,
       username: user.username,
       email: user.email,
@@ -111,10 +118,15 @@ async function optionalAuth(req, res, next) {
     try {
       const decoded = jwt.verify(parts[1], SECRET_KEY, { algorithms: ['HS256'] });
       const db = getDb();
-      const user = await db.collection('users').findOne({ _id: decoded.user_id });
+      let user = await db.collection('users').findOne({ _id: decoded.user_id });
+      if (!user && ObjectId.isValid(decoded.user_id)) {
+        try {
+          user = await db.collection('users').findOne({ _id: new ObjectId(decoded.user_id) });
+        } catch (e) {}
+      }
       if (user) {
         req.user = {
-          id: user._id,
+          id: String(user._id),
           _id: user._id,
           username: user.username,
           email: user.email,
