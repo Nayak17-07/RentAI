@@ -8,11 +8,16 @@
 export const fetchWithAuth = async (url, options = {}) => {
   let token = localStorage.getItem('access_token');
 
-  const buildHeaders = (t) => ({
-    ...options.headers,
-    'Authorization': `Bearer ${t}`,
-    'Content-Type': 'application/json',
-  });
+  const buildHeaders = (t) => {
+    const headers = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
+    if (t && t !== 'null' && t !== 'undefined') {
+      headers['Authorization'] = `Bearer ${t}`;
+    }
+    return headers;
+  };
 
   let response = await fetch(url, {
     ...options,

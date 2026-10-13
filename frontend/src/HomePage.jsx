@@ -322,10 +322,18 @@ const HomePage = ({ onLogout }) => {
       setRecLoading(true);
       setActiveRecFilter(filterKey);
       const cityQuery = targetCity ? `&city=${encodeURIComponent(targetCity)}` : '';
-      const recRes = await fetchWithAuth(`http://localhost:8000/api/recommendations/?filter=${filterKey}${cityQuery}`);
-      if (recRes.ok) {
+      let recRes = null;
+      try {
+        recRes = await fetchWithAuth(`http://localhost:8000/api/recommendations/?filter=${filterKey}${cityQuery}`);
+      } catch (authErr) {
+        recRes = await fetch(`http://localhost:8000/api/recommendations/?filter=${filterKey}${cityQuery}`);
+      }
+      if (!recRes || !recRes.ok) {
+        recRes = await fetch(`http://localhost:8000/api/recommendations/?filter=${filterKey}${cityQuery}`);
+      }
+      if (recRes && recRes.ok) {
         const recData = await recRes.json();
-        setRecommendations(recData);
+        setRecommendations(Array.isArray(recData) ? recData : []);
       }
     } catch (err) {
       console.error('Error filtering recommendations:', err);
