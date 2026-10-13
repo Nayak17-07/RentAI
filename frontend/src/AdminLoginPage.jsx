@@ -7,10 +7,9 @@ import {
   ArrowLeft, 
   Loader2, 
   AlertCircle, 
-  CheckCircle2, 
-  Activity,
-  Terminal,
-  KeyRound
+  Home as HomeIcon,
+  KeyRound,
+  Sparkles
 } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
@@ -66,302 +65,242 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'radial-gradient(ellipse at top, #1e1b4b 0%, #090d16 65%, #030712 100%)',
-      display: 'flex',
-      flexDirection: 'column',
-      color: '#f8fafc',
-      fontFamily: "'Inter', sans-serif",
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
-      {/* Background ambient lighting */}
-      <div style={{
-        position: 'absolute',
-        top: '-15%',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '720px',
-        height: '420px',
-        background: 'radial-gradient(circle, rgba(124, 58, 237, 0.22) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 80%)',
-        filter: 'blur(70px)',
-        pointerEvents: 'none',
-        zIndex: 0
-      }} />
-
-      {/* Top Header Bar */}
-      <header style={{
-        padding: '1.25rem 2.5rem',
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-color)', position: 'relative' }}>
+      {/* Top action rail */}
+      <div style={{ 
+        position: 'absolute', 
+        top: '1.25rem', 
+        right: '1.5rem', 
+        zIndex: 100,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        position: 'relative',
-        zIndex: 10,
-        borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-        backdropFilter: 'blur(10px)'
+        gap: '0.75rem'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{
-            background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
-            padding: '0.45rem',
-            borderRadius: '10px',
-            display: 'flex',
+        <Link
+          to="/"
+          style={{
+            display: 'inline-flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 14px rgba(124, 58, 237, 0.4)'
+            gap: '0.4rem',
+            color: 'var(--text-secondary)',
+            textDecoration: 'none',
+            fontSize: '0.85rem',
+            fontWeight: 600,
+            padding: '0.45rem 0.85rem',
+            borderRadius: '0.5rem',
+            background: 'var(--card-bg, #ffffff)',
+            border: '1px solid var(--border-color, #e2e8f0)',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <ArrowLeft size={15} />
+          <span>Storefront</span>
+        </Link>
+        <ThemeToggle />
+      </div>
+
+      {/* Left side - Branded Executive Visual */}
+      <div 
+        style={{ 
+          flex: '1', 
+          display: 'none', 
+          position: 'relative' 
+        }} 
+        className="auth-image-container"
+      >
+        <img 
+          src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200" 
+          alt="Rentora Executive Headquarters" 
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+        <div style={{ 
+          position: 'absolute', 
+          inset: 0, 
+          background: 'linear-gradient(to right, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.45) 60%, transparent 100%)' 
+        }}></div>
+        <div style={{ position: 'absolute', bottom: '4rem', left: '4rem', color: '#ffffff', maxWidth: '480px' }}>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            background: 'rgba(226, 55, 68, 0.25)',
+            border: '1px solid rgba(226, 55, 68, 0.5)',
+            color: '#ff8a93',
+            padding: '0.25rem 0.75rem',
+            borderRadius: '999px',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            letterSpacing: '0.06em',
+            textTransform: 'uppercase',
+            marginBottom: '1rem'
           }}>
-            <Activity size={20} color="white" />
+            <ShieldCheck size={14} />
+            Internal Staff Portal
           </div>
-          <div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#ffffff' }}>
-              Rentora <span style={{ color: '#a78bfa' }}>Ops Console</span>
-            </div>
-            <div style={{ fontSize: '0.68rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>
-              Staff & Administrative Gateway
-            </div>
-          </div>
+          <h2 style={{ fontSize: '2.4rem', lineHeight: 1.2, marginBottom: '1rem', color: '#ffffff', fontWeight: 800 }}>
+            Operations & AI Intelligence Command Center
+          </h2>
+          <p style={{ fontSize: '1.05rem', color: '#cbd5e1', lineHeight: 1.6 }}>
+            Real-time subscriber churn radar, serialized refurbishment tracking, and executive BI metrics for the Rentora marketplace.
+          </p>
         </div>
+      </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <Link
-            to="/"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-              color: '#cbd5e1',
-              textDecoration: 'none',
-              fontSize: '0.84rem',
-              fontWeight: 600,
-              padding: '0.45rem 0.9rem',
-              borderRadius: '8px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              transition: 'all 0.15s ease'
-            }}
-            onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; e.currentTarget.style.color = '#ffffff'; }}
-            onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.color = '#cbd5e1'; }}
-          >
-            <ArrowLeft size={14} />
-            <span>Storefront</span>
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
-
-      {/* Main Login Card Container */}
-      <main style={{
-        flex: 1,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem 1.25rem',
-        position: 'relative',
-        zIndex: 10
+      {/* Right side - Unified Form */}
+      <div style={{ 
+        flex: '1', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        padding: '2.5rem 1.5rem', 
+        background: 'var(--surface-color, white)' 
       }}>
-        <div style={{
-          width: '100%',
-          maxWidth: '440px',
-          background: 'rgba(17, 24, 39, 0.75)',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          borderRadius: '24px',
-          padding: '2.5rem 2.25rem',
-          boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.65), 0 0 40px rgba(124, 58, 237, 0.15)',
-          backdropFilter: 'blur(20px)',
-          animation: 'fadeIn 0.25s ease-out'
-        }}>
-          {/* Badge & Lock Icon */}
-          <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
-            <div style={{
-              width: '58px',
-              height: '58px',
-              borderRadius: '16px',
-              background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(99, 102, 241, 0.15) 100%)',
-              border: '1.5px solid rgba(167, 139, 250, 0.4)',
-              display: 'flex',
-              alignItems: 'center',
+        <div className="animate-fade-in" style={{ width: '100%', maxWidth: '420px' }}>
+          
+          {/* Brand Header */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '2.5rem', justifyContent: 'center' }}>
+            <div style={{ 
+              background: 'var(--primary-color)', 
+              padding: '0.5rem', 
+              borderRadius: '0.6rem', 
+              display: 'flex', 
+              alignItems: 'center', 
               justifyContent: 'center',
-              margin: '0 auto 1.15rem',
-              boxShadow: '0 8px 24px rgba(124, 58, 237, 0.25)'
+              boxShadow: '0 4px 12px rgba(226, 55, 68, 0.3)'
             }}>
-              <ShieldCheck size={28} color="#c084fc" />
+              <ShieldCheck size={22} color="white" />
             </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-color, #0f172a)', letterSpacing: '-0.02em' }}>
+                  Rentora
+                </span>
+                <span style={{ 
+                  background: 'rgba(226, 55, 68, 0.12)', 
+                  color: 'var(--primary-color)', 
+                  fontSize: '0.72rem', 
+                  fontWeight: 800, 
+                  padding: '0.15rem 0.5rem', 
+                  borderRadius: '0.35rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  Admin
+                </span>
+              </div>
+            </div>
+          </div>
 
-            <span style={{
-              background: 'rgba(124, 58, 237, 0.18)',
-              color: '#c084fc',
-              border: '1px solid rgba(167, 139, 250, 0.3)',
-              fontSize: '0.72rem',
-              fontWeight: 800,
-              padding: '0.2rem 0.7rem',
-              borderRadius: '999px',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              display: 'inline-block',
-              marginBottom: '0.65rem'
-            }}>
-              Internal Staff Only
-            </span>
-
-            <h1 style={{
-              fontSize: '1.55rem',
-              fontWeight: 800,
-              color: '#ffffff',
-              margin: '0 0 0.45rem',
-              letterSpacing: '-0.02em'
-            }}>
-              Operations Console Login
+          <div style={{ marginBottom: '2rem' }}>
+            <h1 style={{ fontSize: '1.85rem', fontWeight: 800, marginBottom: '0.45rem', color: 'var(--text-color, #0f172a)' }}>
+              Staff Command Center
             </h1>
-            <p style={{
-              color: '#94a3b8',
-              fontSize: '0.86rem',
-              lineHeight: 1.45,
-              margin: 0
-            }}>
-              Authorized administrators manage fleet telemetry, KYC verification audits, and real-time reverse logistics.
+            <p style={{ color: 'var(--text-secondary, #64748b)', fontSize: '0.925rem', lineHeight: 1.5, margin: 0 }}>
+              Authenticate with administrative credentials to access operational telemetry and dispatch controls.
             </p>
           </div>
 
-          {/* Error Banner */}
           {error && (
-            <div style={{
-              background: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid rgba(239, 68, 68, 0.35)',
-              borderRadius: '12px',
-              padding: '0.75rem 1rem',
-              marginBottom: '1.25rem',
+            <div style={{ 
+              background: 'rgba(239, 68, 68, 0.1)', 
+              borderLeft: '4px solid var(--primary-color)', 
+              padding: '0.85rem 1rem', 
+              borderRadius: '0.5rem', 
+              marginBottom: '1.5rem', 
+              color: '#dc2626', 
+              fontSize: '0.875rem',
               display: 'flex',
-              alignItems: 'flex-start',
-              gap: '0.65rem',
-              fontSize: '0.825rem',
-              color: '#fca5a5',
-              lineHeight: 1.4
+              alignItems: 'center',
+              gap: '0.5rem'
             }}>
-              <AlertCircle size={16} color="#ef4444" style={{ flexShrink: 0, marginTop: '2px' }} />
-              <div>{error}</div>
+              <AlertCircle size={16} style={{ flexShrink: 0 }} />
+              <span>{error}</span>
             </div>
           )}
 
-          {/* Login Form */}
-          <form onSubmit={handleAdminLogin}>
-            <div style={{ marginBottom: '1.25rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                color: '#cbd5e1',
-                marginBottom: '0.45rem'
-              }}>
-                Administrator Username / Email
+          <form onSubmit={handleAdminLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div>
+              <label className="input-label" style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-color)' }}>
+                Staff Username or Email
               </label>
               <div style={{ position: 'relative' }}>
-                <div style={{
-                  position: 'absolute',
-                  left: '1rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  pointerEvents: 'none',
-                  color: '#64748b'
-                }}>
-                  <User size={16} />
-                </div>
-                <input
-                  type="text"
+                <User style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', width: '1.15rem', height: '1.15rem' }} />
+                <input 
+                  type="text" 
+                  className="input-field" 
+                  placeholder="Enter staff identifier" 
                   value={identifier}
                   onChange={(e) => { setIdentifier(e.target.value); setError(''); }}
-                  placeholder="admin or admin@rentora.com"
-                  autoFocus
-                  required
-                  style={{
+                  style={{ 
                     width: '100%',
-                    padding: '0.8rem 1rem 0.8rem 2.65rem',
-                    borderRadius: '12px',
-                    background: 'rgba(15, 23, 42, 0.7)',
-                    border: '1.5px solid rgba(255, 255, 255, 0.12)',
-                    color: '#ffffff',
+                    padding: '0.75rem 1rem 0.75rem 2.75rem',
+                    borderRadius: '0.6rem',
+                    border: '1.5px solid var(--border-color, #cbd5e1)',
+                    background: 'var(--card-bg, #ffffff)',
+                    color: 'var(--text-color, #0f172a)',
                     fontSize: '0.925rem',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                    transition: 'all 0.15s ease'
+                    boxSizing: 'border-box'
                   }}
-                  onFocus={(e) => { e.target.style.borderColor = '#a78bfa'; e.target.style.boxShadow = '0 0 0 3px rgba(167, 139, 250, 0.2)'; }}
-                  onBlur={(e) => { e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'; e.target.style.boxShadow = 'none'; }}
+                  autoFocus
+                  required 
                 />
               </div>
             </div>
 
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                color: '#cbd5e1',
-                marginBottom: '0.45rem'
-              }}>
-                Master Passcode
+            <div>
+              <label className="input-label" style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-color)' }}>
+                Master Access Passcode
               </label>
               <div style={{ position: 'relative' }}>
-                <div style={{
-                  position: 'absolute',
-                  left: '1rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  pointerEvents: 'none',
-                  color: '#64748b'
-                }}>
-                  <KeyRound size={16} />
-                </div>
-                <input
-                  type="password"
+                <KeyRound style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', width: '1.15rem', height: '1.15rem' }} />
+                <input 
+                  type="password" 
+                  className="input-field" 
+                  placeholder="Enter your security passcode" 
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setError(''); }}
-                  placeholder="••••••••"
-                  required
-                  style={{
+                  style={{ 
                     width: '100%',
-                    padding: '0.8rem 1rem 0.8rem 2.65rem',
-                    borderRadius: '12px',
-                    background: 'rgba(15, 23, 42, 0.7)',
-                    border: '1.5px solid rgba(255, 255, 255, 0.12)',
-                    color: '#ffffff',
+                    padding: '0.75rem 1rem 0.75rem 2.75rem',
+                    borderRadius: '0.6rem',
+                    border: '1.5px solid var(--border-color, #cbd5e1)',
+                    background: 'var(--card-bg, #ffffff)',
+                    color: 'var(--text-color, #0f172a)',
                     fontSize: '0.925rem',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                    transition: 'all 0.15s ease'
+                    boxSizing: 'border-box'
                   }}
-                  onFocus={(e) => { e.target.style.borderColor = '#a78bfa'; e.target.style.boxShadow = '0 0 0 3px rgba(167, 139, 250, 0.2)'; }}
-                  onBlur={(e) => { e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'; e.target.style.boxShadow = 'none'; }}
+                  required 
                 />
               </div>
             </div>
 
-            {/* Quick Demo Pill Helper */}
+            {/* Quick Demo Credentials Autofill Pill */}
             <div style={{
-              background: 'rgba(124, 58, 237, 0.1)',
-              border: '1px dashed rgba(167, 139, 250, 0.3)',
-              borderRadius: '10px',
-              padding: '0.6rem 0.85rem',
-              marginBottom: '1.5rem',
+              background: 'var(--subnav-bg, #f8fafc)',
+              border: '1px dashed var(--border-color, #cbd5e1)',
+              borderRadius: '0.6rem',
+              padding: '0.65rem 0.85rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              fontSize: '0.78rem'
+              fontSize: '0.8rem',
+              color: 'var(--text-secondary)'
             }}>
-              <span style={{ color: '#cbd5e1' }}>
-                🔑 Pre-Seeded Admin: <code style={{ color: '#c084fc', fontWeight: 800 }}>admin</code> / <code style={{ color: '#c084fc', fontWeight: 800 }}>admin123</code>
+              <span>
+                🔑 Demo Access: <strong style={{ color: 'var(--text-color)' }}>admin</strong> / <strong style={{ color: 'var(--text-color)' }}>admin123</strong>
               </span>
               <button
                 type="button"
                 onClick={() => { setIdentifier('admin'); setPassword('admin123'); setError(''); }}
                 style={{
-                  background: 'rgba(167, 139, 250, 0.2)',
+                  background: 'var(--primary-color)',
+                  color: 'white',
                   border: 'none',
-                  borderRadius: '6px',
-                  color: '#e9d5ff',
-                  fontSize: '0.72rem',
+                  borderRadius: '0.35rem',
+                  fontSize: '0.75rem',
                   fontWeight: 700,
-                  padding: '0.2rem 0.55rem',
+                  padding: '0.25rem 0.6rem',
                   cursor: 'pointer'
                 }}
               >
@@ -369,17 +308,18 @@ export default function AdminLoginPage() {
               </button>
             </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              style={{
-                width: '100%',
+            <button 
+              type="submit" 
+              className="btn-primary" 
+              disabled={loading} 
+              style={{ 
+                width: '100%', 
+                marginTop: '0.5rem', 
                 padding: '0.85rem',
-                borderRadius: '12px',
+                borderRadius: '0.6rem',
+                background: 'var(--primary-color)',
+                color: 'white',
                 border: 'none',
-                background: 'linear-gradient(135deg, #7c3aed 0%, #6366f1 100%)',
-                color: '#ffffff',
                 fontWeight: 700,
                 fontSize: '0.95rem',
                 cursor: loading ? 'not-allowed' : 'pointer',
@@ -387,14 +327,13 @@ export default function AdminLoginPage() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '0.5rem',
-                boxShadow: '0 4px 16px rgba(124, 58, 237, 0.4)',
-                transition: 'all 0.15s ease'
+                boxShadow: '0 4px 14px rgba(226, 55, 68, 0.35)'
               }}
             >
               {loading ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />
-                  <span>Authenticating Privileges...</span>
+                  <span>Verifying Privileges...</span>
                 </>
               ) : (
                 <>
@@ -407,17 +346,18 @@ export default function AdminLoginPage() {
 
           {/* Security Disclaimer */}
           <div style={{
-            marginTop: '1.5rem',
+            marginTop: '2rem',
             paddingTop: '1.25rem',
-            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            borderTop: '1px solid var(--border-color, #e2e8f0)',
             textAlign: 'center',
-            fontSize: '0.75rem',
-            color: '#64748b'
+            fontSize: '0.78rem',
+            color: 'var(--text-secondary, #64748b)',
+            lineHeight: 1.5
           }}>
-            🔒 This console is protected by Rentora Identity Governance. All administrative access attempts are logged for security audits.
+            🔒 Protected by Rentora RBAC Security Middleware. Unauthorized access attempts are monitored and recorded.
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

@@ -6,7 +6,11 @@ import pandas as pd
 import warnings
 warnings.filterwarnings('ignore')
 import joblib
-import shap
+try:
+    import shap
+    HAS_SHAP = True
+except ImportError:
+    HAS_SHAP = False
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(CURRENT_DIR)
@@ -48,7 +52,7 @@ def run_etl_and_predict_churn():
     # 1. Initialize DB & Model
     db = get_mongo_db()
     model, feature_cols = load_or_train_churn_model()
-    explainer = shap.TreeExplainer(model)
+    explainer = shap.TreeExplainer(model) if HAS_SHAP else None
     
     mongo_users = list(db.users.find({}))
     print(f"Extracted {len(mongo_users)} users from MongoDB operational collection.")
@@ -138,25 +142,43 @@ def run_etl_and_predict_churn():
             
         calibrated_prob = round(float(np.clip(raw_prob * risk_multiplier, 0.05, 0.95)), 4)
         
-        # Genuine SHAP feature attribution
-        shap_vals = explainer.shap_values(X_user)
-        if isinstance(shap_vals, list):
-            row_shap = shap_vals[1]
-        else:
-            row_shap = shap_vals
+        # Genuine SHAP feature attribution (with heuristic fallback if shap is not installed)
+        if HAS_SHAP and explainer is not None:
+            shap_vals = explainer.shap_values(X_user)
+            if isinstance(shap_vals, list):
+                row_shap = shap_vals[1]
+            else:
+                row_shap = shap_vals
+                
+            if len(np.shape(row_shap)) == 2:
+                row_shap = row_shap[0]
+                
+            top_feature_idx = int(np.argmax(row_shap))
+            top_feature_col = feature_cols[top_feature_idx]
+            top_feature_shap = float(row_shap[top_feature_idx])
+            friendly_label = FEATURE_LABELS.get(top_feature_col, top_feature_col)
             
-        if len(np.shape(row_shap)) == 2:
-            row_shap = row_shap[0]
-            
-        top_feature_idx = int(np.argmax(row_shap))
-        top_feature_col = feature_cols[top_feature_idx]
-        top_feature_shap = float(row_shap[top_feature_idx])
-        friendly_label = FEATURE_LABELS.get(top_feature_col, top_feature_col)
-        
-        if calibrated_prob > 0.5:
-            shap_reason = f"{friendly_label} contributed +{abs(top_feature_shap)*100:.1f}% to churn risk."
+            if calibrated_prob > 0.5:
+                shap_reason = f"{friendly_label} contributed +{abs(top_feature_shap)*100:.1f}% to churn risk."
+            else:
+                shap_reason = "Stable behavior: consistent account tenure and timely payments maintain high retention."
         else:
-            shap_reason = "Stable behavior: consistent account tenure and timely payments maintain high retention."
+            # Fallback based on behavioral heuristic
+            if days_inactive > 20:
+                top_feature_col = 'days_inactive'
+            elif late_payments > 0:
+                top_feature_col = 'late_payments'
+            elif cart_abandonment > 1:
+                top_feature_col = 'cart_abandonment'
+            elif tenure_months < 3:
+                top_feature_col = 'tenure_months'
+            else:
+                top_feature_col = 'avg_rating'
+            friendly_label = FEATURE_LABELS.get(top_feature_col, top_feature_col)
+            if calibrated_prob > 0.5:
+                shap_reason = f"{friendly_label} identified as key driver for elevated churn risk."
+            else:
+                shap_reason = "Stable behavior: consistent account tenure and timely payments maintain high retention."
             
         # 2. Update MongoDB collection 'user_churn_scores'
         db.user_churn_scores.update_one(
