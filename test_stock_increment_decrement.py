@@ -55,8 +55,10 @@ def test_stock_flow():
 
     # Complete KYC verification (Mandatory Security Gateway)
     r_kyc = requests.post(f"{BASE_URL}/kyc/", json={
-        "id_proof": "AADHAAR_STOCK_TEST",
-        "address_proof": "PASSPORT_STOCK_TEST"
+        "full_name": cust_username,
+        "id_proof": "AADHAAR_STOCK_TEST.png",
+        "address_proof": "PASSPORT_STOCK_TEST.png",
+        "ocr_audit": {"verified": True}
     }, headers=auth_headers)
     assert r_kyc.status_code == 200, f"KYC failed: {r_kyc.text}"
     print(f"[STEP 2b] Customer KYC verified successfully")

@@ -1,7 +1,11 @@
 const express = require('express');
 const { getDb } = require('../db');
+const { authenticateJWT, requireRole } = require('../auth');
 
 const router = express.Router();
+
+// Strict Admin RBAC Enforcement: All administrative operations require authentication and admin role
+router.use('/admin', authenticateJWT, requireRole('admin'));
 
 // GET /api/admin/dashboard/
 router.get('/admin/dashboard/', async (req, res) => {

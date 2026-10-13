@@ -10,13 +10,17 @@ import datetime
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingRegressor
-from sklearn.metrics import accuracy_score, roc_auc_score, f1_score, classification_report
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, roc_auc_score, f1_score
+
+import joblib
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATASET_PATH = os.path.join(CURRENT_DIR, "appliance_sensor_dataset.csv")
+MODEL_PATH = os.path.join(CURRENT_DIR, "maintenance_rf_model.joblib")
+AI4I_URL = "https://raw.githubusercontent.com/derekc22/ai4i2020/master/ai4i2020.csv"
 
 APPLIANCE_COMPONENTS = {
     "Washing Machine": ["Motor Bearing", "Drain Pump", "Inverter PCB", "Suspension Damper"],
@@ -27,20 +31,85 @@ APPLIANCE_COMPONENTS = {
     "Dishwasher": ["Circulation Impeller", "Heating Element", "Flow Meter", "Solenoid Valve"]
 }
 
+def fetch_and_map_real_ai4i_dataset(url=AI4I_URL):
+    """
+    Fetches genuine UCI AI4I 2020 Predictive Maintenance dataset (10,000 industrial sensor rows)
+    and maps physical temperature, torque, vibration and failure modes into smart household appliances.
+    """
+    try:
+        print(f"[Dataset] Fetching genuine machine sensor failure dataset from: {url}")
+        raw = pd.read_csv(url)
+
+        type_map = {
+            'L': ['Washing Machine', 'Refrigerator'],
+            'M': ['Air Conditioner', 'Dishwasher'],
+            'H': ['Microwave', 'Water Purifier']
+        }
+
+        appliance_types = []
+        components = []
+        for idx, row in raw.iterrows():
+            opts = type_map.get(row['Type'], ['Washing Machine', 'Refrigerator'])
+            app_type = opts[idx % len(opts)]
+            appliance_types.append(app_type)
+            
+            # Map fault modes from real AI4I failures
+            if row['HDF'] == 1:
+                comp = 'Condenser Fan' if 'Refrigerator' in app_type else 'Compressor'
+            elif row['PWF'] == 1:
+                comp = 'Inverter PCB' if 'Washing' in app_type else 'Capacitor'
+            elif row['OSF'] == 1:
+                comp = 'Suspension Damper' if 'Washing' in app_type else 'Motor Bearing'
+            elif row['TWF'] == 1:
+                comp = 'Drain Pump' if 'Washing' in app_type else 'Booster Pump'
+            elif row['RNF'] == 1:
+                comp = 'Control Relay'
+            else:
+                comp = 'Standard Component'
+            components.append(comp)
+
+        ambient_temp_c = (raw['Air temperature [K]'] - 273.15).round(1)
+        motor_temp_c = (raw['Process temperature [K]'] - 273.15).round(1)
+        operating_hours = (raw['Tool wear [min]'] * 15.0).clip(50, 4500).round(1)
+        vibration_amplitude = (raw['Rotational speed [rpm]'] / 400.0).round(2)
+        power_fluctuation_pct = (raw['Torque [Nm]'] / 3.0).round(1)
+        daily_energy_kwh = (raw['Torque [Nm]'] * raw['Rotational speed [rpm]'] / 80000.0).round(2)
+        duty_cycle_pct = ((raw['Rotational speed [rpm]'] - 1100) / 1700 * 100).clip(10, 95).round(1)
+        days_since_service = (raw['Tool wear [min]'] * 1.5).clip(10, 365).round(0).astype(int)
+
+        failure_30d = raw['Machine failure']
+        fail_prob = ((raw['Process temperature [K]'] - 305) / 10 * 0.3 + (raw['Tool wear [min]'] / 240) * 0.4 + failure_30d * 0.4).clip(0.05, 0.98).round(4)
+        rul_days = (250 - raw['Tool wear [min]']).clip(5, 240).astype(int)
+
+        df_iot = pd.DataFrame({
+            'device_id': [f'IOT_{p}' for p in raw['Product ID']],
+            'appliance_type': appliance_types,
+            'operating_hours': operating_hours,
+            'motor_temp_c': motor_temp_c,
+            'vibration_amplitude': vibration_amplitude,
+            'power_fluctuation_pct': power_fluctuation_pct,
+            'daily_energy_kwh': daily_energy_kwh,
+            'duty_cycle_pct': duty_cycle_pct,
+            'days_since_service': days_since_service,
+            'ambient_temp_c': ambient_temp_c,
+            'failure_probability': fail_prob,
+            'failure_30d': failure_30d,
+            'rul_days': rul_days,
+            'at_risk_component': components
+        })
+
+        df_iot.to_csv(DATASET_PATH, index=False)
+        print(f"[Dataset] Saved {len(df_iot)} genuine records to: {DATASET_PATH}")
+        return df_iot
+    except Exception as e:
+        print(f"[Dataset] Failed to download AI4I dataset ({e}). Generating fallback distribution...")
+        return generate_telemetry_dataset()
+
 def generate_telemetry_dataset(n_samples=2000, random_state=42):
     """
-    Generates realistic industrial IoT telemetry data for smart household appliances:
-    - operating_hours: Cumulative run time
-    - motor_temp_c: Operating core temperature in Celsius
-    - vibration_amplitude: Peak vibration in mm/s
-    - power_fluctuation_pct: Variance in rated power draw
-    - daily_energy_kwh: Power consumption in kWh
-    - duty_cycle_pct: Active running time vs standby time
-    - days_since_service: Days elapsed since last maintenance
-    - ambient_temp_c: Surrounding ambient room temperature
+    Fallback generator if offline.
     """
     np.random.seed(random_state)
-    
     appliance_types = list(APPLIANCE_COMPONENTS.keys())
     categories = np.random.choice(appliance_types, size=n_samples)
     
@@ -53,7 +122,6 @@ def generate_telemetry_dataset(n_samples=2000, random_state=42):
     days_since_service = np.random.randint(10, 400, size=n_samples)
     ambient_temp_c = np.random.normal(loc=29.0, scale=5.0, size=n_samples).clip(16.0, 46.0)
     
-    # Fault index calculation based on physical degradation laws
     thermal_stress = (motor_temp_c - 45.0) / 35.0
     mechanical_wear = (vibration_amplitude - 2.0) / 8.0
     electrical_instability = power_fluctuation_pct / 20.0
@@ -67,19 +135,14 @@ def generate_telemetry_dataset(n_samples=2000, random_state=42):
         0.14 * age_wear +
         0.10 * service_lag
     )
-    
-    # Sigmoid to convert to failure probability within next 30 days
     prob = 1.0 / (1.0 + np.exp(-(degradation_score * 4.5 - 2.2)))
     failure_label = (prob > 0.50).astype(int)
-    
-    # Remaining useful life (days)
     rul_days = np.clip(np.round((1.0 - prob) * 120 + np.random.normal(0, 8, size=n_samples)), 3, 180).astype(int)
     
     records = []
     for i in range(n_samples):
         cat = categories[i]
         comp_list = APPLIANCE_COMPONENTS[cat]
-        # Component with highest fault likelihood
         comp = comp_list[i % len(comp_list)]
         
         records.append({
@@ -107,7 +170,7 @@ def generate_telemetry_dataset(n_samples=2000, random_state=42):
 def train_and_sync_models():
     """Trains the predictive maintenance classifier and syncs to MongoDB."""
     if not os.path.exists(DATASET_PATH):
-        df = generate_telemetry_dataset()
+        df = fetch_and_map_real_ai4i_dataset()
     else:
         df = pd.read_csv(DATASET_PATH)
         
@@ -122,11 +185,11 @@ def train_and_sync_models():
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
     
-    clf = RandomForestClassifier(n_estimators=100, max_depth=8, random_state=42, n_jobs=-1)
+    clf = RandomForestClassifier(n_estimators=100, max_depth=8, class_weight='balanced', random_state=42, n_jobs=-1)
     clf.fit(X_train, y_train)
     
     y_pred = clf.predict(X_test)
-    y_prob = clf.predict_proba(X_test)[:, 1]
+    y_prob = np.asarray(clf.predict_proba(X_test))[:, 1]
     
     acc = accuracy_score(y_test, y_pred)
     roc = roc_auc_score(y_test, y_prob)
@@ -144,6 +207,14 @@ def train_and_sync_models():
     print("Feature Importances:")
     for feat, imp in sorted(importances.items(), key=lambda x: x[1], reverse=True):
         print(f"  - {feat:24s}: {imp*100:.1f}%")
+        
+    # Persist model
+    joblib.dump({
+        'model': clf,
+        'features': features,
+        'metrics': {'accuracy': acc, 'roc_auc': roc, 'f1': f1}
+    }, MODEL_PATH)
+    print(f"[Model Artifact] Serialized predictive maintenance model to: {MODEL_PATH}")
         
     # Attempt to sync precomputed telemetry insights into MongoDB
     try:

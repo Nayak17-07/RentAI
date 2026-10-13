@@ -2,11 +2,13 @@ import os
 import jwt
 from datetime import datetime, timedelta
 from pathlib import Path
-from dotenv import load_dotenv
-
-env_path = Path(__file__).resolve().parent.parent / 'server' / '.env'
-if env_path.exists():
-    load_dotenv(env_path)
+try:
+    from dotenv import load_dotenv
+    env_path = Path(__file__).resolve().parent.parent / 'server' / '.env'
+    if env_path.exists():
+        load_dotenv(env_path)
+except ImportError:
+    pass
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'rentora-secret-key-high-performance-jwt-token-984210a')
 

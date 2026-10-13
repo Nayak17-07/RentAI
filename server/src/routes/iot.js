@@ -59,7 +59,7 @@ router.get('/iot/telemetry/:id', async (req, res) => {
 });
 
 // POST /api/iot/controls/:id - Remote controls (Eco Mode, Self-Test, Remote Lock)
-router.patch('/iot/controls/:id', async (req, res) => {
+router.patch('/iot/controls/:id', authenticateJWT, async (req, res) => {
   try {
     const db = getDb();
     const targetId = req.params.id;
@@ -69,6 +69,20 @@ router.patch('/iot/controls/:id', async (req, res) => {
     const rental = await db.collection('rentals').findOne({ _id: targetId });
     if (rental && rental.appliance_id) {
       applianceId = rental.appliance_id;
+    }
+
+    // Permission enforcement: REMOTE_LOCK and REMOTE_UNLOCK require admin role
+    if (['REMOTE_LOCK', 'REMOTE_UNLOCK'].includes(action)) {
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Forbidden: Only system administrators can execute remote firmware lock/unlock.' });
+      }
+    } else {
+      // Telemetry toggles (Eco, Self-Test) require active renter, appliance owner, or admin
+      const isRenter = rental && rental.user_id === req.user.id;
+      const isAdminOrOwner = ['admin', 'owner'].includes(req.user.role);
+      if (!isRenter && !isAdminOrOwner) {
+        return res.status(403).json({ error: 'Forbidden: You do not have permission to control this appliance.' });
+      }
     }
 
     const current = await db.collection('iot_device_telemetry').findOne({ appliance_id: applianceId });

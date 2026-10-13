@@ -42,6 +42,24 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
       });
     }
 
+    // Idempotency Protection: Prevent duplicate charges on network retry or double clicks
+    const idempotencyKey = req.headers['idempotency-key'] || req.body?.idempotency_key;
+    if (idempotencyKey) {
+      const existingOrder = await db.collection('payments').findOne({
+        user_id: userId,
+        idempotency_key: String(idempotencyKey).trim()
+      });
+      if (existingOrder) {
+        return res.status(200).json({
+          success: 'Order already processed (Idempotent replay)',
+          transaction_id: existingOrder.transaction_id,
+          invoice_number: existingOrder.invoice_number,
+          total_paid: existingOrder.amount_total,
+          rentals: existingOrder.items_summary || []
+        });
+      }
+    }
+
     const transactionId = `TXN_${crypto.randomBytes(5).toString('hex').toUpperCase()}`;
     const dateStr = new Date().toISOString().slice(0, 7).replace('-', '');
     const invoiceNumber = `INV-${dateStr}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
@@ -233,26 +251,36 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
         delivery_tracking: initialTracking
       });
 
-      // Decrease stock atomically
+      // Decrease stock atomically with > 0 guard to prevent negative stock and overselling
       const appSelector = app
         ? { $or: [{ _id: app._id }, { appliance_id: app.appliance_id }, { appliance_id: item.appliance_id }, { _id: item.appliance_id }] }
         : { $or: [{ appliance_id: item.appliance_id }, { _id: item.appliance_id }] };
 
       const updateResult = await db.collection('appliances').findOneAndUpdate(
-        appSelector,
+        {
+          $and: [
+            appSelector,
+            { stock_quantity: { $gt: 0 } }
+          ]
+        },
         { $inc: { stock_quantity: -1 }, $set: { updated_at: new Date() } },
         { returnDocument: 'after' }
       );
 
-      // Guard against negative stock
-      if (updateResult && updateResult.stock_quantity < 0) {
-        await db.collection('appliances').updateOne(
-          appSelector,
-          { $set: { stock_quantity: 0 } }
-        );
+      if (!updateResult) {
+        // Rollback already reserved stock for preceding cart items
+        for (const reserved of rentals) {
+          await db.collection('appliances').updateOne(
+            { $or: [{ appliance_id: reserved.appliance_id }, { _id: reserved.appliance_id }] },
+            { $inc: { stock_quantity: 1 } }
+          );
+        }
+        return res.status(400).json({
+          error: `"${rentalName}" has just sold out. Please adjust your cart and try again.`
+        });
       }
 
-      const newStock = updateResult ? Math.max(0, updateResult.stock_quantity) : 0;
+      const newStock = Math.max(0, updateResult.stock_quantity);
       try {
         const { broadcastEvent } = require('../socket');
         broadcastEvent('catalog:stock_changed', {
@@ -304,6 +332,7 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
       delivery_address: finalAddress,
       status: paymentStatus,
       payment_gateway: paymentGateway,
+      idempotency_key: idempotencyKey ? String(idempotencyKey).trim() : null,
       created_at: now,
       rental_ids: rentals.map(r => r._id),
       items_summary: itemsSummary

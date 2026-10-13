@@ -1,6 +1,7 @@
 const express = require('express');
 const crypto = require('crypto');
 const { getDb } = require('../db');
+const { authenticateJWT, requireRole } = require('../auth');
 
 const router = express.Router();
 
@@ -21,11 +22,11 @@ router.get(['/appliances/', '/appliances/:appliance_id/'], async (req, res) => {
       return res.status(200).json(app);
     }
 
-    const { city, search, all_stock } = req.query;
+    const { city, search, all_stock, in_stock_only } = req.query;
     const includeAllStock = String(all_stock).toLowerCase() === 'true';
 
     const query = {};
-    if (String(req.query.in_stock_only).toLowerCase() === 'true') {
+    if (!includeAllStock || String(in_stock_only).toLowerCase() === 'true') {
       query.stock_quantity = { $gt: 0 };
     }
 
@@ -60,7 +61,7 @@ router.get(['/appliances/', '/appliances/:appliance_id/'], async (req, res) => {
 });
 
 // POST /api/appliances/ (Create appliance)
-router.post('/appliances/', async (req, res) => {
+router.post('/appliances/', authenticateJWT, requireRole('admin', 'owner'), async (req, res) => {
   try {
     const db = getDb();
     const data = req.body;
@@ -122,7 +123,7 @@ router.post('/appliances/', async (req, res) => {
 });
 
 // PUT /api/appliances/ or /api/appliances/:appliance_id/ (Update appliance)
-router.put(['/appliances/', '/appliances/:appliance_id/'], async (req, res) => {
+router.put(['/appliances/', '/appliances/:appliance_id/'], authenticateJWT, requireRole('admin', 'owner'), async (req, res) => {
   try {
     const db = getDb();
     const appId = req.params.appliance_id || req.body.appliance_id;
@@ -179,7 +180,7 @@ router.put(['/appliances/', '/appliances/:appliance_id/'], async (req, res) => {
 });
 
 // PATCH /api/appliances/:appliance_id/stock-adjust (Quick Admin Stock Stepper)
-router.patch('/appliances/:appliance_id/stock-adjust', async (req, res) => {
+router.patch('/appliances/:appliance_id/stock-adjust', authenticateJWT, requireRole('admin', 'owner'), async (req, res) => {
   try {
     const db = getDb();
     const appId = req.params.appliance_id;
@@ -215,7 +216,7 @@ router.patch('/appliances/:appliance_id/stock-adjust', async (req, res) => {
 });
 
 // DELETE /api/appliances/ or /api/appliances/:appliance_id/ (Delete appliance)
-router.delete(['/appliances/', '/appliances/:appliance_id/'], async (req, res) => {
+router.delete(['/appliances/', '/appliances/:appliance_id/'], authenticateJWT, requireRole('admin'), async (req, res) => {
   try {
     const db = getDb();
     const appId = req.params.appliance_id || req.body.appliance_id;

@@ -10,7 +10,7 @@ const router = express.Router();
 // POST /api/auth/send-signup-otp/ (Real-Time Gmail OTP Request for Registration)
 router.post('/auth/send-signup-otp/', async (req, res) => {
   try {
-    const { username, email, password, phone_num, role } = req.body;
+    const { username, email, password, phone_num } = req.body;
     const db = getDb();
 
     if (!username || !email || !password) {
@@ -148,7 +148,7 @@ router.post('/auth/verify-signup-otp/', async (req, res) => {
 // POST /api/users/ (Legacy direct registration fallback)
 router.post('/users/', async (req, res) => {
   try {
-    const { username, email, password, phone_num, role } = req.body;
+    const { username, email, password, phone_num } = req.body;
     const db = getDb();
 
     if (!username || !email || !password) {

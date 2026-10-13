@@ -46,6 +46,18 @@ def run_tests():
     assert res.status_code == 200, f"Password reset confirm failed: {res.text}"
     print(f"[OK] 2. Password Reset Confirm: Password updated in MongoDB with PBKDF2 hashing")
 
+    # Admin Auth Credentials for Operations
+    admin_id = str(uuid.uuid4())
+    db.users.insert_one({
+        "_id": admin_id,
+        "username": f"admin_{admin_id[:6]}",
+        "email": f"admin_{admin_id[:6]}@rentora.com",
+        "role": "admin",
+        "created_at": datetime.datetime.utcnow()
+    })
+    admin_tokens = generate_tokens(admin_id)
+    admin_auth = {"Authorization": f"Bearer {admin_tokens['access']}"}
+
     # 2. Module 2: Appliance Management (Admin CRUD)
     new_app_name = f"Test Smart Refrigerator {uuid.uuid4().hex[:4]}"
     res = requests.post(f"{BASE_URL}/appliances/", json={
@@ -60,7 +72,7 @@ def run_tests():
         "pricing_12": 600,
         "description": "Double door inverter frost-free smart refrigerator.",
         "image_url": "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5"
-    })
+    }, headers=admin_auth)
     assert res.status_code == 201, f"Appliance creation failed: {res.text}"
     created_app = res.json()["appliance"]
     created_app_id = created_app["appliance_id"]
@@ -70,7 +82,7 @@ def run_tests():
     res = requests.put(f"{BASE_URL}/appliances/{created_app_id}/", json={
         "monthly_price": 799,
         "stock_quantity": 12
-    })
+    }, headers=admin_auth)
     assert res.status_code == 200 and res.json()["appliance"]["monthly_price"] == 799, f"Update failed: {res.text}"
     print(f"[OK] 4. Module 2 Admin Update Appliance: Price updated to Rs. 799, Stock to 12")
 
@@ -83,8 +95,13 @@ def run_tests():
     assert res.status_code in [200, 201]
     
     # KYC
-    res = requests.post(f"{BASE_URL}/kyc/", json={"id_proof": "AADHAAR_9988", "address_proof": "PASSPORT_9988"}, headers=auth_header)
-    assert res.status_code == 200
+    res = requests.post(f"{BASE_URL}/kyc/", json={
+        "full_name": f"user_{test_user_id[:6]}",
+        "id_proof": "AADHAAR_9988.png",
+        "address_proof": "PASSPORT_9988.png",
+        "ocr_audit": {"verified": True}
+    }, headers=auth_header)
+    assert res.status_code == 200 and res.json().get("status") == "approved"
 
     # Checkout with COD
     res = requests.post(f"{BASE_URL}/checkout/", json={"payment_method": "CASH_ON_DELIVERY"}, headers=auth_header)
@@ -115,12 +132,12 @@ def run_tests():
     print(f"[OK] 6. Module 6 Return & Damage Waiver: Minor damage covered by Rs. 10,000 waiver; 100% deposit (Rs. {ret_data['deposit_refunded']}) refunded")
 
     # 5. Module 7: Admin User Management
-    res = requests.get(f"{BASE_URL}/admin/users/")
+    res = requests.get(f"{BASE_URL}/admin/users/", headers=admin_auth)
     assert res.status_code == 200 and len(res.json()) > 0
     print(f"[OK] 7. Module 7 Admin Users: Retrieved {len(res.json())} users with active rental counts")
 
     # 6. Module 7: Admin Rentals Approval & Status Management
-    res = requests.get(f"{BASE_URL}/admin/rentals/")
+    res = requests.get(f"{BASE_URL}/admin/rentals/", headers=admin_auth)
     assert res.status_code == 200 and len(res.json()) > 0
     print(f"[OK] 8. Module 7 Admin Rentals: Retrieved {len(res.json())} rental orders across all customers")
 
@@ -130,7 +147,7 @@ def run_tests():
         "rating": 5,
         "comment": "Amazing cooling, energy bill barely went up! Highly recommended.",
         "username": "Test Reviewer"
-    })
+    }, headers=auth_header)
     assert res.status_code == 201, f"Feedback submission failed: {res.text}"
     
     res = requests.get(f"{BASE_URL}/feedback/?appliance_id={created_app_id}")
@@ -144,7 +161,7 @@ def run_tests():
         "description": "Please deliver after 5 PM on weekdays.",
         "customer_name": "Test Customer",
         "customer_email": test_email
-    })
+    }, headers=auth_header)
     assert res.status_code == 201, f"Complaint creation failed: {res.text}"
     ticket_id = res.json()["complaint"]["ticket_id"]
     print(f"[OK] 10. Module 8 Complaints: Created support ticket {ticket_id} with status OPEN")
@@ -153,17 +170,17 @@ def run_tests():
     res = requests.patch(f"{BASE_URL}/complaints/{ticket_id}/", json={
         "status": "RESOLVED",
         "resolution_notes": "Noted delivery preference. Delivery assigned for 6 PM."
-    })
+    }, headers=admin_auth)
     assert res.status_code == 200, f"Complaint resolve failed: {res.text}"
     print(f"[OK] 11. Module 8 Admin Resolution: Support ticket {ticket_id} resolved with notes")
 
     # Clean up test appliance
-    res = requests.delete(f"{BASE_URL}/appliances/{created_app_id}/")
+    res = requests.delete(f"{BASE_URL}/appliances/{created_app_id}/", headers=admin_auth)
     assert res.status_code == 200
     print(f"[OK] 12. Module 2 Admin Delete Appliance: Cleaned up test item successfully")
 
-    # Clean up test user
-    db.users.delete_one({"_id": test_user_id})
+    # Clean up test user & admin
+    db.users.delete_many({"_id": {"$in": [test_user_id, admin_id]}})
     db.rentals.delete_many({"user_id": test_user_id})
     db.payments.delete_many({"user_id": test_user_id})
     db.refunds.delete_many({"user_id": test_user_id})

@@ -52,7 +52,12 @@ def run_tests():
     print(f"[OK] 3. Added to cart with 6-month plan (Rent: Rs. 799/mo, Deposit: Rs. 1500)")
 
     # 4. KYC Approval
-    kyc_res = requests.post(f"{BASE_URL}/kyc/", json={"id_proof": "AADHAAR_9988", "address_proof": "PASSPORT_4455"}, headers=auth_header)
+    kyc_res = requests.post(f"{BASE_URL}/kyc/", json={
+        "full_name": test_username,
+        "id_proof": "AADHAAR_9988.png",
+        "address_proof": "PASSPORT_4455.png",
+        "ocr_audit": {"verified": True}
+    }, headers=auth_header)
     assert kyc_res.status_code == 200 and kyc_res.json().get("status") == "approved"
     print(f"[OK] 4. KYC verification approved for checkout")
 

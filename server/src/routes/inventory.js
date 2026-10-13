@@ -1,8 +1,12 @@
 const express = require('express');
 const { getDb } = require('../db');
+const { authenticateJWT, requireRole } = require('../auth');
 const { notifyAdmin, broadcastEvent } = require('../socket');
 
 const router = express.Router();
+
+// Enforce Admin RBAC for warehouse and physical asset inventory management
+router.use('/inventory', authenticateJWT, requireRole('admin'));
 
 const DEPOTS = [
   'Bangalore Central Hub (Whitefield)',

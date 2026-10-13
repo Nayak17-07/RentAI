@@ -2,7 +2,7 @@ const express = require('express');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { getDb } = require('../db');
-const { SECRET_KEY } = require('../auth');
+const { SECRET_KEY, authenticateJWT, requireRole } = require('../auth');
 
 const router = express.Router();
 
@@ -47,7 +47,7 @@ router.get('/feedback/', async (req, res) => {
       created_at: f.created_at instanceof Date ? f.created_at.toISOString() : f.created_at
     }));
 
-    let avgRating = 4.8;
+    let avgRating = 0.0;
     if (formatted.length > 0) {
       const total = formatted.reduce((sum, f) => sum + (parseFloat(f.rating) || 5), 0);
       avgRating = Math.round((total / formatted.length) * 10) / 10;
@@ -65,13 +65,11 @@ router.get('/feedback/', async (req, res) => {
 });
 
 // POST /api/feedback/
-router.post('/feedback/', async (req, res) => {
+router.post('/feedback/', authenticateJWT, async (req, res) => {
   try {
     const db = getDb();
-    const userInfo = await getUserFromHeader(req, db);
-
-    const userId = userInfo ? userInfo.userId : 'guest_user';
-    let username = req.body.username || (userInfo ? userInfo.username : 'Verified Renter');
+    const userId = req.user.id;
+    const username = req.user.username || 'Verified Renter';
 
     const { appliance_id, rating = 5, comment = '' } = req.body;
     const numRating = parseInt(rating, 10);
@@ -111,15 +109,16 @@ router.post('/feedback/', async (req, res) => {
 });
 
 // GET /api/complaints/
-router.get('/complaints/', async (req, res) => {
+router.get('/complaints/', authenticateJWT, async (req, res) => {
   try {
     const db = getDb();
-    const userId = req.query.user_id;
-    const isAdmin = String(req.query.admin).toLowerCase() === 'true';
-
     const query = {};
-    if (userId && !isAdmin) {
-      query.user_id = userId;
+
+    // Strict access control: Customers can ONLY view their own tickets. Admins can view all tickets.
+    if (req.user.role !== 'admin') {
+      query.user_id = req.user.id;
+    } else if (req.query.user_id) {
+      query.user_id = req.query.user_id;
     }
 
     const complaints = await db.collection('complaints').find(query).sort({ created_at: -1 }).toArray();
@@ -139,14 +138,12 @@ router.get('/complaints/', async (req, res) => {
 });
 
 // POST /api/complaints/
-router.post('/complaints/', async (req, res) => {
+router.post('/complaints/', authenticateJWT, async (req, res) => {
   try {
     const db = getDb();
-    const userInfo = await getUserFromHeader(req, db);
-
-    const userId = userInfo ? userInfo.userId : 'guest_user';
-    const customerName = req.body.customer_name || (userInfo ? userInfo.username : 'Valued Customer');
-    const customerEmail = req.body.customer_email || (userInfo ? userInfo.email : '');
+    const userId = req.user.id;
+    const customerName = req.body.customer_name || req.user.username || 'Valued Customer';
+    const customerEmail = req.body.customer_email || req.user.email || '';
 
     const { subject, category = 'General Issue', description, priority = 'MEDIUM' } = req.body;
 
@@ -188,8 +185,8 @@ router.post('/complaints/', async (req, res) => {
   }
 });
 
-// PATCH /api/complaints/:ticket_id/ or /api/complaints/
-router.patch(['/complaints/:ticket_id/', '/complaints/:ticket_id', '/complaints/'], async (req, res) => {
+// PATCH /api/complaints/:ticket_id/ or /api/complaints/ - Admin-only resolution
+router.patch(['/complaints/:ticket_id/', '/complaints/:ticket_id', '/complaints/'], authenticateJWT, requireRole('admin'), async (req, res) => {
   try {
     const db = getDb();
     const ticketId = req.params.ticket_id || req.body.ticket_id;

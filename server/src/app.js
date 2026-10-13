@@ -76,7 +76,7 @@ app.use('/api', inventoryRoutes);
 app.use('/api', trackingRoutes);
 
 // Global Error Handler
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error('Unhandled Server Error:', err);
   const isDev = process.env.NODE_ENV !== 'production';
   res.status(err.status || 500).json({ 

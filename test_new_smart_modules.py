@@ -11,6 +11,13 @@ def run_tests():
     print("  VERIFYING SMART APPLIANCE, IOT, BI & REAL-TIME TRACKING MODULES")
     print("=" * 80)
 
+    from api.mongo_client import get_mongo_db
+    from api.mongo_auth import generate_tokens
+    db = get_mongo_db()
+    admin_id = str(uuid.uuid4())
+    db.users.insert_one({"_id": admin_id, "username": f"adm_{admin_id[:6]}", "email": f"adm_{admin_id[:6]}@rentora.com", "role": "admin"})
+    admin_auth = {"Authorization": f"Bearer {generate_tokens(admin_id)['access']}"}
+
     # 1. Test IoT Telemetry Endpoint
     res = requests.get(f"{BASE_URL}/iot/telemetry/sample-appliance-id")
     assert res.status_code == 200, f"IoT telemetry failed: {res.text}"
@@ -21,7 +28,7 @@ def run_tests():
     print(f"[OK] 1. IoT Telemetry Endpoint: Health Score {telemetry['health_score']}/100, Temp {telemetry['motor_temp_c']}°C, Daily {telemetry['daily_energy_kwh']} kWh")
 
     # 2. Test Remote IoT Smart Controls
-    res = requests.patch(f"{BASE_URL}/iot/controls/sample-appliance-id", json={"action": "TOGGLE_ECO"})
+    res = requests.patch(f"{BASE_URL}/iot/controls/sample-appliance-id", json={"action": "TOGGLE_ECO"}, headers=admin_auth)
     assert res.status_code == 200, f"IoT eco toggle failed: {res.text}"
     print(f"[OK] 2. Remote IoT Controls (Eco-Saver Toggle): {res.json()['message']}")
 
@@ -41,7 +48,7 @@ def run_tests():
     print(f"[OK] 4. Fleet Health Hub: {summary['total_connected_appliances']} Connected Nodes, {summary['online_rate_pct']}% Online, Avg Health {summary['avg_fleet_health_score']}/100")
 
     # 5. Test Serialized Inventory Units
-    res = requests.get(f"{BASE_URL}/inventory/units")
+    res = requests.get(f"{BASE_URL}/inventory/units", headers=admin_auth)
     assert res.status_code == 200, f"Inventory units failed: {res.text}"
     units = res.json()
     assert len(units) > 0, "No serialized units found"
@@ -52,12 +59,12 @@ def run_tests():
     res = requests.post(f"{BASE_URL}/inventory/refurbish-step/{sample_unit['unit_id']}", json={
         "next_stage": "SANITIZATION_PART_REPLACE",
         "notes": "Steam sanitization & gasket refresh initiated by quality team"
-    })
+    }, headers=admin_auth)
     assert res.status_code == 200, f"Refurb step failed: {res.text}"
     print(f"[OK] 6. 4-Stage Refurbishment Workflow: {res.json()['message']}")
 
     # 7. Test Inventory Valuation KPIs
-    res = requests.get(f"{BASE_URL}/inventory/kpis")
+    res = requests.get(f"{BASE_URL}/inventory/kpis", headers=admin_auth)
     assert res.status_code == 200, f"Inventory KPIs failed: {res.text}"
     kpis = res.json()
     print(f"[OK] 7. Inventory KPIs: Fleet Utilization {kpis['fleet_utilization_pct']}%, Total Procurement INR {kpis['total_fleet_procurement_cost']:,}, Recovered INR {kpis['total_rental_revenue_recovered']:,}")
@@ -71,7 +78,7 @@ def run_tests():
     print(f"[OK] 8. Live Real-Time GPS Route: Van #{trk['vehicle_number']} at {trk['speed_kmh']} km/h ({trk['distance_remaining_km']} km left • ETA: {trk['eta_minutes']} mins) with {len(trk['waypoints'])} GPS coordinates")
 
     # 9. Test Business Intelligence (BI) Analytics
-    res = requests.get(f"{BASE_URL}/admin/bi-analytics/")
+    res = requests.get(f"{BASE_URL}/admin/bi-analytics/", headers=admin_auth)
     assert res.status_code == 200, f"BI analytics failed: {res.text}"
     bi = res.json()
     fin = bi["financial_kpis"]
@@ -79,6 +86,8 @@ def run_tests():
     print(f"      - 6-Month Category Demand Forecast: {len(bi['demand_forecast'])} seasonal predictions")
     print(f"      - Metro City Profitability: {len(bi['city_performance'])} hubs (Bangalore, Mumbai, Delhi, Hyderabad, Pune)")
     print(f"      - Cohort Retention Matrix: {len(bi['cohort_retention'])} customer cohorts")
+
+    db.users.delete_one({"_id": admin_id})
 
     print("=" * 80)
     print("  ALL 9 NEW SMART APPLIANCE & BUSINESS INTELLIGENCE MODULES PASSED (100% SUCCESS)!")

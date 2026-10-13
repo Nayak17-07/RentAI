@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Block private authenticated routes from indexing
+Disallow: /cart
+Disallow: /rentals
+Disallow: /kyc
+Disallow: /admin
+Disallow: /admin/login
+Disallow: /owner
+Disallow: /session-expired
+Disallow: /offline
+
+# Block system error pages
+Disallow: /403
+
+Sitemap: https://www.rentora.in/sitemap.xml

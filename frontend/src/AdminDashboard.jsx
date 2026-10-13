@@ -19,7 +19,6 @@ import {
   RefreshCw,
   Truck,
   Package,
-  Layers,
   Boxes,
   Lock,
   ArrowLeft,
@@ -28,9 +27,6 @@ import {
   Download,
   BarChart2,
   Wifi,
-  FileSpreadsheet,
-  CheckCircle2,
-  CheckCircle,
   AlertCircle,
   Sparkles,
   Copy,
@@ -49,11 +45,9 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
-  Cell,
-  Legend
+  Cell
 } from 'recharts';
 import { getSocket, joinAdminRoom } from './utils/socket';
-import { downloadCsv, exportViaServer } from './utils/exportCsv';
 import BusinessIntelligenceTab from './BusinessIntelligenceTab';
 import SmartIoTFleetTab from './SmartIoTFleetTab';
 
@@ -166,7 +160,7 @@ const AdminDashboard = ({ onLogout }) => {
         const d = await res.json();
         setPasscodeError(d.error || 'Invalid Admin Authorization Passcode');
       }
-    } catch (err) {
+    } catch {
       setPasscodeError('Verification failed. Check server connection.');
     } finally {
       setVerifying(false);
@@ -175,7 +169,7 @@ const AdminDashboard = ({ onLogout }) => {
 
   const fetchDashboard = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/admin/dashboard/');
+      const response = await fetchWithAuth('http://localhost:8000/api/admin/dashboard/');
       if (response.ok) {
         const data = await response.json();
         setDashboardData(data);
@@ -189,7 +183,7 @@ const AdminDashboard = ({ onLogout }) => {
 
   const fetchInventory = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/appliances/?all_stock=true');
+      const res = await fetchWithAuth('http://localhost:8000/api/appliances/?all_stock=true');
       if (res.ok) {
         const data = await res.json();
         setAppliances(data);
@@ -201,7 +195,7 @@ const AdminDashboard = ({ onLogout }) => {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/admin/users/');
+      const res = await fetchWithAuth('http://localhost:8000/api/admin/users/');
       if (res.ok) {
         const data = await res.json();
         setUsersList(data);
@@ -213,7 +207,7 @@ const AdminDashboard = ({ onLogout }) => {
 
   const fetchRentals = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/admin/rentals/');
+      const res = await fetchWithAuth('http://localhost:8000/api/admin/rentals/');
       if (res.ok) {
         const data = await res.json();
         setAllRentals(data);
@@ -225,7 +219,7 @@ const AdminDashboard = ({ onLogout }) => {
 
   const fetchComplaints = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/complaints/?admin=true');
+      const res = await fetchWithAuth('http://localhost:8000/api/complaints/?admin=true');
       if (res.ok) {
         const data = await res.json();
         setComplaintsList(data);
@@ -238,7 +232,7 @@ const AdminDashboard = ({ onLogout }) => {
   const fetchKyc = async () => {
     try {
       setKycLoading(true);
-      const res = await fetch('http://localhost:8000/api/admin/kyc/');
+      const res = await fetchWithAuth('http://localhost:8000/api/admin/kyc/');
       if (res.ok) {
         const data = await res.json();
         setKycList(data.submissions || []);
@@ -253,7 +247,7 @@ const AdminDashboard = ({ onLogout }) => {
 
   const handleUpdateKycStatus = async (userId, newStatus, reason = '') => {
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/kyc/${userId}/`, {
+      const res = await fetchWithAuth(`http://localhost:8000/api/admin/kyc/${userId}/`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus, rejection_reason: reason })
@@ -483,7 +477,7 @@ const AdminDashboard = ({ onLogout }) => {
   const handleSetUserRole = async (user, targetRole) => {
     if (!window.confirm(`Change ${user.username}'s role to ${targetRole.toUpperCase()}?`)) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/users/${user._id}/`, {
+      const res = await fetchWithAuth(`http://localhost:8000/api/admin/users/${user._id}/`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ role: targetRole })
@@ -499,7 +493,7 @@ const AdminDashboard = ({ onLogout }) => {
   const handleDeleteUser = async (userId, username) => {
     if (!window.confirm(`Permanently remove user account "${username}"?`)) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/users/${userId}/`, {
+      const res = await fetchWithAuth(`http://localhost:8000/api/admin/users/${userId}/`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -513,7 +507,7 @@ const AdminDashboard = ({ onLogout }) => {
   // --- Module 7: Rental Status / Approval Handlers ---
   const handleUpdateRentalStatus = async (rentalId, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/rentals/${rentalId}/approve/`, {
+      const res = await fetchWithAuth(`http://localhost:8000/api/admin/rentals/${rentalId}/approve/`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
@@ -755,7 +749,7 @@ const AdminDashboard = ({ onLogout }) => {
                 </p>
               ) : (
                 <p style={{ color: '#64748b', fontSize: '0.78rem', marginTop: '0.45rem' }}>
-                  💡 Demo Passcode: <code style={{ background: '#f1f5f9', padding: '1px 6px', borderRadius: '4px', fontWeight: 800, color: '#7c3aed' }}>admin123</code>
+                  💡 Demo Passcode: <code style={{ background: '#f1f5f9', padding: '1px 6px', borderRadius: '4px', fontWeight: 800, color: '#7c3aed' }}>1707</code>
                 </p>
               )}
             </div>

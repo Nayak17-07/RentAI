@@ -30,6 +30,7 @@ import {
   Legend, 
   Cell 
 } from 'recharts';
+import { fetchWithAuth } from './utils/api';
 
 const BusinessIntelligenceTab = ({ onExport }) => {
   const [biData, setBiData] = useState(null);
@@ -38,7 +39,7 @@ const BusinessIntelligenceTab = ({ onExport }) => {
   const fetchBi = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:8000/api/admin/bi-analytics/');
+      const res = await fetchWithAuth('http://localhost:8000/api/admin/bi-analytics/');
       if (res.ok) {
         const data = await res.json();
         setBiData(data);

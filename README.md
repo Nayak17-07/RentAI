@@ -146,3 +146,6 @@ RentAI/
 * **Project Name**: Rentora (AI-Enabled Smart Household Appliance Rental System)
 * **Curriculum**: Software Development Cell - II (SDC-II) Capstone Project
 * **Repository**: [https://github.com/Nayak17-07/RentAI](https://github.com/Nayak17-07/RentAI)
+
+> [!NOTE]
+> **Prototype Simulation Disclosure**: In accordance with academic capstone demonstration guidelines, fintech payment gateways, RBI escrow banking rails, IoT hardware sensor streams, and UIDAI database integrations operate via simulated software workflows and verifiable algorithmic models (such as Verhoeff mathematical checksums and simulated banking ledgers) rather than live production financial accounts.

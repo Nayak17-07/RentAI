@@ -284,15 +284,20 @@ router.post('/kyc/', authenticateJWT, async (req, res) => {
       return res.status(400).json({ error: 'Front image of your Government ID is required.' });
     }
 
-    // 2. File Format Inspection
+    // 2. Validate Full Name is explicitly provided (prevent self-matching blank names)
+    if (!full_name || !full_name.trim()) {
+      return res.status(400).json({ error: 'Full legal name matching your Government ID is required.' });
+    }
+    const candidateName = full_name.trim();
+
+    // 3. File Format Inspection
     const validExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.pdf'];
-    const isSyntheticTest = finalIdProofName && (finalIdProofName.toUpperCase().includes('AADHAAR') || finalIdProofName.toUpperCase().includes('TEST') || finalIdProofName.toUpperCase().includes('PASSPORT'));
-    const hasValidIdExt = !finalIdProofName || validExtensions.some(ext => finalIdProofName.toLowerCase().endsWith(ext)) || isSyntheticTest;
+    const hasValidIdExt = !finalIdProofName || validExtensions.some(ext => finalIdProofName.toLowerCase().endsWith(ext));
     if (!hasValidIdExt) {
       return res.status(400).json({ error: 'Unsupported ID proof format. Upload JPG, PNG, WEBP, or PDF.' });
     }
 
-    // 3. Mathematical & Structural Document Verification
+    // 4. Mathematical & Structural Document Verification
     const docCheck = validateDocumentStructure(id_type, id_number);
     if (!docCheck.valid) {
       return res.status(400).json({ 
@@ -302,32 +307,31 @@ router.post('/kyc/', authenticateJWT, async (req, res) => {
       });
     }
 
-    // 4. Fuzzy Name Matching against registered profile
+    // 5. Fuzzy Name Matching against registered profile
     const registeredName = req.user.username || '';
-    const candidateName = full_name.trim() || registeredName;
     const nameMatchRatio = calculateNameSimilarity(candidateName, registeredName);
 
-    // 5. Compute Realistic Verification Metrics
-    const checksumScore = 50.0; // Guaranteed 50 points if algorithm passed
-    const nameScore = Math.round(nameMatchRatio * 35.0); // Up to 35 points
-    const docScore = (id_proof_preview ? 10.0 : 8.0) + (address_proof_preview ? 4.5 : 3.0); // Up to 14.5 points
-    const computedConfidence = Math.min(99.6, Math.max(88.0, checksumScore + nameScore + docScore)).toFixed(1);
+    // 6. Compute Real Verification Metrics (no artificial 88% minimum floor)
+    const checksumScore = docCheck.valid ? 45.0 : 0.0;
+    const nameScore = Math.round(nameMatchRatio * 40.0);
+    const docScore = (id_proof_preview ? 10.0 : 5.0) + (address_proof_preview ? 5.0 : 2.5);
+    const computedConfidence = Math.min(99.4, Math.max(15.0, checksumScore + nameScore + docScore)).toFixed(1);
 
     const isOcrValid = Boolean(ocr_audit && ocr_audit.verified === true);
     
-    // Status assessment: automated instant approval requires genuine OCR + checksum + name match (or synthetic test flag)
+    // Status assessment: automated instant approval requires genuine OCR + checksum + high name match (>=70%)
     let status = 'in_review';
     let rejectionReason = null;
 
-    if (isSyntheticTest) {
-      status = 'approved';
-    } else if (isInstant && isOcrValid && docCheck.valid && nameMatchRatio >= 0.50) {
+    if (isInstant && isOcrValid && docCheck.valid && nameMatchRatio >= 0.70) {
       status = 'approved';
     } else {
       status = 'in_review';
-      rejectionReason = !isOcrValid 
-        ? 'OCR verification incomplete. Placed in queue for manual compliance review.' 
-        : `Name on ID ('${candidateName}') does not sufficiently match profile name ('${registeredName}'). Placed in manual review.`;
+      if (!isOcrValid) {
+        rejectionReason = 'OCR document verification pending. Placed in queue for manual compliance review.';
+      } else if (nameMatchRatio < 0.70) {
+        rejectionReason = `Name on ID ('${candidateName}') does not sufficiently match profile username ('${registeredName}'). Placed in manual review.`;
+      }
     }
 
     const verificationAudit = {
@@ -337,12 +341,17 @@ router.post('/kyc/', authenticateJWT, async (req, res) => {
       ocr_verified: isOcrValid,
       ocr_landmarks_detected: ocr_audit?.detected_keywords || (isOcrValid ? ['Government Seal / UIDAI Landmark Detected'] : []),
       document_status: status === 'approved' ? 'VERIFIED_COMPLIANT' : 'PENDING_MANUAL_REVIEW',
-      simulation_note: 'Academic Note: Identity verification simulated using structural check, OCR heuristics & name matching.',
+      simulation_note: 'Identity verification evaluated using structural validation, OCR heuristics & name matching.',
       verified_at: new Date()
     };
 
     const savedIdProofPreview = saveBase64Image(id_proof_preview, 'id', userId);
     const savedAddressProofPreview = saveBase64Image(address_proof_preview, 'addr', userId);
+
+    // Privacy Protection (DPDP Act & UIDAI Compliance):
+    // Store ONLY masked ID numbers and one-way cryptographic SHA-256 hashes to prevent plaintext PII leaks.
+    const maskedIdNumber = maskIdentityNumber(docCheck.cleanId, id_type);
+    const idNumberHash = crypto.createHash('sha256').update(docCheck.cleanId).digest('hex');
 
     const docUpdate = {
       user_id: userId,
@@ -350,7 +359,9 @@ router.post('/kyc/', authenticateJWT, async (req, res) => {
       user_name: req.user.username || '',
       full_name: candidateName,
       id_type,
-      id_number: docCheck.cleanId,
+      id_number: maskedIdNumber,
+      id_number_masked: maskedIdNumber,
+      id_number_hash: idNumberHash,
       address_line: address_line.trim() || 'Verified Residential Address',
       id_proof_name: finalIdProofName || 'id_document.png',
       id_proof_preview: savedIdProofPreview || `mock_url_${crypto.randomUUID()}`,
