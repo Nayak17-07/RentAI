@@ -1173,25 +1173,26 @@ const HomePage = ({ onLogout }) => {
             </button>
 
             {/* My Rentals Dedicated Button */}
-            <button 
-              type="button"
+            <Link 
+              to="/rentals"
               id="header-my-rentals-btn"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                try {
-                  navigate('/rentals');
-                } catch {
-                  window.location.href = '/rentals';
-                }
-              }}
               className="header-action-btn header-btn-rentals"
-              style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', cursor: 'pointer', position: 'relative', zIndex: 100 }}
+              style={{ 
+                padding: '0.4rem 0.75rem', 
+                fontSize: '0.8rem', 
+                cursor: 'pointer', 
+                position: 'relative', 
+                zIndex: 100,
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem'
+              }}
               title="View your active rentals, monthly payments & maintenance"
             >
               <Package size={14} color="#e23744" />
               <span>My Rentals</span>
-            </button>
+            </Link>
 
             {/* Shopping Cart Button */}
             <button 

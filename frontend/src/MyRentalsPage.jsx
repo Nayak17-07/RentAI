@@ -27,7 +27,8 @@ import {
   Zap,
   Wifi,
   Download,
-  ChevronRight
+  ChevronRight,
+  ArrowLeft
 } from 'lucide-react';
 import { fetchWithAuth } from './utils/api';
 import { getSocket, joinUserRoom } from './utils/socket';
