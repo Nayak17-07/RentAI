@@ -26,7 +26,8 @@ import {
   Award,
   Zap,
   Wifi,
-  Download
+  Download,
+  ChevronRight
 } from 'lucide-react';
 import { fetchWithAuth } from './utils/api';
 import { getSocket, joinUserRoom } from './utils/socket';
@@ -628,6 +629,32 @@ const MyRentalsPage = ({ onLogout }) => {
             >
               <span>KYC</span>
             </Link>
+
+            <button
+              onClick={async () => {
+                try {
+                  await fetchWithAuth('http://localhost:8000/api/auth/switch-role/', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ role: 'owner' })
+                  });
+                  localStorage.setItem('user_role', 'owner');
+                  navigate('/owner');
+                } catch (e) {
+                  navigate('/owner');
+                }
+              }}
+              className="nav-action-btn"
+              title="Switch to Owner / Partner Hub to monetize your appliances"
+              style={{
+                background: 'rgba(16, 185, 129, 0.1)',
+                color: '#10b981',
+                borderColor: 'rgba(16, 185, 129, 0.3)'
+              }}
+            >
+              <span>Owner Hub</span>
+              <ChevronRight size={14} />
+            </button>
 
             {/* Live Socket Tracker status */}
             <div style={{
