@@ -1,12 +1,18 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { getDb } = require('./db');
 
-const SECRET_KEY = process.env.SECRET_KEY || 'rentora-secret-key-high-performance-jwt-token-984210a';
+const SECRET_KEY = process.env.JWT_SECRET || process.env.SECRET_KEY || 'rentora-secret-key-high-performance-jwt-token-984210a';
+
+if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET && !process.env.SECRET_KEY)) {
+  throw new Error('FATAL SECURITY ERROR: JWT_SECRET or SECRET_KEY must be configured in production environment.');
+}
 
 function makePassword(password) {
   const salt = crypto.randomBytes(16).toString('base64').replace(/=/g, '');
-  const iterations = 1000000;
+  const iterations = 100000; // Calibrated for secure, responsive hashing
   const derivedKey = crypto.pbkdf2Sync(password, salt, iterations, 32, 'sha256');
   return `pbkdf2_sha256$${iterations}$${salt}$${derivedKey.toString('base64')}`;
 }
@@ -19,11 +25,25 @@ function checkPassword(password, storedHash) {
       const iterations = parseInt(parts[1], 10);
       const salt = parts[2];
       const hash = parts[3];
+      if (!iterations || !salt || !hash) return false;
       const derivedKey = crypto.pbkdf2Sync(password, salt, iterations, 32, 'sha256');
-      return derivedKey.toString('base64') === hash;
+      try {
+        const hashBuf = Buffer.from(hash, 'base64');
+        if (derivedKey.length !== hashBuf.length) return false;
+        return crypto.timingSafeEqual(derivedKey, hashBuf);
+      } catch (e) {
+        return false;
+      }
     }
   }
-  return password === storedHash;
+  // Constant-time comparison for legacy non-pbkdf2 stored hashes
+  try {
+    const pBuf = Buffer.from(String(password));
+    const sBuf = Buffer.from(String(storedHash));
+    return pBuf.length === sBuf.length && crypto.timingSafeEqual(pBuf, sBuf);
+  } catch (e) {
+    return false;
+  }
 }
 
 function generateTokens(userId) {
@@ -108,11 +128,27 @@ async function optionalAuth(req, res, next) {
   next();
 }
 
+function requireRole(...allowedRoles) {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ detail: 'Authentication credentials were not provided.' });
+    }
+    const userRole = req.user.role || 'customer';
+    if (!allowedRoles.includes(userRole)) {
+      return res.status(403).json({
+        error: `Forbidden: Access requires one of [${allowedRoles.join(', ')}]. Current role: '${userRole}'`
+      });
+    }
+    next();
+  };
+}
+
 module.exports = {
   SECRET_KEY,
   makePassword,
   checkPassword,
   generateTokens,
   authenticateJWT,
-  optionalAuth
+  optionalAuth,
+  requireRole
 };

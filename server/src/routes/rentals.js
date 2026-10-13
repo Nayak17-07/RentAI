@@ -23,7 +23,13 @@ router.get('/rentals/', authenticateJWT, async (req, res) => {
     const result = [];
 
     for (const r of rentals) {
-      const app = await db.collection('appliances').findOne({ appliance_id: r.appliance_id });
+      const app = await db.collection('appliances').findOne({
+        $or: [
+          { appliance_id: r.appliance_id },
+          { _id: r.appliance_id },
+          ...(r.appliance_ref_id ? [{ _id: r.appliance_ref_id }] : [])
+        ]
+      });
       let applianceData;
       if (app) {
         app._id = String(app._id);
@@ -144,9 +150,15 @@ router.patch('/rentals/', authenticateJWT, async (req, res) => {
       return res.status(400).json({ error: 'rental_id is required' });
     }
 
-    const rental = await db.collection('rentals').findOne({ _id: rental_id, user_id: userId, status: 'active' });
+    const rentalQuery = {
+      _id: rental_id,
+      ...(req.user.role === 'admin' ? {} : { user_id: userId }),
+      status: { $nin: ['inactive', 'returned', 'cancelled', 'OWNED'] }
+    };
+
+    const rental = await db.collection('rentals').findOne(rentalQuery);
     if (!rental) {
-      return res.status(404).json({ error: 'Active rental not found' });
+      return res.status(404).json({ error: 'Active or returnable rental not found' });
     }
 
     const now = new Date();
@@ -177,11 +189,11 @@ router.patch('/rentals/', authenticateJWT, async (req, res) => {
       );
 
       await db.collection('appliances').updateOne(
-        { appliance_id: rental.appliance_id },
+        { $or: [{ appliance_id: rental.appliance_id }, { _id: rental.appliance_id }] },
         { $inc: { stock_quantity: 1 } }
       );
       await db.collection('appliances').updateOne(
-        { appliance_id: new_appliance_id },
+        { $or: [{ appliance_id: new_appliance_id }, { _id: new_appliance_id }] },
         { $inc: { stock_quantity: -1 } }
       );
 
@@ -386,10 +398,32 @@ router.patch('/rentals/', authenticateJWT, async (req, res) => {
 
     await db.collection('rentals').updateOne({ _id: rental_id }, { $set: returnDocUpdate });
 
-    await db.collection('appliances').updateOne(
-      { appliance_id: rental.appliance_id },
-      { $inc: { stock_quantity: 1 } }
+    // Atomically increment the stock of the returned appliance
+    const appQuery = {
+      $or: [
+        { appliance_id: rental.appliance_id },
+        { _id: rental.appliance_id },
+        ...(rental.appliance_ref_id ? [{ _id: rental.appliance_ref_id }] : [])
+      ]
+    };
+
+    const updateRes = await db.collection('appliances').findOneAndUpdate(
+      appQuery,
+      { $inc: { stock_quantity: 1 }, $set: { updated_at: new Date() } },
+      { returnDocument: 'after' }
     );
+
+    const newStock = updateRes ? updateRes.stock_quantity : 1;
+
+    try {
+      const { broadcastEvent } = require('../socket');
+      broadcastEvent('catalog:stock_changed', {
+        appliance_id: rental.appliance_id,
+        _id: rental.appliance_ref_id,
+        action: 'increment',
+        new_stock: newStock
+      });
+    } catch (e) {}
 
     await db.collection('refunds').insertOne({
       _id: crypto.randomUUID(),
@@ -475,6 +509,92 @@ router.patch('/rentals/:rental_id/reschedule', authenticateJWT, async (req, res)
   } catch (err) {
     console.error('Reschedule delivery error:', err);
     return res.status(500).json({ error: 'Failed to reschedule delivery' });
+  }
+});
+
+// POST /api/rentals/:rental_id/confirm-delivery/ (Bug 30: Secure Delivery OTP Lifecycle)
+router.post('/rentals/:rental_id/confirm-delivery/', authenticateJWT, async (req, res) => {
+  try {
+    const db = getDb();
+    const userId = req.user.id;
+    const userRole = req.user.role;
+    const rentalId = req.params.rental_id;
+    const { otp } = req.body;
+
+    if (!otp) {
+      return res.status(400).json({ error: 'Delivery OTP is required' });
+    }
+
+    const query = (userRole === 'admin') ? { _id: rentalId } : { _id: rentalId, user_id: userId };
+    const rental = await db.collection('rentals').findOne(query);
+    if (!rental) {
+      return res.status(404).json({ error: 'Rental order not found' });
+    }
+
+    const tracking = rental.delivery_tracking || {};
+    if (rental.delivery_status === 'DELIVERED') {
+      return res.status(400).json({ error: 'Appliance has already been verified as delivered.' });
+    }
+
+    // Check attempt lockout
+    if ((tracking.delivery_otp_attempts || 0) >= 5) {
+      return res.status(429).json({ error: 'Too many incorrect OTP attempts. Contact support to reissue delivery PIN.' });
+    }
+
+    // Check expiration
+    if (tracking.delivery_otp_expires_at && new Date() > new Date(tracking.delivery_otp_expires_at)) {
+      return res.status(400).json({ error: 'Delivery OTP has expired. Please request a new delivery dispatch.' });
+    }
+
+    // Timing-safe comparison of OTP
+    const expectedOtp = String(tracking.delivery_otp || '').trim();
+    const inputOtp = String(otp).trim();
+    const match = expectedOtp.length === inputOtp.length &&
+      crypto.timingSafeEqual(Buffer.from(inputOtp), Buffer.from(expectedOtp));
+
+    if (!match) {
+      await db.collection('rentals').updateOne(
+        { _id: rentalId },
+        { $inc: { 'delivery_tracking.delivery_otp_attempts': 1 } }
+      );
+      const remaining = Math.max(0, 5 - ((tracking.delivery_otp_attempts || 0) + 1));
+      return res.status(400).json({ error: `Invalid delivery OTP code. (${remaining} attempts remaining)` });
+    }
+
+    // Valid OTP: transition to DELIVERED, invalidate OTP, record timestamp
+    const nowIso = new Date().toISOString();
+    const updatedTimeline = (tracking.timeline || []).map(step => {
+      if (step.stage === 'OUT_FOR_DELIVERY' || step.stage === 'DELIVERED') {
+        return { ...step, completed: true, timestamp: step.timestamp || nowIso };
+      }
+      return step;
+    });
+
+    await db.collection('rentals').updateOne(
+      { _id: rentalId },
+      {
+        $set: {
+          delivery_status: 'DELIVERED',
+          'delivery_tracking.current_stage': 'DELIVERED',
+          'delivery_tracking.delivery_otp_verified': true,
+          'delivery_tracking.delivery_otp_attempts': 0,
+          'delivery_tracking.delivered_at': nowIso,
+          'delivery_tracking.timeline': updatedTimeline
+        },
+        $unset: {
+          'delivery_tracking.delivery_otp': '' // Invalidate plain OTP once verified
+        }
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Delivery successfully verified and marked complete!',
+      delivery_status: 'DELIVERED'
+    });
+  } catch (err) {
+    console.error('Confirm delivery error:', err);
+    return res.status(500).json({ error: 'Internal server error confirming delivery' });
   }
 });
 

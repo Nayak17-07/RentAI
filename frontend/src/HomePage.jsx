@@ -33,13 +33,13 @@ import {
   Plus
 } from 'lucide-react';
 import { fetchWithAuth } from './utils/api';
+import { getSocket } from './utils/socket';
 import CitySelectionModal from './CitySelectionModal';
 import ProductDetailsModal from './ProductDetailsModal';
 import { CategoryIcon } from './CategoryIcons';
 import { AssuranceBanner } from './AssuranceBanner';
 import { RentVsBuyCalculator } from './RentVsBuyCalculator';
 import UNLMTDSubscriptionModal from './UNLMTDSubscriptionModal';
-import PincodeCheckerModal from './PincodeCheckerModal';
 import CuratedRoomCombos from './CuratedRoomCombos';
 import ThemeToggle from './ThemeToggle';
 
@@ -109,7 +109,6 @@ const HomePage = ({ onLogout }) => {
   const [budgetFilter, setBudgetFilter] = useState('all');
   const [helpOpen, setHelpOpen] = useState(false);
   const [showUNLMTDModal, setShowUNLMTDModal] = useState(false);
-  const [showPincodeModal, setShowPincodeModal] = useState(false);
   const [storeMode, setStoreMode] = useState('rent'); // 'rent' | 'refurbished'
   const [currentUserRole, setCurrentUserRole] = useState(localStorage.getItem('user_role') || 'customer');
   const [currentUsername, setCurrentUsername] = useState(localStorage.getItem('username') || '');
@@ -172,12 +171,6 @@ const HomePage = ({ onLogout }) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [searchFocused]);
-
-  // Admin Security Passcode Gate State
-  const [showAdminPasscodeModal, setShowAdminPasscodeModal] = useState(false);
-  const [adminPasscode, setAdminPasscode] = useState('');
-  const [adminError, setAdminError] = useState('');
-  const [adminVerifying, setAdminVerifying] = useState(false);
 
   const navigate = useNavigate();
 
@@ -271,38 +264,6 @@ const HomePage = ({ onLogout }) => {
     }
   };
 
-  // Admin Security Passcode Verification (Enterprise Protected Route)
-  const handleVerifyAdminPasscode = async (e) => {
-    e.preventDefault();
-    if (!adminPasscode.trim()) {
-      setAdminError('Please enter the Admin Security Key');
-      return;
-    }
-    setAdminVerifying(true);
-    setAdminError('');
-    try {
-      const res = await fetchWithAuth('http://localhost:8000/api/auth/switch-role/', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role: 'admin', admin_code: adminPasscode.trim() })
-      });
-      if (res.ok) {
-        setCurrentUserRole('admin');
-        localStorage.setItem('user_role', 'admin');
-        setShowAdminPasscodeModal(false);
-        setAdminPasscode('');
-        navigate('/admin');
-      } else {
-        const data = await res.json();
-        setAdminError(data.error || 'Invalid Admin Authorization Passcode');
-      }
-    } catch (err) {
-      setAdminError('Server verification error. Try again.');
-    } finally {
-      setAdminVerifying(false);
-    }
-  };
-
   const fetchData = async (selectedCity) => {
     const token = localStorage.getItem('access_token');
     if (!token) {
@@ -380,6 +341,41 @@ const HomePage = ({ onLogout }) => {
       setLoading(false);
     }
   }, [city, navigate]);
+
+  // Real-Time Inventory Stock Synchronization
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const handleStockChanged = (data) => {
+      if (!data) return;
+      setAppliances((prev) =>
+        prev.map((item) => {
+          const isMatch =
+            (data.appliance_id && item.appliance_id === data.appliance_id) ||
+            (data._id && item._id === data._id) ||
+            (data.appliance_id && item._id === data.appliance_id) ||
+            (data._id && item.appliance_id === data._id);
+
+          if (isMatch) {
+            const nextStock =
+              data.new_stock !== undefined
+                ? data.new_stock
+                : data.action === 'decrement'
+                ? Math.max(0, (item.stock_quantity || 0) - 1)
+                : (item.stock_quantity || 0) + 1;
+            return { ...item, stock_quantity: nextStock };
+          }
+          return item;
+        })
+      );
+    };
+
+    socket.on('catalog:stock_changed', handleStockChanged);
+    return () => {
+      socket.off('catalog:stock_changed', handleStockChanged);
+    };
+  }, []);
 
   const handleCitySelect = (selected) => {
     localStorage.setItem('rentora_city', selected);
@@ -565,13 +561,6 @@ const HomePage = ({ onLogout }) => {
         currentCity={city}
       />
 
-      {/* Pincode Delivery Estimator Modal (Rentora 72h Guarantee) */}
-      <PincodeCheckerModal
-        isOpen={showPincodeModal}
-        onClose={() => setShowPincodeModal(false)}
-        currentCity={city}
-      />
-
       {/* UNLMTD Whole-Home Subscription Builder Modal (Rentora Signature) */}
       <UNLMTDSubscriptionModal
         isOpen={showUNLMTDModal}
@@ -587,160 +576,6 @@ const HomePage = ({ onLogout }) => {
           onClose={() => setSelectedProduct(null)} 
           onAddToCart={addToCart} 
         />
-      )}
-
-      {/* Enterprise Admin Authorization Security Modal */}
-      {showAdminPasscodeModal && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(15, 23, 42, 0.7)',
-          backdropFilter: 'blur(6px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 2000,
-          padding: '1rem'
-        }}>
-          <div style={{
-            background: '#ffffff',
-            borderRadius: '20px',
-            maxWidth: '440px',
-            width: '100%',
-            padding: '2rem',
-            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
-            animation: 'modalPop 0.18s ease-out',
-            position: 'relative'
-          }}>
-            <button
-              onClick={() => {
-                setShowAdminPasscodeModal(false);
-                setAdminPasscode('');
-                setAdminError('');
-              }}
-              style={{
-                position: 'absolute',
-                top: '1.25rem',
-                right: '1.25rem',
-                background: '#f1f5f9',
-                border: 'none',
-                borderRadius: '50%',
-                width: '32px',
-                height: '32px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <X size={16} color="#64748b" />
-            </button>
-
-            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-              <div style={{
-                width: '54px',
-                height: '54px',
-                borderRadius: '16px',
-                background: '#f5f3ff',
-                border: '1px solid #ddd6fe',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 1rem'
-              }}>
-                <Lock size={26} color="#7c3aed" />
-              </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#111827', margin: '0 0 0.4rem' }}>
-                Restricted Admin Console
-              </h3>
-              <p style={{ color: '#64748b', fontSize: '0.85rem', margin: 0, lineHeight: 1.4 }}>
-                Enter your Administrator Security Key to access internal platform metrics, user moderation, and inventory management.
-              </p>
-            </div>
-
-            <form onSubmit={handleVerifyAdminPasscode}>
-              <div style={{ marginBottom: '1.25rem' }}>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '0.4rem' }}>
-                  Admin Authorization Passcode
-                </label>
-                <input
-                  type="password"
-                  value={adminPasscode}
-                  onChange={(e) => {
-                    setAdminPasscode(e.target.value);
-                    setAdminError('');
-                  }}
-                  placeholder="Enter passcode..."
-                  autoFocus
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 1rem',
-                    borderRadius: '10px',
-                    border: `1.5px solid ${adminError ? '#ef4444' : '#cbd5e1'}`,
-                    fontSize: '0.95rem',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                />
-                {adminError ? (
-                  <p style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '0.4rem', fontWeight: 600 }}>
-                    {adminError}
-                  </p>
-                ) : (
-                  <p style={{ color: '#64748b', fontSize: '0.75rem', marginTop: '0.4rem' }}>
-                    💡 Demo Passcode: <code style={{ background: '#f1f5f9', padding: '1px 6px', borderRadius: '4px', fontWeight: 800, color: '#7c3aed' }}>admin123</code>
-                  </p>
-                )}
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAdminPasscodeModal(false);
-                    setAdminPasscode('');
-                    setAdminError('');
-                  }}
-                  style={{
-                    flex: 1,
-                    padding: '0.75rem',
-                    borderRadius: '10px',
-                    border: '1px solid #e2e8f0',
-                    background: '#f8fafc',
-                    color: '#475569',
-                    fontWeight: 700,
-                    fontSize: '0.85rem',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={adminVerifying}
-                  style={{
-                    flex: 1,
-                    padding: '0.75rem',
-                    borderRadius: '10px',
-                    border: 'none',
-                    background: '#7c3aed',
-                    color: '#ffffff',
-                    fontWeight: 700,
-                    fontSize: '0.85rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.4rem',
-                    boxShadow: '0 4px 12px rgba(124, 58, 237, 0.3)'
-                  }}
-                >
-                  {adminVerifying ? <Loader2 size={16} className="animate-spin" /> : 'Authorize & Enter'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
       )}
 
       {/* ========================================================
@@ -851,46 +686,6 @@ const HomePage = ({ onLogout }) => {
               <MapPin size={15} color="#e23744" />
               <span>{city}</span>
               <ChevronDown size={13} color="#6b7280" />
-            </button>
-
-            {/* 72-Hour Express Delivery / Pincode Badge */}
-            <button
-              type="button"
-              id="header-express-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowPincodeModal(true);
-              }}
-              style={{
-                background: '#f0fdf4',
-                border: '1px solid #bbf7d0',
-                padding: '0.45rem 0.85rem',
-                borderRadius: '8px',
-                color: '#166534',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                transition: 'all 0.2s ease',
-                boxSizing: 'border-box',
-                position: 'relative',
-                zIndex: 1,
-                margin: 0
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.borderColor = '#16a34a';
-                e.currentTarget.style.background = '#dcfce7';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.borderColor = '#bbf7d0';
-                e.currentTarget.style.background = '#f0fdf4';
-              }}
-              title="Check 72-hour express delivery for your pincode"
-            >
-              <Zap size={14} color="#16a34a" />
-              <span>Express (72h)</span>
             </button>
           </div>
 
@@ -1390,20 +1185,6 @@ const HomePage = ({ onLogout }) => {
               <span>My Rentals</span>
             </button>
 
-            {/* Airbnb-Style "Switch to Owner" Host Mode Button */}
-            <button
-              type="button"
-              id="header-switch-owner-btn"
-              onClick={handleSwitchToOwner}
-              className={`header-action-btn header-btn-owner ${currentUserRole === 'owner' ? 'is-owner' : ''}`}
-              style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem' }}
-              title="List your appliances and earn monthly rental payouts"
-            >
-              <Briefcase size={14} color="#059669" />
-              <span>{currentUserRole === 'owner' ? '💼 Owner Portal' : 'Switch to Owner'}</span>
-            </button>
-
-
             {/* Shopping Cart Button */}
             <button 
               type="button"
@@ -1632,43 +1413,36 @@ const HomePage = ({ onLogout }) => {
 
                   <div style={{ height: '1px', background: '#f1f5f9', margin: '0.25rem 0' }} />
 
-                  {/* Protected Admin Access */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowUserMenu(false);
-                      if (currentUserRole === 'admin') {
+                  {/* Admin Console Access (Only for Admin Role) */}
+                  {currentUserRole === 'admin' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowUserMenu(false);
                         navigate('/admin');
-                      } else {
-                        setShowAdminPasscodeModal(true);
-                      }
-                    }}
-                    style={{
-                      padding: '0.5rem 0.65rem',
-                      textAlign: 'left',
-                      background: 'transparent',
-                      border: 'none',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      fontSize: '0.825rem',
-                      fontWeight: 700,
-                      color: '#7c3aed',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      transition: 'background 0.15s ease'
-                    }}
-                    onMouseOver={(e) => { e.currentTarget.style.background = '#f5f3ff'; }}
-                    onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      }}
+                      style={{
+                        padding: '0.5rem 0.65rem',
+                        textAlign: 'left',
+                        background: 'transparent',
+                        border: 'none',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        fontSize: '0.825rem',
+                        fontWeight: 700,
+                        color: '#7c3aed',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        transition: 'background 0.15s ease'
+                      }}
+                      onMouseOver={(e) => { e.currentTarget.style.background = '#f5f3ff'; }}
+                      onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                    >
                       <Lock size={15} color="#7c3aed" />
-                      <span>Admin Console</span>
-                    </div>
-                    {currentUserRole !== 'admin' && (
-                      <span style={{ fontSize: '0.65rem', background: '#ede9fe', padding: '1px 5px', borderRadius: '4px', fontWeight: 800 }}>LOCK</span>
-                    )}
-                  </button>
+                      <span>Admin Control Center</span>
+                    </button>
+                  )}
 
                   <div style={{ height: '1px', background: '#f1f5f9', margin: '0.25rem 0' }} />
 
@@ -2432,6 +2206,8 @@ const HomePage = ({ onLogout }) => {
                   const isWishlisted = wishlist[item.appliance_id];
                   const isAdded = addedItems[item.appliance_id];
                   const tag = item.tag || (idx % 2 === 0 ? 'Best Seller' : 'Popular');
+                  const itemStock = typeof item.stock_quantity === 'number' ? item.stock_quantity : (parseInt(item.stock_quantity, 10) || 0);
+                  const isOutOfStock = itemStock <= 0;
 
                   return (
                     <div 
@@ -2546,7 +2322,7 @@ const HomePage = ({ onLogout }) => {
                           fontSize: '0.925rem',
                           fontWeight: 600,
                           color: 'var(--text-primary)',
-                          marginBottom: '1rem',
+                          marginBottom: '0.4rem',
                           height: '42px',
                           display: '-webkit-box',
                           WebkitLineClamp: 2,
@@ -2555,6 +2331,23 @@ const HomePage = ({ onLogout }) => {
                           lineHeight: 1.4
                         }} title={item.rental_name}>
                           {item.rental_name}
+                        </div>
+
+                        {/* Stock status indicator */}
+                        <div style={{ marginBottom: '0.65rem' }}>
+                          {isOutOfStock ? (
+                            <span style={{ fontSize: '0.7rem', color: '#dc2626', background: '#fee2e2', padding: '0.15rem 0.5rem', borderRadius: '4px', fontWeight: 700 }}>
+                              ● Out of Stock
+                            </span>
+                          ) : itemStock <= 3 ? (
+                            <span style={{ fontSize: '0.7rem', color: '#b45309', background: '#fef3c7', padding: '0.15rem 0.5rem', borderRadius: '4px', fontWeight: 700 }}>
+                              ⚡ Only {itemStock} Left!
+                            </span>
+                          ) : (
+                            <span style={{ fontSize: '0.7rem', color: '#16a34a', background: '#dcfce7', padding: '0.15rem 0.5rem', borderRadius: '4px', fontWeight: 700 }}>
+                              ● In Stock ({itemStock})
+                            </span>
+                          )}
                         </div>
 
                         {/* Price & Action Row */}
@@ -2589,23 +2382,40 @@ const HomePage = ({ onLogout }) => {
                               e.stopPropagation();
                               setSelectedProduct(item);
                             }}
+                            disabled={isOutOfStock && storeMode === 'rent'}
                             style={{
-                              background: isAdded ? '#16a34a' : storeMode === 'rent' ? 'var(--primary-color)' : 'var(--secondary-color)',
+                              background: isAdded
+                                ? '#16a34a'
+                                : (isOutOfStock && storeMode === 'rent')
+                                  ? '#94a3b8'
+                                  : storeMode === 'rent'
+                                    ? 'var(--primary-color)'
+                                    : 'var(--secondary-color)',
                               color: '#ffffff',
                               border: 'none',
                               borderRadius: '8px',
                               padding: '0.5rem 1rem',
                               fontSize: '0.8rem',
                               fontWeight: 700,
-                              cursor: 'pointer',
+                              cursor: (isOutOfStock && storeMode === 'rent') ? 'not-allowed' : 'pointer',
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: '0.3rem',
-                              boxShadow: isAdded ? '0 2px 6px rgba(22, 163, 74, 0.3)' : '0 2px 6px rgba(226, 55, 68, 0.25)',
+                              boxShadow: (isOutOfStock && storeMode === 'rent')
+                                ? 'none'
+                                : isAdded
+                                  ? '0 2px 6px rgba(22, 163, 74, 0.3)'
+                                  : '0 2px 6px rgba(226, 55, 68, 0.25)',
                               transition: 'all 0.15s ease'
                             }}
                           >
-                            {isAdded ? <Check size={14} /> : storeMode === 'rent' ? 'Rent' : 'Buy Now'}
+                            {isAdded
+                              ? <Check size={14} />
+                              : (isOutOfStock && storeMode === 'rent')
+                                ? 'Out of Stock'
+                                : storeMode === 'rent'
+                                  ? 'Rent'
+                                  : 'Buy Now'}
                           </button>
                         </div>
                       </div>

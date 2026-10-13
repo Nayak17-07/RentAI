@@ -15,7 +15,9 @@ router.get('/cart/', authenticateJWT, async (req, res) => {
     const result = [];
 
     for (const item of cartItems) {
-      const app = await db.collection('appliances').findOne({ appliance_id: item.appliance_id });
+      const app = await db.collection('appliances').findOne({
+        $or: [{ appliance_id: item.appliance_id }, { _id: item.appliance_id }]
+      });
       if (app) {
         app._id = String(app._id);
         result.push({
@@ -45,14 +47,43 @@ router.post('/cart/', authenticateJWT, async (req, res) => {
       return res.status(400).json({ error: 'appliance_id is required' });
     }
 
-    if (bundle_data) {
-      const existingApp = await db.collection('appliances').findOne({ appliance_id });
+    // Bug 28: Validate tenure commitment duration
+    const validTenures = ['3', '6', '12'];
+    const tenureStr = String(tenure || '3');
+    if (!validTenures.includes(tenureStr)) {
+      return res.status(400).json({ error: 'Invalid tenure duration. Supported lease commitments: 3, 6, or 12 months.' });
+    }
+
+    const appToRent = await db.collection('appliances').findOne({
+      $or: [{ appliance_id }, { _id: appliance_id }]
+    });
+
+    if (appToRent) {
+      const curStock = parseInt(appToRent.stock_quantity !== undefined ? appToRent.stock_quantity : 1, 10);
+      if (curStock <= 0) {
+        return res.status(400).json({ error: `"${appToRent.rental_name || 'Item'}" is currently out of stock.` });
+      }
+    }
+
+    // Bug 26: Sanitize bundle definitions and restrict client override
+    if (bundle_data && typeof bundle_data === 'object') {
+      const existingApp = await db.collection('appliances').findOne({
+        $or: [{ appliance_id }, { _id: appliance_id }]
+      });
       if (!existingApp) {
         const bundleDoc = {
-          ...bundle_data,
           _id: crypto.randomUUID(),
+          appliance_id,
+          rental_name: String(bundle_data.rental_name || 'Curated Room Combo').slice(0, 100),
+          category_id: String(bundle_data.category_id || 'Packages').slice(0, 50),
+          sub_category: 'Curated Room Package',
+          monthly_price: Math.max(500, Math.min(50000, parseFloat(bundle_data.monthly_price) || 1499)),
+          security_deposit: Math.max(0, Math.min(50000, parseFloat(bundle_data.security_deposit) || 0)),
           stock_quantity: 50,
-          available_cities: ['Hyderabad', 'Bangalore', 'Mumbai', 'Delhi', 'Pune']
+          available_cities: ['Hyderabad', 'Bangalore', 'Mumbai', 'Delhi', 'Pune'],
+          image_url: String(bundle_data.image_url || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc'),
+          tag: 'Curated Package',
+          created_at: new Date()
         };
         await db.collection('appliances').insertOne(bundleDoc);
       }

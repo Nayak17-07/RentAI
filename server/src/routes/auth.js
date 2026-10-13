@@ -50,7 +50,7 @@ router.post('/auth/send-signup-otp/', async (req, res) => {
           email: cleanEmail,
           password: makePassword(password),
           phone_num: phone_num ? phone_num.trim() : '',
-          role: role || 'customer',
+          role: 'customer',
           otp,
           created_at: now,
           expires_at: expiresAt
@@ -114,7 +114,7 @@ router.post('/auth/verify-signup-otp/', async (req, res) => {
       email: record.email,
       password: record.password,
       phone_num: record.phone_num,
-      role: record.role || 'customer',
+      role: 'customer',
       email_verified: true,
       email_verified_at: new Date(),
       kyc_verified: false,
@@ -172,7 +172,7 @@ router.post('/users/', async (req, res) => {
       email,
       password: makePassword(password),
       phone_num: phone_num || '',
-      role: role || 'customer',
+      role: 'customer',
       created_at: new Date()
     };
 
@@ -193,7 +193,13 @@ router.post('/token/', async (req, res) => {
     }
 
     const db = getDb();
-    const user = await db.collection('users').findOne({ username });
+    const cleanInput = (username || '').trim();
+    const user = await db.collection('users').findOne({
+      $or: [
+        { username: cleanInput },
+        { email: cleanInput.toLowerCase() }
+      ]
+    });
 
     if (user && checkPassword(password, user.password)) {
       const tokens = generateTokens(user._id);
@@ -212,6 +218,49 @@ router.post('/token/', async (req, res) => {
   } catch (err) {
     console.error('Login error:', err);
     return res.status(500).json({ detail: 'Internal server error during login' });
+  }
+});
+
+// POST /api/auth/admin-login/ (Internal Operations & Administrative Portal Login)
+router.post('/auth/admin-login/', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username or email, and password are required' });
+    }
+
+    const db = getDb();
+    const cleanInput = (username || '').trim();
+    const user = await db.collection('users').findOne({
+      $or: [
+        { username: cleanInput },
+        { email: cleanInput.toLowerCase() }
+      ]
+    });
+
+    if (!user || !checkPassword(password, user.password)) {
+      return res.status(401).json({ error: 'Invalid administrator credentials' });
+    }
+
+    if (user.role !== 'admin') {
+      return res.status(403).json({
+        error: 'Access Denied: This account is registered as a customer/vendor and does not have administrator privileges.'
+      });
+    }
+
+    const tokens = generateTokens(user._id);
+    return res.status(200).json({
+      ...tokens,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: 'admin'
+      }
+    });
+  } catch (err) {
+    console.error('Admin login error:', err);
+    return res.status(500).json({ error: 'Internal server error during admin authentication' });
   }
 });
 
@@ -247,21 +296,34 @@ router.post('/auth/password-reset-request/', async (req, res) => {
       return res.status(400).json({ error: 'Email address is required' });
     }
 
+    const cleanEmail = email.toLowerCase().trim();
     const db = getDb();
-    const user = await db.collection('users').findOne({ email });
+    const user = await db.collection('users').findOne({ email: cleanEmail });
     if (!user) {
-      return res.status(404).json({ error: 'No account found registered with this email' });
+      return res.status(200).json({
+        success: 'If an account with this email exists, a verification code has been dispatched.',
+        email: cleanEmail
+      });
+    }
+
+    // Rate limiting: allow at most 1 request per 60 seconds
+    const existingReset = await db.collection('password_resets').findOne({ email: cleanEmail });
+    const now = new Date();
+    if (existingReset && existingReset.created_at && (now - new Date(existingReset.created_at)) < 60000) {
+      return res.status(429).json({
+        error: 'Please wait at least 60 seconds before requesting another verification code.'
+      });
     }
 
     const otp = String(Math.floor(100000 + Math.random() * 900000));
-    const now = new Date();
     const expiresAt = new Date(now.getTime() + 15 * 60 * 1000); // 15 mins
 
     await db.collection('password_resets').updateOne(
-      { email },
+      { email: cleanEmail },
       {
         $set: {
           otp,
+          attempts: 0,
           created_at: now,
           expires_at: expiresAt
         }
@@ -269,11 +331,11 @@ router.post('/auth/password-reset-request/', async (req, res) => {
       { upsert: true }
     );
 
-    const mailResult = await sendOtpEmail(email, otp, 'reset');
+    const mailResult = await sendOtpEmail(cleanEmail, otp, 'reset');
 
     return res.status(200).json({
-      success: 'Verification code has been sent to your Gmail',
-      email,
+      success: 'Verification code has been sent to your registered email',
+      email: cleanEmail,
       simulated: mailResult.simulated,
       mock_otp: mailResult.simulated ? otp : undefined
     });
@@ -291,22 +353,45 @@ router.post('/auth/password-reset-confirm/', async (req, res) => {
       return res.status(400).json({ error: 'Email, verification OTP code, and new password are required' });
     }
 
+    if (typeof new_password !== 'string' || new_password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters long.' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
     const db = getDb();
-    const record = await db.collection('password_resets').findOne({ email, otp: String(otp).trim() });
+    const record = await db.collection('password_resets').findOne({ email: cleanEmail });
     if (!record) {
-      return res.status(400).json({ error: 'Invalid verification code' });
+      return res.status(400).json({ error: 'Invalid or expired verification code' });
+    }
+
+    // Bug 13: Brute force lockout after 5 failed attempts
+    if ((record.attempts || 0) >= 5) {
+      await db.collection('password_resets').deleteOne({ email: cleanEmail });
+      return res.status(429).json({ error: 'Too many failed verification attempts. Please request a new code.' });
     }
 
     if (new Date() > new Date(record.expires_at)) {
+      await db.collection('password_resets').deleteOne({ email: cleanEmail });
       return res.status(400).json({ error: 'Verification code has expired. Please request a new one' });
     }
 
+    // Timing-safe comparison of OTP
+    const userOtpBuf = Buffer.from(String(otp).trim());
+    const storedOtpBuf = Buffer.from(String(record.otp).trim());
+    const match = userOtpBuf.length === storedOtpBuf.length && crypto.timingSafeEqual(userOtpBuf, storedOtpBuf);
+
+    if (!match) {
+      await db.collection('password_resets').updateOne({ email: cleanEmail }, { $inc: { attempts: 1 } });
+      const remaining = Math.max(0, 5 - ((record.attempts || 0) + 1));
+      return res.status(400).json({ error: `Invalid verification code. (${remaining} attempts remaining)` });
+    }
+
     await db.collection('users').updateOne(
-      { email },
+      { email: cleanEmail },
       { $set: { password: makePassword(new_password) } }
     );
 
-    await db.collection('password_resets').deleteOne({ email });
+    await db.collection('password_resets').deleteOne({ email: cleanEmail });
 
     return res.status(200).json({
       success: 'Password reset successfully! You can now log in with your new credentials.'
@@ -335,23 +420,15 @@ router.get('/auth/me/', authenticateJWT, async (req, res) => {
   }
 });
 
-// PATCH /api/auth/switch-role/ (Switch active role between customer, owner, and admin)
+// PATCH /api/auth/switch-role/ (Switch active role between customer and owner)
 router.patch('/auth/switch-role/', authenticateJWT, async (req, res) => {
   try {
-    const { role, admin_code } = req.body;
-    const allowedRoles = ['customer', 'owner', 'admin'];
+    const { role } = req.body;
+    const allowedRoles = ['customer', 'owner'];
     if (!role || !allowedRoles.includes(role)) {
-      return res.status(400).json({ error: 'Valid role is required (customer, owner, admin)' });
-    }
-
-    // Enterprise Security: Restrict Admin promotion behind Admin Security Passcode
-    if (role === 'admin' && req.user.role !== 'admin') {
-      const validAdminPasscode = process.env.ADMIN_SECURITY_KEY || 'admin123';
-      if (!admin_code || admin_code !== validAdminPasscode) {
-        return res.status(403).json({ 
-          error: 'Restricted Access: Valid Admin Authorization Passcode is required to access the Admin Console.' 
-        });
-      }
+      return res.status(403).json({ 
+        error: 'Forbidden: Only marketplace roles (customer, owner) can be switched. Administrator privileges cannot be self-assigned.' 
+      });
     }
 
     const db = getDb();

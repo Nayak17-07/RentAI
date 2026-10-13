@@ -230,6 +230,29 @@ router.patch(['/admin/rentals/:rental_id/approve/', '/admin/rentals/:rental_id/'
       { $set: setObj }
     );
 
+    // Replenish catalog stock if rental is terminated, returned, or cancelled
+    if (['inactive', 'returned', 'cancelled'].includes(newStatus) && !['inactive', 'returned', 'cancelled'].includes(existing.status)) {
+      const appSelector = {
+        $or: [
+          { appliance_id: existing.appliance_id },
+          { _id: existing.appliance_id },
+          ...(existing.appliance_ref_id ? [{ _id: existing.appliance_ref_id }] : [])
+        ]
+      };
+      const incRes = await db.collection('appliances').findOneAndUpdate(
+        appSelector,
+        { $inc: { stock_quantity: 1 }, $set: { updated_at: new Date() } },
+        { returnDocument: 'after' }
+      );
+      try {
+        const { broadcastEvent } = require('../socket');
+        broadcastEvent('catalog:stock_changed', {
+          appliance_id: existing.appliance_id,
+          new_stock: incRes?.stock_quantity
+        });
+      } catch (e) {}
+    }
+
     try {
       const { notifyUser, notifyAdmin } = require('../socket');
       const updatedRental = await db.collection('rentals').findOne({ _id: rentalId });

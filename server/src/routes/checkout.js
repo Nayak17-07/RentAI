@@ -31,6 +31,17 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
       delivery_address = {}
     } = req.body || {};
 
+    // Bug 7: Strict payment method allowlist
+    const allowedPaymentMethods = [
+      'UPI', 'UPI_GATEWAY', 'CARD', 'CREDIT_CARD', 'DEBIT_CARD', 
+      'NETBANKING', 'CASH_ON_DELIVERY', 'COD', 'DOORSTEP'
+    ];
+    if (!allowedPaymentMethods.includes(payment_method)) {
+      return res.status(400).json({ 
+        error: `Unsupported payment method: '${payment_method}'. Allowed methods: ${allowedPaymentMethods.join(', ')}` 
+      });
+    }
+
     const transactionId = `TXN_${crypto.randomBytes(5).toString('hex').toUpperCase()}`;
     const dateStr = new Date().toISOString().slice(0, 7).replace('-', '');
     const invoiceNumber = `INV-${dateStr}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
@@ -78,16 +89,25 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
       let categoryId = 'Appliance';
       let imageUrl = '';
 
-      if (app) {
-        const pricing = app.pricing || {};
-        itemPrice = parseFloat(pricing[tenureStr] || app.monthly_price || 500);
-        standardDeposit = parseFloat(app.security_deposit || Math.round(itemPrice * 1.5));
-        rentalName = app.rental_name || 'Appliance';
-        categoryId = app.category_id || 'Appliance';
-        imageUrl = app.image_url || '';
-      } else {
-        standardDeposit = Math.round(itemPrice * 1.5);
+      // Bug 8: Reject phantom non-existent appliances
+      if (!app) {
+        return res.status(404).json({
+          error: `Appliance with ID "${item.appliance_id}" was not found in catalog. Please remove it from your cart before checkout.`
+        });
       }
+
+      const currentStock = parseInt(app.stock_quantity !== undefined ? app.stock_quantity : 1, 10);
+      if (currentStock <= 0) {
+        return res.status(400).json({
+          error: `"${app.rental_name}" is currently out of stock. Please remove it from your cart before checkout.`
+        });
+      }
+      const pricing = app.pricing || {};
+      itemPrice = parseFloat(pricing[tenureStr] || app.monthly_price || 500);
+      standardDeposit = parseFloat(app.security_deposit || Math.round(itemPrice * 1.5));
+      rentalName = app.rental_name || 'Appliance';
+      categoryId = app.category_id || 'Appliance';
+      imageUrl = app.image_url || '';
 
       // KYC-Linked Smart Deposit Privilege: 50% discount on security deposit for verified tenants!
       const itemDeposit = Math.round(standardDeposit * 0.5);
@@ -100,7 +120,8 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
       const rentalId = crypto.randomUUID();
       const escrowId = 'ESC-BLR-' + String(rentalId).slice(0, 8).toUpperCase();
       const trackingId = 'TRK-' + Math.floor(100000 + Math.random() * 900000);
-      const deliveryOtp = String(Math.floor(1000 + Math.random() * 9000));
+      // Bug 30: Cryptographically secure delivery OTP with expiration lifecycle
+      const deliveryOtp = String(crypto.randomInt(1000, 10000));
       const estDays = finalAddress?.delivery_slot?.includes('Express') ? 1 : 2;
       const etaDate = new Date(Date.now() + estDays * 24 * 3600 * 1000).toLocaleDateString('en-IN', {
         weekday: 'short',
@@ -108,6 +129,10 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
         month: 'short'
       });
 
+      const itemTax = Math.round(itemPrice * 0.18 * 100) / 100;
+      const itemTotalDue = parseFloat((itemPrice + itemDeposit + itemTax).toFixed(2));
+
+      // Bug 29: Explicitly label simulated logistics tracking
       const initialTracking = {
         tracking_id: trackingId,
         courier_partner: 'Rentora Direct Fleet & White-Glove Installation',
@@ -115,6 +140,11 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
         agent_phone: '+91 98450 12891',
         vehicle_number: 'KA-01-EL-9284',
         delivery_otp: deliveryOtp,
+        delivery_otp_attempts: 0,
+        delivery_otp_expires_at: new Date(Date.now() + 48 * 3600 * 1000), // 48-hour validity
+        delivery_otp_verified: false,
+        is_simulation: true,
+        simulation_notice: 'Academic Simulation: Fleet tracking and logistics ETA are simulated.',
         current_stage: 'QUALITY_CHECK',
         slot: finalAddress?.delivery_slot || 'Express (Within 24-48 Hours)',
         estimated_delivery: etaDate,
@@ -158,20 +188,28 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
         ]
       };
 
+      // Bug 10: Clear financial allocation per line item
       rentals.push({
         _id: rentalId,
         user_id: userId,
-        appliance_id: item.appliance_id,
+        appliance_id: app ? (app.appliance_id || String(app._id)) : item.appliance_id,
+        appliance_ref_id: app ? String(app._id) : item.appliance_id,
+        rental_name: rentalName,
+        category_id: categoryId,
+        image_url: imageUrl,
         tenure: tenureStr,
         monthly_rent: itemPrice,
         standard_deposit: standardDeposit,
         security_deposit: itemDeposit,
+        tax_rate: 0.18,
+        item_tax: itemTax,
+        amount_due_now: itemTotalDue,
+        amount_paid: itemTotalDue,
         deposit_discount_applied: true,
         deposit_discount_amount: depositSavings,
         escrow_id: escrowId,
         escrow_held_at: now,
         deposit_status: 'HELD',
-        amount_paid: parseFloat((itemPrice + itemDeposit).toFixed(2)),
         transaction_id: transactionId,
         invoice_number: invoiceNumber,
         payment_method,
@@ -195,21 +233,50 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
         delivery_tracking: initialTracking
       });
 
-      // Decrease stock
-      await db.collection('appliances').updateOne(
-        { $or: [{ appliance_id: item.appliance_id }, { _id: item.appliance_id }] },
-        { $inc: { stock_quantity: -1 } }
+      // Decrease stock atomically
+      const appSelector = app
+        ? { $or: [{ _id: app._id }, { appliance_id: app.appliance_id }, { appliance_id: item.appliance_id }, { _id: item.appliance_id }] }
+        : { $or: [{ appliance_id: item.appliance_id }, { _id: item.appliance_id }] };
+
+      const updateResult = await db.collection('appliances').findOneAndUpdate(
+        appSelector,
+        { $inc: { stock_quantity: -1 }, $set: { updated_at: new Date() } },
+        { returnDocument: 'after' }
       );
+
+      // Guard against negative stock
+      if (updateResult && updateResult.stock_quantity < 0) {
+        await db.collection('appliances').updateOne(
+          appSelector,
+          { $set: { stock_quantity: 0 } }
+        );
+      }
+
+      const newStock = updateResult ? Math.max(0, updateResult.stock_quantity) : 0;
+      try {
+        const { broadcastEvent } = require('../socket');
+        broadcastEvent('catalog:stock_changed', {
+          appliance_id: app?.appliance_id || item.appliance_id,
+          _id: app?._id ? String(app._id) : undefined,
+          action: 'decrement',
+          new_stock: newStock
+        });
+      } catch (e) {}
     }
 
     const taxAmount = Math.round(totalRent * 0.18 * 100) / 100;
     
-    // Process points redemption
+    // Bug 11: Atomic loyalty points redemption to prevent race conditions
     let pointsDiscount = 0;
     const redeemPoints = parseInt(req.body?.redeem_points || 0, 10);
-    if (redeemPoints > 0 && user && user.loyalty_points >= redeemPoints) {
-      pointsDiscount = redeemPoints; // 1 point = ₹1
-      await db.collection('users').updateOne({ _id: userId }, { $inc: { loyalty_points: -redeemPoints } });
+    if (redeemPoints > 0) {
+      const deductionRes = await db.collection('users').updateOne(
+        { _id: userId, loyalty_points: { $gte: redeemPoints } },
+        { $inc: { loyalty_points: -redeemPoints } }
+      );
+      if (deductionRes.modifiedCount === 1) {
+        pointsDiscount = redeemPoints; // 1 point = ₹1
+      }
     }
     
     let totalPaid = Math.round((totalRent + totalDeposit + taxAmount - pointsDiscount) * 100) / 100;

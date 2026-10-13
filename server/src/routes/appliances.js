@@ -25,7 +25,7 @@ router.get(['/appliances/', '/appliances/:appliance_id/'], async (req, res) => {
     const includeAllStock = String(all_stock).toLowerCase() === 'true';
 
     const query = {};
-    if (!includeAllStock) {
+    if (String(req.query.in_stock_only).toLowerCase() === 'true') {
       query.stock_quantity = { $gt: 0 };
     }
 
@@ -175,6 +175,42 @@ router.put(['/appliances/', '/appliances/:appliance_id/'], async (req, res) => {
   } catch (err) {
     console.error('Update appliance error:', err);
     return res.status(500).json({ error: 'Internal server error updating appliance' });
+  }
+});
+
+// PATCH /api/appliances/:appliance_id/stock-adjust (Quick Admin Stock Stepper)
+router.patch('/appliances/:appliance_id/stock-adjust', async (req, res) => {
+  try {
+    const db = getDb();
+    const appId = req.params.appliance_id;
+    const delta = parseInt(req.body.delta, 10);
+    if (isNaN(delta)) {
+      return res.status(400).json({ error: 'delta integer is required' });
+    }
+
+    const existing = await db.collection('appliances').findOne({
+      $or: [{ appliance_id: appId }, { _id: appId }]
+    });
+    if (!existing) {
+      return res.status(404).json({ error: 'Appliance not found' });
+    }
+
+    const currentStock = parseInt(existing.stock_quantity || 0, 10);
+    const newStock = Math.max(0, currentStock + delta);
+
+    await db.collection('appliances').updateOne(
+      { _id: existing._id },
+      { $set: { stock_quantity: newStock, updated_at: new Date() } }
+    );
+
+    return res.status(200).json({
+      success: 'Stock adjusted successfully',
+      appliance_id: existing.appliance_id,
+      stock_quantity: newStock
+    });
+  } catch (err) {
+    console.error('Adjust stock error:', err);
+    return res.status(500).json({ error: 'Internal server error adjusting stock' });
   }
 });
 

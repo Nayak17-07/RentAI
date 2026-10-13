@@ -74,14 +74,15 @@ def run_tests():
     assert txn_id and txn_id.startswith("TXN_"), f"Invalid txn_id: {txn_id}"
     assert inv_num and inv_num.startswith("INV-"), f"Invalid inv_num: {inv_num}"
     
-    # 799 rent + 1500 deposit + 143.82 GST (18% on rent) = 2442.82
+    # 799 rent + 750 deposit (50% KYC rebate on 1500) + 143.82 GST (18% on rent) = 1692.82
     expected_tax = round(799.0 * 0.18, 2)
-    expected_total = round(799.0 + 1500.0 + expected_tax, 2)
+    expected_deposit = 750.0 # 50% discount for KYC-verified customer
+    expected_total = round(799.0 + expected_deposit + expected_tax, 2)
     assert total_paid == expected_total, f"Expected total {expected_total}, got {total_paid}"
     print(f"[OK] 5. Checkout payment processed successfully!")
     print(f"       |-- Transaction ID : {txn_id}")
     print(f"       |-- Invoice Number : {inv_num}")
-    print(f"       |-- Amount Breakdown: Rent Rs. 799 + Deposit Rs. 1,500 + 18% GST Rs. {expected_tax} = Rs. {total_paid}")
+    print(f"       |-- Amount Breakdown: Rent Rs. 799 + Deposit Rs. {expected_deposit} (50% KYC Rebate) + 18% GST Rs. {expected_tax} = Rs. {total_paid}")
 
     # 6. Verify MongoDB Payments Collection
     payment_doc = db.payments.find_one({"transaction_id": txn_id})
@@ -117,14 +118,14 @@ def run_tests():
     rental_record = active_rentals[0]
     rental_id = rental_record["rental_id"]
     assert rental_record["deposit_status"] == "HELD"
-    assert rental_record["security_deposit"] == 1500.0
-    print(f"[OK] 10. Active rental contract confirmed. Deposit status: HELD IN ESCROW (Rs. 1,500)")
+    assert rental_record["security_deposit"] == expected_deposit
+    print(f"[OK] 10. Active rental contract confirmed. Deposit status: HELD IN ESCROW (Rs. {expected_deposit})")
 
     # 11. Asset Return & Deposit Refund Workflow (Module 4)
     patch_res = requests.patch(f"{BASE_URL}/rentals/", json={"rental_id": rental_id}, headers=auth_header)
     assert patch_res.status_code == 200
     patch_data = patch_res.json()
-    assert patch_data.get("deposit_refunded") == 1500.0
+    assert patch_data.get("deposit_refunded") == expected_deposit
     refund_txn = patch_data.get("refund_transaction_id")
     assert refund_txn and refund_txn.startswith("REF_")
     print(f"[OK] 11. Asset return processed & Deposit Refund executed!")

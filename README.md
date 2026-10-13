@@ -1,7 +1,7 @@
 # 🌟 Rentora (RentAI) — Next-Gen AI & IoT Household Appliance Rental Platform
 
 [![Node.js](https://img.shields.io/badge/Node.js-v20%2B-green.svg)](https://nodejs.org/)
-[![Express.js](https://img.shields.io/badge/Express.js-v4.19-lightgrey.svg)](https://expressjs.com/)
+[![Express.js](https://img.shields.io/badge/Express.js-v5.2-lightgrey.svg)](https://expressjs.com/)
 [![React 19](https://img.shields.io/badge/React-v19-blue.svg)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-v8-646CFF.svg)](https://vitejs.dev/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-NoSQL-47A248.svg)](https://www.mongodb.com/)
@@ -64,16 +64,20 @@
 ```
 
 * **Frontend**: React 19, Vite 8, React Router 7, Lucide Icons, Recharts, Tesseract.js, Socket.io-client.
-* **Backend**: Node.js v20+, Express.js 4, Socket.io, JSONWebToken, Multer, CORS.
+* **Backend**: Node.js v20+, Express.js 5.2, Socket.io, JSONWebToken, Multer, CORS.
 * **Database**: MongoDB (Native MongoDB Driver with connection pooling and atomic transactions).
 * **Machine Learning**: Python 3.10+, LightGBM, TreeSHAP, Scikit-learn, Pandas, NumPy.
+
+> [!NOTE]
+> **Academic Simulation & Architecture Scope**:
+> Rentora is an academic capstone platform developed to demonstrate enterprise software engineering patterns, explainable AI, and reactive architectures. Payment processing (UPI/Razorpay rails), Escrow custody IDs, and IoT sensor streams are simulated within software data pipelines to demonstrate real-world domain workflows without requiring live third-party merchant accounts or physical IoT hardware.
 
 ---
 
 ## 📦 Getting Started & Local Installation
 
 ### Prerequisites
-* [Node.js](https://nodejs.org/) (v18 or higher)
+* [Node.js](https://nodejs.org/) (v20 or higher)
 * [MongoDB](https://www.mongodb.com/) (running locally on port 27017 or a cloud MongoDB Atlas URI)
 
 ### 1. Clone the Repository
@@ -88,6 +92,7 @@ In the `server/` directory, ensure `.env` is configured:
 PORT=8000
 MONGO_URI=mongodb://127.0.0.1:27017/rentora_db
 JWT_SECRET=your_super_secret_jwt_key
+SECRET_KEY=your_super_secret_jwt_key
 ADMIN_PASSCODE=1707
 ```
 

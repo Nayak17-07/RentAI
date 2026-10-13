@@ -61,9 +61,17 @@ def run_tests():
     owner_tokens = r_owner_login.json()
     owner_auth = {"Authorization": f"Bearer {owner_tokens['access']}"}
 
+    # Verify self-service admin promotion is blocked with HTTP 403 (Bug 1 fix)
+    r_bad_admin = requests.patch(f"{BASE_URL}/auth/switch-role/", json={"role": "admin"}, headers=owner_auth)
+    assert r_bad_admin.status_code == 403, f"Expected 403 for admin self-promotion, got {r_bad_admin.status_code}"
+
+    # Activate marketplace owner role via switch-role endpoint
+    r_to_owner = requests.patch(f"{BASE_URL}/auth/switch-role/", json={"role": "owner"}, headers=owner_auth)
+    assert r_to_owner.status_code == 200
+
     r_owner_me = requests.get(f"{BASE_URL}/auth/me/", headers=owner_auth)
     assert r_owner_me.status_code == 200 and r_owner_me.json().get("role") == "owner"
-    print(f"[OK] 2. Role: OWNER successfully registered & authenticated ({owner_username})")
+    print(f"[OK] 2. Role: OWNER successfully activated via switch-role & authenticated ({owner_username})")
 
     # Owner accesses dedicated dashboard
     r_dash = requests.get(f"{BASE_URL}/owner/dashboard/", headers=owner_auth)
@@ -97,7 +105,7 @@ def run_tests():
     # Customer adds owner's appliance to cart & checks out
     requests.post(f"{BASE_URL}/cart/", json={"appliance_id": app_id, "tenure": "3"}, headers=cust_auth)
     r_checkout = requests.post(f"{BASE_URL}/checkout/", json={"payment_method": "UPI_GATEWAY"}, headers=cust_auth)
-    assert r_checkout.status_code == 200
+    assert r_checkout.status_code == 200, f"Checkout failed: {r_checkout.text}"
     print(f"[OK] 5. Customer rented Owner's appliance. Txn: {r_checkout.json().get('transaction_id')}")
 
     # Owner dashboard reflects active booking and 85% revenue share

@@ -40,6 +40,14 @@ import OwnershipCertificateModal from './OwnershipCertificateModal';
 import SmartApplianceIoTModal from './SmartApplianceIoTModal';
 import EscrowLedgerModal from './EscrowLedgerModal';
 
+const isSmartAppliance = (rental) => {
+  const name = (rental?.appliance_name || rental?.rental_name || rental?.title || '').toLowerCase();
+  const cat = (rental?.category || rental?.category_id || '').toLowerCase();
+  const sub = (rental?.sub_category || '').toLowerCase();
+  const keywords = ['refrigerator', 'fridge', 'washing machine', 'purifier', 'water purifier', 'ac', 'air conditioner', 'tv', 'television', 'microwave'];
+  return keywords.some(k => name.includes(k) || cat.includes(k) || sub.includes(k)) || cat.includes('appliance') || cat.includes('electronic');
+};
+
 const MyRentalsPage = ({ onLogout }) => {
   const [rentals, setRentals] = useState([]);
   const [payments, setPayments] = useState([]);
@@ -1405,71 +1413,7 @@ const MyRentalsPage = ({ onLogout }) => {
                         </div>
                       ) : (
                         <>
-                          {/* 0. Smart IoT Health & Telemetry Button */}
-                          <button
-                            type="button"
-                            onClick={() => setIotModalRental(rental)}
-                            style={{
-                              background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-                              color: '#ffffff',
-                              border: '1px solid #38bdf8',
-                              padding: '0.65rem 0.85rem',
-                              borderRadius: '8px',
-                              fontSize: '0.825rem',
-                              fontWeight: 800,
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              boxShadow: '0 2px 10px rgba(56, 189, 248, 0.25)',
-                              transition: 'all 0.15s ease'
-                            }}
-                            onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.01)'; }}
-                            onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                              <Zap size={15} color="#38bdf8" />
-                              <span>Smart IoT Health & Telemetry</span>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.72rem', color: '#4ade80' }}>
-                              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }} />
-                              <span>Live Sensor Hub →</span>
-                            </div>
-                          </button>
-
-                          {/* 0.5. Escrow Deposit & Refund Ledger Button */}
-                          <button
-                            type="button"
-                            onClick={() => setEscrowModalRental(rental)}
-                            style={{
-                              background: 'linear-gradient(135deg, #064e3b 0%, #065f46 100%)',
-                              color: '#ffffff',
-                              border: '1px solid #34d399',
-                              padding: '0.65rem 0.85rem',
-                              borderRadius: '8px',
-                              fontSize: '0.825rem',
-                              fontWeight: 800,
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              boxShadow: '0 2px 10px rgba(5, 150, 105, 0.25)',
-                              transition: 'all 0.15s ease'
-                            }}
-                            onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.01)'; }}
-                            onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                              <ShieldCheck size={15} color="#34d399" />
-                              <span>Escrow Deposit & Refund Ledger</span>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.72rem', color: '#a7f3d0' }}>
-                              <span>{rental.escrow_id ? rental.escrow_id.substring(0, 11) : 'ESC-RBI'}</span>
-                              <span>→</span>
-                            </div>
-                          </button>
-
-                          {/* 1. Track Delivery Button */}
+                          {/* 1. Status & Assurance Badges */}
                           <button
                             type="button"
                             onClick={() => setTrackingModalRental(rental)}
@@ -1477,31 +1421,89 @@ const MyRentalsPage = ({ onLogout }) => {
                               background: '#0f172a',
                               color: '#ffffff',
                               border: 'none',
-                              padding: '0.65rem 0.85rem',
-                              borderRadius: '8px',
-                              fontSize: '0.825rem',
+                              padding: '0.6rem 0.85rem',
+                              borderRadius: '10px',
+                              fontSize: '0.8rem',
                               fontWeight: 700,
                               cursor: 'pointer',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'space-between',
-                              boxShadow: '0 2px 8px rgba(15, 23, 42, 0.25)',
+                              boxShadow: '0 2px 8px rgba(15, 23, 42, 0.2)',
                               transition: 'all 0.15s ease'
                             }}
                             onMouseOver={(e) => { e.currentTarget.style.background = '#1e293b'; }}
                             onMouseOut={(e) => { e.currentTarget.style.background = '#0f172a'; }}
                           >
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                              <Truck size={15} color="#38bdf8" />
-                              <span>Track Delivery & Installation</span>
+                              <Truck size={14} color="#38bdf8" />
+                              <span>Track Delivery</span>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.72rem', color: '#94a3b8' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.72rem', color: '#94a3b8' }}>
                               <span>OTP: <strong style={{ color: '#4ade80', fontFamily: 'monospace' }}>{rental.delivery_tracking?.delivery_otp || '4829'}</strong></span>
                               <span>→</span>
                             </div>
                           </button>
 
-                          {/* 2. Rent-to-Own Equity Buyout Button */}
+                          {/* Escrow Deposit & Smart IoT Pill Badges */}
+                          <div style={{ display: 'grid', gridTemplateColumns: isSmartAppliance(rental) ? '1fr 1fr' : '1fr', gap: '0.45rem' }}>
+                            <button
+                              type="button"
+                              onClick={() => setEscrowModalRental(rental)}
+                              style={{
+                                background: '#ecfdf5',
+                                color: '#065f46',
+                                border: '1px solid #a7f3d0',
+                                padding: '0.45rem 0.65rem',
+                                borderRadius: '8px',
+                                fontSize: '0.74rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.35rem',
+                                transition: 'all 0.15s ease'
+                              }}
+                              onMouseOver={(e) => { e.currentTarget.style.background = '#d1fae5'; }}
+                              onMouseOut={(e) => { e.currentTarget.style.background = '#ecfdf5'; }}
+                              title="RBI-Compliant Escrow Protection & Deposit Return Ledger"
+                            >
+                              <ShieldCheck size={13} color="#059669" />
+                              <span>₹{rental.security_deposit || 750} in Escrow</span>
+                            </button>
+
+                            {isSmartAppliance(rental) && (
+                              <button
+                                type="button"
+                                onClick={() => setIotModalRental(rental)}
+                                style={{
+                                  background: '#f0f9ff',
+                                  color: '#0369a1',
+                                  border: '1px solid #bae6fd',
+                                  padding: '0.45rem 0.65rem',
+                                  borderRadius: '8px',
+                                  fontSize: '0.74rem',
+                                  fontWeight: 700,
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  gap: '0.35rem',
+                                  transition: 'all 0.15s ease'
+                                }}
+                                onMouseOver={(e) => { e.currentTarget.style.background = '#e0f2fe'; }}
+                                onMouseOut={(e) => { e.currentTarget.style.background = '#f0f9ff'; }}
+                                title="Smart IoT Appliance Telemetry & Diagnostics"
+                              >
+                                <Zap size={13} color="#0284c7" />
+                                <span>IoT Telemetry</span>
+                                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
+                              </button>
+                            )}
+                          </div>
+
+                          {/* 2. Flagship Rent-to-Own Equity Action */}
                           <button
                             type="button"
                             onClick={() => setBuyoutModalRental(rental)}
@@ -1510,7 +1512,7 @@ const MyRentalsPage = ({ onLogout }) => {
                               color: '#ffffff',
                               border: 'none',
                               padding: '0.65rem 0.85rem',
-                              borderRadius: '8px',
+                              borderRadius: '10px',
                               fontSize: '0.825rem',
                               fontWeight: 800,
                               cursor: 'pointer',
@@ -1518,122 +1520,89 @@ const MyRentalsPage = ({ onLogout }) => {
                               alignItems: 'center',
                               justifyContent: 'center',
                               gap: '0.45rem',
-                              boxShadow: '0 4px 12px rgba(49, 46, 129, 0.3)',
+                              boxShadow: '0 4px 12px rgba(49, 46, 129, 0.25)',
                               transition: 'all 0.15s ease'
                             }}
                             onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.01)'; }}
                             onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
                           >
                             <Sparkles size={14} color="#fde047" />
-                            <span>Own This Item (Rent-to-Own Buyout)</span>
+                            <span>Rent-to-Own Buyout & Equity</span>
                           </button>
 
-                          {/* 3. Style Upgrade & Tenure Extension Row */}
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                          {/* 3. Lifecycle Services Row */}
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.45rem' }}>
                             <button
                               type="button"
                               onClick={() => setSwapModalRental(rental)}
                               style={{
-                                background: '#f0f9ff',
-                                color: '#0284c7',
-                                border: '1.5px solid #bae6fd',
-                                padding: '0.55rem 0.5rem',
+                                background: '#f8fafc',
+                                color: '#334155',
+                                border: '1px solid #e2e8f0',
+                                padding: '0.5rem 0.45rem',
                                 borderRadius: '8px',
-                                fontSize: '0.78rem',
+                                fontSize: '0.76rem',
                                 fontWeight: 700,
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: '0.35rem'
+                                gap: '0.35rem',
+                                transition: 'all 0.15s ease'
                               }}
+                              onMouseOver={(e) => { e.currentTarget.style.borderColor = '#0284c7'; e.currentTarget.style.color = '#0284c7'; }}
+                              onMouseOut={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#334155'; }}
+                              title="Upgrade to newer model or swap appliance style"
                             >
-                              <RefreshCw size={13} color="#0284c7" />
+                              <RefreshCw size={13} />
                               <span>Style Upgrade</span>
                             </button>
 
                             <button
                               type="button"
-                              onClick={() => setBuyoutModalRental(rental)}
-                              style={{
-                                background: '#f5f3ff',
-                                color: '#7c3aed',
-                                border: '1.5px solid #ddd6fe',
-                                padding: '0.55rem 0.5rem',
-                                borderRadius: '8px',
-                                fontSize: '0.78rem',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '0.35rem'
-                              }}
-                            >
-                              <Zap size={13} color="#7c3aed" />
-                              <span>Extend (Save 20%)</span>
-                            </button>
-                          </div>
-
-                          {/* 4. Maintenance & Free Shifting Row */}
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                            <button
                               onClick={() => setServiceModal({ type: 'maintenance', rental })}
                               style={{
-                                background: '#eff6ff',
-                                color: '#2563eb',
-                                border: '1px solid #bfdbfe',
-                                padding: '0.55rem 0.5rem',
+                                background: '#f8fafc',
+                                color: '#334155',
+                                border: '1px solid #e2e8f0',
+                                padding: '0.5rem 0.45rem',
                                 borderRadius: '8px',
-                                fontSize: '0.78rem',
+                                fontSize: '0.76rem',
                                 fontWeight: 700,
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: '0.35rem'
+                                gap: '0.35rem',
+                                transition: 'all 0.15s ease'
                               }}
+                              onMouseOver={(e) => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.color = '#2563eb'; }}
+                              onMouseOut={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#334155'; }}
+                              title="Schedule free doorstep maintenance or relocation"
                             >
                               <Wrench size={13} />
-                              <span>Maintenance</span>
-                            </button>
-
-                            <button
-                              onClick={() => setServiceModal({ type: 'relocation', rental })}
-                              style={{
-                                background: '#f0fdf4',
-                                color: '#16a34a',
-                                border: '1px solid #bbf7d0',
-                                padding: '0.55rem 0.5rem',
-                                borderRadius: '8px',
-                                fontSize: '0.78rem',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '0.35rem'
-                              }}
-                            >
-                              <Truck size={13} />
-                              <span>Free Shifting</span>
+                              <span>Service & Shifting</span>
                             </button>
                           </div>
 
-                          {/* 5. Return Appliance Button */}
+                          {/* 4. Subtle Return & Refund Link */}
                           <button 
+                            type="button"
                             onClick={() => handleOpenReturnModal(rental)}
                             style={{
-                              background: '#ffffff',
-                              border: '1px solid #fecaca',
+                              background: 'transparent',
+                              border: '1px solid #fee2e2',
                               color: '#dc2626',
-                              padding: '0.55rem',
+                              padding: '0.45rem',
                               borderRadius: '8px',
-                              fontSize: '0.8rem',
+                              fontSize: '0.75rem',
                               fontWeight: 600,
                               cursor: 'pointer',
-                              textAlign: 'center'
+                              textAlign: 'center',
+                              transition: 'all 0.15s ease'
                             }}
+                            onMouseOver={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                            onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
                           >
                             Return Appliance & Claim Deposit (₹{rental.security_deposit || 750})
                           </button>

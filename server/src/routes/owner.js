@@ -1,12 +1,15 @@
 const express = require('express');
 const crypto = require('crypto');
 const { getDb } = require('../db');
-const { authenticateJWT } = require('../auth');
+const { authenticateJWT, requireRole } = require('../auth');
 
 const router = express.Router();
 
+// Enforce authentication & owner RBAC across all owner dashboard and fleet operations
+router.use(authenticateJWT, requireRole('owner', 'admin'));
+
 // GET /api/owner/dashboard/ - Overview metrics and active bookings for the logged-in owner
-router.get('/dashboard/', authenticateJWT, async (req, res) => {
+router.get('/dashboard/', async (req, res) => {
   try {
     const db = getDb();
     const ownerId = req.user.id;
@@ -98,9 +101,20 @@ router.post('/appliances/', authenticateJWT, async (req, res) => {
     }
 
     const appId = crypto.randomUUID();
-    const monthlyPrice = parseFloat(data.monthly_price || 500);
-    const deposit = parseFloat(data.security_deposit || Math.round(monthlyPrice * 1.5));
-    const stock = parseInt(data.stock_quantity || 1, 10);
+    const monthlyPrice = parseFloat(data.monthly_price);
+    if (!Number.isFinite(monthlyPrice) || monthlyPrice < 50 || monthlyPrice > 100000) {
+      return res.status(400).json({ error: 'Monthly price must be a valid number between ₹50 and ₹1,00,000' });
+    }
+
+    const deposit = parseFloat(data.security_deposit !== undefined ? data.security_deposit : Math.round(monthlyPrice * 1.5));
+    if (!Number.isFinite(deposit) || deposit < 0 || deposit > 200000) {
+      return res.status(400).json({ error: 'Security deposit must be a valid number between ₹0 and ₹2,00,000' });
+    }
+
+    const stock = parseInt(data.stock_quantity !== undefined ? data.stock_quantity : 1, 10);
+    if (!Number.isInteger(stock) || stock <= 0 || stock > 500) {
+      return res.status(400).json({ error: 'Stock quantity must be an integer between 1 and 500' });
+    }
 
     let pricing = data.pricing;
     if (!pricing || typeof pricing !== 'object') {
@@ -194,21 +208,36 @@ router.put('/appliances/:id', authenticateJWT, async (req, res) => {
   }
 });
 
-// DELETE /api/owner/appliances/:id - Owner deletes their own listing
-router.delete('/appliances/:id', authenticateJWT, async (req, res) => {
+// DELETE /api/owner/appliances/:id - Owner deletes their own listing (blocked if active rentals exist)
+router.delete('/appliances/:id', async (req, res) => {
   try {
     const db = getDb();
     const ownerId = req.user.id;
     const appId = req.params.id;
 
-    const result = await db.collection('appliances').deleteOne({
+    const app = await db.collection('appliances').findOne({
       $or: [{ appliance_id: appId }, { _id: appId }],
       owner_id: ownerId
     });
 
-    if (result.deletedCount === 0) {
+    if (!app) {
       return res.status(404).json({ error: 'Listing not found or you do not have permission to delete it' });
     }
+
+    // Bug 19: Check for active rentals before deleting
+    const targetAppId = app.appliance_id || String(app._id);
+    const activeRental = await db.collection('rentals').findOne({
+      $or: [{ appliance_id: targetAppId }, { appliance_id: String(app._id) }],
+      status: 'active'
+    });
+
+    if (activeRental) {
+      return res.status(400).json({
+        error: 'Cannot delete listing: An active customer lease is currently ongoing for this appliance. Please conclude the rental before removing.'
+      });
+    }
+
+    await db.collection('appliances').deleteOne({ _id: app._id });
 
     return res.status(200).json({ success: 'Listing removed successfully' });
   } catch (err) {
@@ -217,16 +246,43 @@ router.delete('/appliances/:id', authenticateJWT, async (req, res) => {
   }
 });
 
-// POST /api/owner/withdraw/ - Request instant payout or bank withdrawal
-router.post('/withdraw/', authenticateJWT, async (req, res) => {
+// POST /api/owner/withdraw/ - Request payout verified against genuine available ledger balance
+router.post('/withdraw/', async (req, res) => {
   try {
     const db = getDb();
     const ownerId = req.user.id;
     const { amount, method = 'upi', upi_id, bank_account, ifsc } = req.body || {};
 
     const withdrawAmt = parseFloat(amount);
-    if (!withdrawAmt || withdrawAmt <= 0) {
-      return res.status(400).json({ error: 'Invalid withdrawal amount' });
+    if (!Number.isFinite(withdrawAmt) || withdrawAmt <= 0) {
+      return res.status(400).json({ error: 'Invalid withdrawal amount. Must be a positive number.' });
+    }
+
+    // Bug 5 & 20: Compute true available ledger balance
+    const myApps = await db.collection('appliances').find({ owner_id: ownerId }).toArray();
+    const appIds = myApps.map(a => a.appliance_id || a._id);
+
+    let totalEarned = 0;
+    if (appIds.length > 0) {
+      const bookings = await db.collection('rentals').find({
+        appliance_id: { $in: appIds },
+        status: { $in: ['active', 'inactive', 'delivered'] }
+      }).toArray();
+      totalEarned = bookings.reduce((sum, b) => sum + Math.round((parseFloat(b.monthly_rent) || 0) * 0.85), 0);
+    }
+
+    const previousPayouts = await db.collection('owner_payouts').find({
+      owner_id: ownerId,
+      status: { $in: ['COMPLETED', 'PENDING_SETTLEMENT', 'PROCESSED'] }
+    }).toArray();
+
+    const totalWithdrawn = previousPayouts.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+    const availableBalance = Math.max(0, totalEarned - totalWithdrawn);
+
+    if (withdrawAmt > availableBalance) {
+      return res.status(400).json({
+        error: `Insufficient earnings balance. Requested: ₹${withdrawAmt.toLocaleString('en-IN')}, Available: ₹${availableBalance.toLocaleString('en-IN')}. Please wait for rental subscriptions to settle.`
+      });
     }
 
     const payoutId = `PAY-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -238,9 +294,11 @@ router.post('/withdraw/', authenticateJWT, async (req, res) => {
       payout_id: payoutId,
       owner_id: ownerId,
       amount: withdrawAmt,
-      method: method === 'upi' ? `UPI (${upi_id || 'partner@okhdfcbank'})` : `Bank (${bank_account || 'HDFC...8492'})`,
+      method: method === 'upi' ? `UPI (${upi_id || 'partner@bank'})` : `Bank (${bank_account || 'Verified Account'})`,
+      ifsc: ifsc || null,
       utr,
-      status: 'COMPLETED',
+      status: 'PENDING_SETTLEMENT',
+      simulation_note: 'Simulation Workflow: Payout request submitted for automated banking clearance.',
       created_at: now
     };
 

@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  LogOut, 
-  Activity, 
-  Users, 
-  DollarSign, 
-  AlertTriangle, 
-  TrendingUp, 
+import {
+  LogOut,
+  Activity,
+  Users,
+  DollarSign,
+  AlertTriangle,
+  TrendingUp,
   ShoppingBag,
   PackageCheck,
   Plus,
+  Minus,
   Search,
   Edit3,
   Trash2,
@@ -18,6 +19,8 @@ import {
   RefreshCw,
   Truck,
   Package,
+  Layers,
+  Boxes,
   Lock,
   ArrowLeft,
   ShieldCheck,
@@ -27,23 +30,27 @@ import {
   Wifi,
   FileSpreadsheet,
   CheckCircle2,
-  Sparkles
+  CheckCircle,
+  AlertCircle,
+  Sparkles,
+  Copy,
+  ExternalLink
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from './utils/api';
 import ThemeToggle from './ThemeToggle';
-import { 
-  ResponsiveContainer, 
-  AreaChart, 
-  Area, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  Tooltip, 
-  CartesianGrid, 
-  Cell, 
-  Legend 
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Cell,
+  Legend
 } from 'recharts';
 import { getSocket, joinAdminRoom } from './utils/socket';
 import { downloadCsv, exportViaServer } from './utils/exportCsv';
@@ -54,7 +61,7 @@ const AdminDashboard = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'bi_analytics' | 'iot_fleet' | 'inventory' | 'users' | 'rentals' | 'complaints'
   const [socketConnected, setSocketConnected] = useState(false);
   const [liveAlert, setLiveAlert] = useState(null);
-  
+
   // Overview data
   const [dashboardData, setDashboardData] = useState({
     total_revenue: 0,
@@ -67,6 +74,9 @@ const AdminDashboard = ({ onLogout }) => {
   // Inventory state (Module 2)
   const [appliances, setAppliances] = useState([]);
   const [inventorySearch, setInventorySearch] = useState('');
+  const [inventoryCategoryFilter, setInventoryCategoryFilter] = useState('All');
+  const [inventoryStockFilter, setInventoryStockFilter] = useState('all'); // 'all' | 'in_stock' | 'low_stock' | 'out_of_stock'
+  const [stockUpdatingId, setStockUpdatingId] = useState(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingAppliance, setEditingAppliance] = useState(null);
   const [applianceForm, setApplianceForm] = useState({
@@ -116,6 +126,14 @@ const AdminDashboard = ({ onLogout }) => {
   const [rejectingKyc, setRejectingKyc] = useState(null);
   const [rejectionReason, setRejectionReason] = useState('');
   const [kycLoading, setKycLoading] = useState(false);
+  const [copiedProofKey, setCopiedProofKey] = useState(null);
+
+  const handleCopyProofUrl = (url, key) => {
+    if (!url) return;
+    navigator.clipboard.writeText(url);
+    setCopiedProofKey(key);
+    setTimeout(() => setCopiedProofKey(null), 2500);
+  };
 
   const navigate = useNavigate();
 
@@ -356,7 +374,7 @@ const AdminDashboard = ({ onLogout }) => {
     e.preventDefault();
     try {
       const isEdit = Boolean(editingAppliance);
-      const url = isEdit 
+      const url = isEdit
         ? `http://localhost:8000/api/appliances/${editingAppliance.appliance_id || editingAppliance._id}/`
         : 'http://localhost:8000/api/appliances/';
       const method = isEdit ? 'PUT' : 'POST';
@@ -417,6 +435,48 @@ const AdminDashboard = ({ onLogout }) => {
       description: app.description || ''
     });
     setIsAddModalOpen(true);
+  };
+
+  // Quick Inline Stock Adjustment (+1 / -1 / custom delta)
+  const handleStockAdjust = async (appId, delta) => {
+    if (!appId || stockUpdatingId) return;
+    setStockUpdatingId(appId);
+
+    // Optimistic UI state update
+    setAppliances(prev => prev.map(a => {
+      const id = a.appliance_id || a._id;
+      if (id === appId) {
+        const cur = parseInt(a.stock_quantity, 10) || 0;
+        return { ...a, stock_quantity: Math.max(0, cur + delta) };
+      }
+      return a;
+    }));
+
+    try {
+      const res = await fetch(`http://localhost:8000/api/appliances/${appId}/stock-adjust`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ delta })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(`Stock update failed: ${data.error || 'Server error'}`);
+        fetchInventory();
+      } else {
+        setAppliances(prev => prev.map(a => {
+          const id = a.appliance_id || a._id;
+          if (id === appId) {
+            return { ...a, stock_quantity: data.stock_quantity };
+          }
+          return a;
+        }));
+      }
+    } catch (err) {
+      console.error("Error adjusting stock:", err);
+      fetchInventory();
+    } finally {
+      setStockUpdatingId(null);
+    }
   };
 
   // --- Module 7: User Management Handlers (Admin, Owner, Customer) ---
@@ -549,25 +609,63 @@ const AdminDashboard = ({ onLogout }) => {
 
   const sales = dashboardData.sales_analytics || {};
 
+  // Unique categories for catalog filtering
+  const uniqueCategories = ['All', ...Array.from(new Set(appliances.map(a => a.category_id).filter(Boolean)))];
+
+  // Inventory KPI metrics
+  const totalCatalogSKUs = appliances.length;
+  const totalUnitsInStock = appliances.reduce((sum, a) => sum + (parseInt(a.stock_quantity, 10) || 0), 0);
+  const lowStockCount = appliances.filter(a => {
+    const s = parseInt(a.stock_quantity, 10) || 0;
+    return s > 0 && s <= 3;
+  }).length;
+  const outOfStockCount = appliances.filter(a => {
+    const s = parseInt(a.stock_quantity, 10) || 0;
+    return s <= 0;
+  }).length;
+  const inStockCount = appliances.filter(a => {
+    const s = parseInt(a.stock_quantity, 10) || 0;
+    return s > 3;
+  }).length;
+
   // Filtered inventories
-  const filteredAppliances = appliances.filter(a => 
-    a.rental_name?.toLowerCase().includes(inventorySearch.toLowerCase()) ||
-    a.category_id?.toLowerCase().includes(inventorySearch.toLowerCase())
-  );
+  const filteredAppliances = appliances.filter(a => {
+    const q = inventorySearch.toLowerCase().trim();
+    if (q) {
+      const matches =
+        a.rental_name?.toLowerCase().includes(q) ||
+        a.category_id?.toLowerCase().includes(q) ||
+        a.sub_category?.toLowerCase().includes(q) ||
+        a.brand?.toLowerCase().includes(q) ||
+        a.appliance_id?.toLowerCase().includes(q);
+      if (!matches) return false;
+    }
+
+    if (inventoryCategoryFilter !== 'All' && a.category_id !== inventoryCategoryFilter) {
+      return false;
+    }
+
+    const stock = typeof a.stock_quantity === 'number' ? a.stock_quantity : (parseInt(a.stock_quantity, 10) || 0);
+    if (inventoryStockFilter === 'in_stock' && stock <= 3) return false;
+    if (inventoryStockFilter === 'low_stock' && (stock <= 0 || stock > 3)) return false;
+    if (inventoryStockFilter === 'out_of_stock' && stock > 0) return false;
+
+    return true;
+  });
 
   // Filtered users
-  const filteredUsers = usersList.filter(u => 
+  const filteredUsers = usersList.filter(u =>
     u.username?.toLowerCase().includes(userSearch.toLowerCase()) ||
     u.email?.toLowerCase().includes(userSearch.toLowerCase())
   );
 
   // Filtered rentals
-  const filteredRentals = allRentals.filter(r => 
+  const filteredRentals = allRentals.filter(r =>
     rentalFilter === 'all' ? true : r.status === rentalFilter
   );
 
   // Filtered complaints
-  const filteredComplaints = complaintsList.filter(c => 
+  const filteredComplaints = complaintsList.filter(c =>
     complaintFilter === 'all' ? true : c.status === complaintFilter
   );
 
@@ -733,16 +831,16 @@ const AdminDashboard = ({ onLogout }) => {
             </div>
 
             {/* Navigation Tabs */}
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.35rem', overflowX: 'auto', paddingBottom: '2px' }}>
               {[
-                { id: 'overview', label: 'Analytics & Churn', icon: TrendingUp },
-                { id: 'bi_analytics', label: 'Business Intelligence (BI)', icon: BarChart2 },
-                { id: 'iot_fleet', label: 'Smart IoT & Predictive Maintenance', icon: Wifi },
-                { id: 'inventory', label: `Appliance Inventory (${appliances.length})`, icon: ShoppingBag },
-                { id: 'users', label: `Users (${usersList.length})`, icon: Users },
-                { id: 'rentals', label: `Bookings (${allRentals.length})`, icon: PackageCheck },
-                { id: 'complaints', label: `Support Tickets (${complaintsList.filter(c => c.status === 'OPEN').length} New)`, icon: MessageSquare },
-                { id: 'kyc', label: `KYC Moderation (${kycStats.pending > 0 ? `${kycStats.pending} Pending` : kycList.length})`, icon: ShieldCheck }
+                { id: 'overview', label: 'Analytics', icon: TrendingUp },
+                { id: 'bi_analytics', label: 'Executive BI', icon: BarChart2 },
+                { id: 'iot_fleet', label: 'IoT Fleet', icon: Wifi },
+                { id: 'inventory', label: 'Inventory', badge: appliances.length, icon: ShoppingBag },
+                { id: 'users', label: 'Users', badge: usersList.length, icon: Users },
+                { id: 'rentals', label: 'Bookings', badge: allRentals.length, icon: PackageCheck },
+                { id: 'complaints', label: 'Support', badge: complaintsList.filter(c => c.status === 'OPEN').length, icon: MessageSquare, badgeAlert: true },
+                { id: 'kyc', label: 'KYC', badge: kycStats.pending || kycList.length, icon: ShieldCheck, badgeAlert: kycStats.pending > 0 }
               ].map(tab => {
                 const Icon = tab.icon;
                 const isSelected = activeTab === tab.id;
@@ -751,28 +849,41 @@ const AdminDashboard = ({ onLogout }) => {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     style={{
-                      display: 'flex',
+                      display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '0.4rem',
-                      padding: '0.5rem 0.85rem',
+                      gap: '0.35rem',
+                      padding: '0.45rem 0.75rem',
                       borderRadius: '8px',
                       border: 'none',
                       background: isSelected ? '#fee2e2' : 'transparent',
                       color: isSelected ? '#dc2626' : '#64748b',
                       fontWeight: isSelected ? 700 : 500,
-                      fontSize: '0.85rem',
+                      fontSize: '0.825rem',
                       cursor: 'pointer',
-                      transition: 'all 0.15s'
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.15s ease'
                     }}
                   >
-                    <Icon size={16} />
+                    <Icon size={15} />
                     <span>{tab.label}</span>
+                    {tab.badge !== undefined && tab.badge > 0 && (
+                      <span style={{
+                        fontSize: '0.68rem',
+                        padding: '1px 5px',
+                        borderRadius: '999px',
+                        background: isSelected ? '#dc2626' : (tab.badgeAlert ? '#fee2e2' : '#f1f5f9'),
+                        color: isSelected ? '#ffffff' : (tab.badgeAlert ? '#dc2626' : '#475569'),
+                        fontWeight: 700
+                      }}>
+                        {tab.badge}
+                      </span>
+                    )}
                   </button>
                 );
               })}
             </div>
           </div>
-          
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
             {/* Live WebSocket Status Indicator */}
             <div style={{
@@ -799,7 +910,7 @@ const AdminDashboard = ({ onLogout }) => {
               <span>{socketConnected ? 'Live Socket Connected' : 'Connecting Socket...'}</span>
             </div>
 
-            <button 
+            <button
               onClick={() => {
                 localStorage.setItem('user_role', 'customer');
                 navigate('/');
@@ -866,7 +977,7 @@ const AdminDashboard = ({ onLogout }) => {
       )}
 
       <main className="container" style={{ marginTop: '2rem' }}>
-        
+
         {/* ========================================================================= */}
         {/* TAB 1: OVERVIEW & MARKET ANALYTICS */}
         {/* ========================================================================= */}
@@ -946,7 +1057,7 @@ const AdminDashboard = ({ onLogout }) => {
                   <h3 style={{ fontSize: '1.5rem', margin: 0, color: '#0f172a' }}>₹{dashboardData.total_revenue.toLocaleString()}</h3>
                 </div>
               </div>
-              
+
               <div className="panel" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
                 <div style={{ background: '#eff6ff', padding: '0.75rem', borderRadius: '0.75rem' }}>
                   <Package size={26} color="#2563eb" />
@@ -956,7 +1067,7 @@ const AdminDashboard = ({ onLogout }) => {
                   <h3 style={{ fontSize: '1.5rem', margin: 0, color: '#0f172a' }}>{dashboardData.active_rentals}</h3>
                 </div>
               </div>
-              
+
               <div className="panel" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
                 <div style={{ background: '#fef2f2', padding: '0.75rem', borderRadius: '0.75rem' }}>
                   <AlertTriangle size={26} color="#e23744" />
@@ -1031,8 +1142,8 @@ const AdminDashboard = ({ onLogout }) => {
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                         <XAxis dataKey="month" stroke="#94a3b8" fontSize={11} tickLine={false} />
-                        <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} tickFormatter={(v) => `₹${(v/1000).toFixed(0)}k`} />
-                        <Tooltip 
+                        <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
+                        <Tooltip
                           formatter={(value, name) => [
                             name === 'revenue' ? `₹${Number(value).toLocaleString()}` : value,
                             name === 'revenue' ? 'Monthly Revenue' : 'Active Contracts'
@@ -1064,8 +1175,8 @@ const AdminDashboard = ({ onLogout }) => {
                       ]} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                         <XAxis dataKey="category" stroke="#94a3b8" fontSize={10} tickLine={false} interval={0} />
-                        <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} tickFormatter={(v) => `₹${(v/1000).toFixed(0)}k`} />
-                        <Tooltip 
+                        <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
+                        <Tooltip
                           formatter={(v) => [`₹${Number(v).toLocaleString()}`, 'Monthly Inflow']}
                           contentStyle={{ backgroundColor: '#0f172a', borderRadius: '8px', border: 'none', color: '#fff', fontSize: '0.8rem' }}
                         />
@@ -1111,7 +1222,7 @@ const AdminDashboard = ({ onLogout }) => {
                         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                         <XAxis dataKey="tier" stroke="#94a3b8" fontSize={10} tickLine={false} />
                         <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} allowDecimals={false} />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(v) => [`${v} Users`, 'Cohort Size']}
                           contentStyle={{ backgroundColor: '#0f172a', borderRadius: '8px', border: 'none', color: '#fff', fontSize: '0.8rem' }}
                         />
@@ -1152,7 +1263,7 @@ const AdminDashboard = ({ onLogout }) => {
                         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                         <XAxis dataKey="tier" stroke="#94a3b8" fontSize={10} tickLine={false} />
                         <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} tickFormatter={(v) => `₹${v}L`} />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(v, name) => [`₹${v} Lakhs`, name === 'sales' ? 'Gross Sales' : 'Net Margin']}
                           contentStyle={{ backgroundColor: '#0f172a', borderRadius: '8px', border: 'none', color: '#fff', fontSize: '0.8rem' }}
                         />
@@ -1176,7 +1287,7 @@ const AdminDashboard = ({ onLogout }) => {
                   AI Model 1 Active
                 </span>
               </div>
-              
+
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead>
@@ -1196,9 +1307,9 @@ const AdminDashboard = ({ onLogout }) => {
                             <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{customer.email}</div>
                           </td>
                           <td style={{ padding: '0.85rem 1.5rem' }}>
-                            <div style={{ 
-                              display: 'inline-flex', alignItems: 'center', 
-                              background: customer.churn_risk_score > 0.8 ? '#fef2f2' : '#fff7ed', 
+                            <div style={{
+                              display: 'inline-flex', alignItems: 'center',
+                              background: customer.churn_risk_score > 0.8 ? '#fef2f2' : '#fff7ed',
                               color: customer.churn_risk_score > 0.8 ? '#e23744' : '#ea580c',
                               padding: '0.2rem 0.65rem', borderRadius: '1rem', fontWeight: 700, fontSize: '0.8rem'
                             }}>
@@ -1230,29 +1341,47 @@ const AdminDashboard = ({ onLogout }) => {
         )}
 
         {/* ========================================================================= */}
-        {/* TAB 2: APPLIANCE INVENTORY MANAGEMENT (Module 2) */}
+        {/* TAB 2: APPLIANCE INVENTORY & FLEET MANAGEMENT (Module 2) */}
         {/* ========================================================================= */}
         {activeTab === 'inventory' && (
           <div className="animate-fade-in">
+            {/* Header with Search and Actions */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
-                <h1 style={{ fontSize: '1.75rem', margin: 0, color: '#0f172a' }}>Appliance Inventory Catalog</h1>
-                <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '0.2rem', margin: 0 }}>
-                  Add, update, adjust tenure rental pricing, configure deposits, and manage stock quantities.
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <h1 style={{ fontSize: '1.75rem', margin: 0, color: '#0f172a', fontWeight: 800 }}>Inventory & Fleet Catalog</h1>
+                  <span style={{ background: '#e0e7ff', color: '#4338ca', fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '999px' }}>
+                    {totalCatalogSKUs} Active SKUs
+                  </span>
+                </div>
+                <p style={{ color: '#64748b', fontSize: '0.88rem', marginTop: '0.3rem', margin: 0 }}>
+                  Real-time stock controls, automated restock steppers, category taxonomy, and rental pricing tiers.
                 </p>
               </div>
 
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 <div style={{ position: 'relative' }}>
-                  <Search size={16} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                  <Search size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                   <input
                     type="text"
-                    placeholder="Search appliances..."
+                    placeholder="Search name, SKU, brand..."
                     value={inventorySearch}
                     onChange={(e) => setInventorySearch(e.target.value)}
-                    style={{ padding: '0.5rem 1rem 0.5rem 2.2rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', width: '220px' }}
+                    style={{ padding: '0.5rem 1rem 0.5rem 2.2rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', width: '230px', background: 'white' }}
                   />
                 </div>
+
+                <select
+                  value={inventoryCategoryFilter}
+                  onChange={(e) => setInventoryCategoryFilter(e.target.value)}
+                  style={{ padding: '0.5rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', background: 'white', color: '#334155', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  {uniqueCategories.map((c, i) => (
+                    <option key={i} value={c}>
+                      {c === 'All' ? 'All Categories' : c}
+                    </option>
+                  ))}
+                </select>
 
                 <button
                   onClick={() => {
@@ -1275,90 +1404,348 @@ const AdminDashboard = ({ onLogout }) => {
                     setIsAddModalOpen(true);
                   }}
                   className="btn-primary"
-                  style={{ padding: '0.55rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                  style={{ padding: '0.55rem 1.1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700 }}
                 >
                   <Plus size={16} />
-                  Add New Appliance
+                  Add New Item
                 </button>
               </div>
             </div>
 
-            <div className="panel" style={{ overflow: 'hidden' }}>
+            {/* Inventory KPI Summary Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div className="panel" style={{ padding: '1.15rem 1.25rem', background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '10px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>
+                  <Package size={24} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Catalog SKUs</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>{totalCatalogSKUs}</div>
+                  <div style={{ fontSize: '0.72rem', color: '#2563eb', fontWeight: 600 }}>{uniqueCategories.length - 1} categories active</div>
+                </div>
+              </div>
+
+              <div className="panel" style={{ padding: '1.15rem 1.25rem', background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '10px', background: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
+                  <Boxes size={24} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Fleet In Stock</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>{totalUnitsInStock}</div>
+                  <div style={{ fontSize: '0.72rem', color: '#059669', fontWeight: 600 }}>Physical units in hubs</div>
+                </div>
+              </div>
+
+              <div className="panel" style={{ padding: '1.15rem 1.25rem', background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '10px', background: '#fffbeb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706' }}>
+                  <AlertTriangle size={24} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Low Stock Alert</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: lowStockCount > 0 ? '#d97706' : '#0f172a' }}>{lowStockCount}</div>
+                  <div style={{ fontSize: '0.72rem', color: '#d97706', fontWeight: 600 }}>Units &le; 3 (Reorder recommended)</div>
+                </div>
+              </div>
+
+              <div className="panel" style={{ padding: '1.15rem 1.25rem', background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '10px', background: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626' }}>
+                  <AlertCircle size={24} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Out of Stock</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: outOfStockCount > 0 ? '#dc2626' : '#0f172a' }}>{outOfStockCount}</div>
+                  <div style={{ fontSize: '0.72rem', color: outOfStockCount > 0 ? '#dc2626' : '#64748b', fontWeight: 600 }}>Checkout blocked</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Status Filter Tab Pills */}
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+              {[
+                { id: 'all', label: 'All Items', count: totalCatalogSKUs },
+                { id: 'in_stock', label: 'In Stock (>3)', count: inStockCount },
+                { id: 'low_stock', label: 'Low Stock (1-3)', count: lowStockCount },
+                { id: 'out_of_stock', label: 'Out of Stock (0)', count: outOfStockCount }
+              ].map(tab => {
+                const isActive = inventoryStockFilter === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setInventoryStockFilter(tab.id)}
+                    style={{
+                      padding: '0.45rem 1rem',
+                      borderRadius: '8px',
+                      border: isActive ? '1.5px solid #2563eb' : '1px solid #e2e8f0',
+                      background: isActive ? '#eff6ff' : 'white',
+                      color: isActive ? '#1d4ed8' : '#64748b',
+                      fontSize: '0.825rem',
+                      fontWeight: isActive ? 700 : 500,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <span>{tab.label}</span>
+                    <span style={{
+                      background: isActive ? '#bfdbfe' : '#f1f5f9',
+                      color: isActive ? '#1e40af' : '#64748b',
+                      padding: '0.1rem 0.45rem',
+                      borderRadius: '999px',
+                      fontSize: '0.72rem',
+                      fontWeight: 700
+                    }}>
+                      {tab.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Inventory Table */}
+            <div className="panel" style={{ overflow: 'hidden', background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead>
                     <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                      <th style={{ padding: '0.85rem 1.25rem', fontWeight: 600, color: '#64748b', fontSize: '0.8rem' }}>Item</th>
-                      <th style={{ padding: '0.85rem 1.25rem', fontWeight: 600, color: '#64748b', fontSize: '0.8rem' }}>Category</th>
-                      <th style={{ padding: '0.85rem 1.25rem', fontWeight: 600, color: '#64748b', fontSize: '0.8rem' }}>Monthly Rent</th>
-                      <th style={{ padding: '0.85rem 1.25rem', fontWeight: 600, color: '#64748b', fontSize: '0.8rem' }}>Deposit</th>
-                      <th style={{ padding: '0.85rem 1.25rem', fontWeight: 600, color: '#64748b', fontSize: '0.8rem' }}>Stock</th>
-                      <th style={{ padding: '0.85rem 1.25rem', fontWeight: 600, color: '#64748b', fontSize: '0.8rem' }}>Coverage</th>
-                      <th style={{ padding: '0.85rem 1.25rem', fontWeight: 600, color: '#64748b', fontSize: '0.8rem', textAlign: 'right' }}>Actions</th>
+                      <th style={{ padding: '0.9rem 1.25rem', fontWeight: 700, color: '#475569', fontSize: '0.8rem' }}>Item & SKU</th>
+                      <th style={{ padding: '0.9rem 1.25rem', fontWeight: 700, color: '#475569', fontSize: '0.8rem' }}>Category & Taxonomy</th>
+                      <th style={{ padding: '0.9rem 1.25rem', fontWeight: 700, color: '#475569', fontSize: '0.8rem' }}>Monthly Rent</th>
+                      <th style={{ padding: '0.9rem 1.25rem', fontWeight: 700, color: '#475569', fontSize: '0.8rem' }}>Deposit</th>
+                      <th style={{ padding: '0.9rem 1.25rem', fontWeight: 700, color: '#475569', fontSize: '0.8rem', minWidth: '180px' }}>Live Stock Stepper</th>
+                      <th style={{ padding: '0.9rem 1.25rem', fontWeight: 700, color: '#475569', fontSize: '0.8rem' }}>Service Hubs</th>
+                      <th style={{ padding: '0.9rem 1.25rem', fontWeight: 700, color: '#475569', fontSize: '0.8rem', textAlign: 'right' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredAppliances.map((app, idx) => (
-                      <tr key={idx} style={{ borderBottom: '1px solid #e2e8f0', background: idx % 2 === 0 ? 'white' : '#f8fafc', fontSize: '0.85rem' }}>
-                        <td style={{ padding: '0.85rem 1.25rem' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                            <img 
-                              src={app.image_url || 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?auto=format&fit=crop&q=80&w=150'} 
-                              alt={app.rental_name} 
-                              style={{ width: '45px', height: '45px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #e2e8f0' }}
-                            />
-                            <div>
-                              <div style={{ fontWeight: 600, color: '#0f172a' }}>{app.rental_name}</div>
-                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{app.brand || 'Rentora Select'} • {app.tag || 'Standard'}</div>
-                            </div>
+                    {filteredAppliances.length > 0 ? (
+                      filteredAppliances.map((app, idx) => {
+                        const appId = app.appliance_id || app._id;
+                        const stock = typeof app.stock_quantity === 'number' ? app.stock_quantity : (parseInt(app.stock_quantity, 10) || 0);
+                        const isUpdating = stockUpdatingId === appId;
+
+                        return (
+                          <tr key={idx} style={{ borderBottom: '1px solid #e2e8f0', background: idx % 2 === 0 ? 'white' : '#fafafa', fontSize: '0.85rem' }}>
+                            {/* Item & SKU */}
+                            <td style={{ padding: '0.85rem 1.25rem' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                                <img
+                                  src={app.image_url || 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?auto=format&fit=crop&q=80&w=150'}
+                                  alt={app.rental_name}
+                                  style={{
+                                    width: '50px',
+                                    height: '50px',
+                                    objectFit: 'cover',
+                                    borderRadius: '8px',
+                                    border: '1px solid #e2e8f0',
+                                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                                    flexShrink: 0
+                                  }}
+                                />
+                                <div>
+                                  <div style={{ fontWeight: 700, color: '#0f172a', lineHeight: 1.3 }}>{app.rental_name}</div>
+                                  <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                    <span style={{ fontWeight: 600, color: '#334155' }}>{app.brand || 'Rentora Select'}</span>
+                                    <span>•</span>
+                                    <span style={{ fontFamily: 'monospace', color: '#94a3b8' }}>ID: {String(appId).slice(0, 8)}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+
+                            {/* Category & Taxonomy */}
+                            <td style={{ padding: '0.85rem 1.25rem' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', alignItems: 'flex-start' }}>
+                                <span style={{ background: '#f1f5f9', padding: '0.2rem 0.55rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>
+                                  {app.category_id}
+                                </span>
+                                {app.sub_category && (
+                                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                                    {app.sub_category}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+
+                            {/* Monthly Rent */}
+                            <td style={{ padding: '0.85rem 1.25rem' }}>
+                              <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.95rem' }}>
+                                ₹{app.monthly_price}/mo
+                              </div>
+                              <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 500, marginTop: '2px' }}>
+                                6m: ₹{app.pricing?.['6'] || Math.round(app.monthly_price * 0.9)} • 12m: ₹{app.pricing?.['12'] || Math.round(app.monthly_price * 0.8)}
+                              </div>
+                            </td>
+
+                            {/* Deposit */}
+                            <td style={{ padding: '0.85rem 1.25rem', color: '#475569', fontWeight: 600 }}>
+                              ₹{app.security_deposit || Math.round(app.monthly_price * 1.5)}
+                            </td>
+
+                            {/* Live Stock Stepper */}
+                            <td style={{ padding: '0.85rem 1.25rem' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', alignItems: 'flex-start' }}>
+                                {/* Stepper row */}
+                                <div style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  background: '#f8fafc',
+                                  border: '1.5px solid #e2e8f0',
+                                  borderRadius: '8px',
+                                  padding: '2px',
+                                  opacity: isUpdating ? 0.6 : 1
+                                }}>
+                                  <button
+                                    onClick={() => handleStockAdjust(appId, -1)}
+                                    disabled={stock <= 0 || isUpdating}
+                                    title="Decrease stock (-1)"
+                                    style={{
+                                      background: 'white',
+                                      border: '1px solid #cbd5e1',
+                                      borderRadius: '6px',
+                                      width: '28px',
+                                      height: '28px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      cursor: stock <= 0 || isUpdating ? 'not-allowed' : 'pointer',
+                                      color: stock <= 0 ? '#cbd5e1' : '#dc2626',
+                                      fontWeight: 800,
+                                      transition: 'all 0.15s'
+                                    }}
+                                  >
+                                    <Minus size={13} />
+                                  </button>
+
+                                  <span style={{
+                                    minWidth: '42px',
+                                    textAlign: 'center',
+                                    fontWeight: 800,
+                                    fontSize: '0.9rem',
+                                    color: stock > 3 ? '#0f172a' : stock > 0 ? '#b45309' : '#dc2626'
+                                  }}>
+                                    {stock}
+                                  </span>
+
+                                  <button
+                                    onClick={() => handleStockAdjust(appId, 1)}
+                                    disabled={isUpdating}
+                                    title="Increase stock (+1)"
+                                    style={{
+                                      background: 'white',
+                                      border: '1px solid #cbd5e1',
+                                      borderRadius: '6px',
+                                      width: '28px',
+                                      height: '28px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      cursor: isUpdating ? 'not-allowed' : 'pointer',
+                                      color: '#16a34a',
+                                      fontWeight: 800,
+                                      transition: 'all 0.15s'
+                                    }}
+                                  >
+                                    <Plus size={13} />
+                                  </button>
+                                </div>
+
+                                {/* Status badge and quick restock */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                  {stock > 3 ? (
+                                    <span style={{ background: '#dcfce7', color: '#15803d', padding: '0.15rem 0.5rem', borderRadius: '999px', fontSize: '0.72rem', fontWeight: 700 }}>
+                                      ● In Stock
+                                    </span>
+                                  ) : stock > 0 ? (
+                                    <span style={{ background: '#fef3c7', color: '#b45309', padding: '0.15rem 0.5rem', borderRadius: '999px', fontSize: '0.72rem', fontWeight: 700 }}>
+                                      ● Low Stock ({stock})
+                                    </span>
+                                  ) : (
+                                    <span style={{ background: '#fee2e2', color: '#b91c1c', padding: '0.15rem 0.5rem', borderRadius: '999px', fontSize: '0.72rem', fontWeight: 700 }}>
+                                      ● Out of Stock
+                                    </span>
+                                  )}
+
+                                  {stock <= 3 && (
+                                    <button
+                                      onClick={() => handleStockAdjust(appId, 5)}
+                                      disabled={isUpdating}
+                                      style={{
+                                        background: '#f1f5f9',
+                                        border: '1px solid #cbd5e1',
+                                        color: '#334155',
+                                        padding: '0.15rem 0.45rem',
+                                        borderRadius: '4px',
+                                        fontSize: '0.68rem',
+                                        fontWeight: 700,
+                                        cursor: 'pointer'
+                                      }}
+                                      title="Add +5 units to stock immediately"
+                                    >
+                                      +5 Restock
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+
+                            {/* Service Hubs */}
+                            <td style={{ padding: '0.85rem 1.25rem', fontSize: '0.75rem', color: '#64748b' }}>
+                              <span title={Array.isArray(app.available_cities) ? app.available_cities.join(', ') : 'All Hubs'}>
+                                {Array.isArray(app.available_cities) ? `${app.available_cities.length} Metros` : '5 Metros'}
+                              </span>
+                            </td>
+
+                            {/* Actions */}
+                            <td style={{ padding: '0.85rem 1.25rem', textAlign: 'right' }}>
+                              <div style={{ display: 'flex', gap: '0.45rem', justifyContent: 'flex-end' }}>
+                                <button
+                                  onClick={() => openEditAppliance(app)}
+                                  style={{ background: '#eff6ff', border: '1px solid #bfdbfe', color: '#1d4ed8', padding: '0.35rem 0.6rem', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', fontWeight: 600 }}
+                                >
+                                  <Edit3 size={13} />
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteAppliance(appId, app.rental_name)}
+                                  style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '0.35rem 0.6rem', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', fontWeight: 600 }}
+                                >
+                                  <Trash2 size={13} />
+                                  Delete
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan="7" style={{ padding: '3rem 1.5rem', textAlign: 'center', color: '#64748b' }}>
+                          <Package size={36} color="#cbd5e1" style={{ margin: '0 auto 0.75rem' }} />
+                          <div style={{ fontWeight: 700, color: '#334155', fontSize: '1rem' }}>No inventory items found</div>
+                          <div style={{ fontSize: '0.825rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                            Try adjusting your search query, category filter, or stock status tab.
                           </div>
-                        </td>
-                        <td style={{ padding: '0.85rem 1.25rem' }}>
-                          <span style={{ background: '#f1f5f9', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, color: '#475569' }}>
-                            {app.category_id}
-                          </span>
-                        </td>
-                        <td style={{ padding: '0.85rem 1.25rem', fontWeight: 700, color: '#0f172a' }}>
-                          ₹{app.monthly_price}/mo
-                          <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 400 }}>
-                            6m: ₹{app.pricing?.['6'] || Math.round(app.monthly_price * 0.9)} • 12m: ₹{app.pricing?.['12'] || Math.round(app.monthly_price * 0.8)}
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.85rem 1.25rem', color: '#64748b' }}>
-                          ₹{app.security_deposit || Math.round(app.monthly_price * 1.5)}
-                        </td>
-                        <td style={{ padding: '0.85rem 1.25rem' }}>
-                          <span style={{ 
-                            background: app.stock_quantity > 0 ? '#dcfce7' : '#fee2e2', 
-                            color: app.stock_quantity > 0 ? '#15803d' : '#b91c1c',
-                            padding: '0.2rem 0.55rem', borderRadius: '1rem', fontWeight: 700, fontSize: '0.75rem' 
-                          }}>
-                            {app.stock_quantity > 0 ? `${app.stock_quantity} in stock` : 'Out of Stock'}
-                          </span>
-                        </td>
-                        <td style={{ padding: '0.85rem 1.25rem', fontSize: '0.75rem', color: '#64748b' }}>
-                          {Array.isArray(app.available_cities) ? `${app.available_cities.length} cities` : '5 cities'}
-                        </td>
-                        <td style={{ padding: '0.85rem 1.25rem', textAlign: 'right' }}>
-                          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                            <button
-                              onClick={() => openEditAppliance(app)}
-                              style={{ background: '#eff6ff', border: '1px solid #bfdbfe', color: '#1d4ed8', padding: '0.35rem 0.55rem', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.75rem' }}
-                            >
-                              <Edit3 size={13} />
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDeleteAppliance(app.appliance_id || app._id, app.rental_name)}
-                              style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '0.35rem 0.55rem', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.75rem' }}
-                            >
-                              <Trash2 size={13} />
-                              Delete
-                            </button>
-                          </div>
+                          <button
+                            onClick={() => { setInventorySearch(''); setInventoryCategoryFilter('All'); setInventoryStockFilter('all'); }}
+                            style={{
+                              marginTop: '1rem',
+                              padding: '0.45rem 1rem',
+                              borderRadius: '6px',
+                              background: '#f1f5f9',
+                              border: '1px solid #cbd5e1',
+                              color: '#334155',
+                              fontSize: '0.8rem',
+                              fontWeight: 600,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Reset Filters
+                          </button>
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -1432,11 +1819,11 @@ const AdminDashboard = ({ onLogout }) => {
                           {u.phone_num || 'Not provided'}
                         </td>
                         <td style={{ padding: '0.85rem 1.5rem' }}>
-                          <span style={{ 
-                            background: u.role === 'admin' ? '#fee2e2' : u.role === 'owner' ? '#ecfdf5' : '#eff6ff', 
+                          <span style={{
+                            background: u.role === 'admin' ? '#fee2e2' : u.role === 'owner' ? '#ecfdf5' : '#eff6ff',
                             color: u.role === 'admin' ? '#dc2626' : u.role === 'owner' ? '#059669' : '#2563eb',
                             border: `1px solid ${u.role === 'admin' ? '#fca5a5' : u.role === 'owner' ? '#a7f3d0' : '#bfdbfe'}`,
-                            padding: '0.25rem 0.75rem', borderRadius: '1rem', fontWeight: 800, fontSize: '0.75rem' 
+                            padding: '0.25rem 0.75rem', borderRadius: '1rem', fontWeight: 800, fontSize: '0.75rem'
                           }}>
                             {u.role ? u.role.toUpperCase() : 'CUSTOMER'}
                           </span>
@@ -1565,13 +1952,13 @@ const AdminDashboard = ({ onLogout }) => {
                           <div style={{ fontWeight: 600, color: '#0f172a' }}>{r.customer_name}</div>
                           <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{r.customer_email}</div>
                           {r.delivery_address && (
-                            <div style={{ 
-                              marginTop: '0.35rem', 
-                              padding: '0.3rem 0.5rem', 
-                              background: '#eff6ff', 
-                              borderRadius: '6px', 
+                            <div style={{
+                              marginTop: '0.35rem',
+                              padding: '0.3rem 0.5rem',
+                              background: '#eff6ff',
+                              borderRadius: '6px',
                               border: '1px solid #bfdbfe',
-                              fontSize: '0.73rem' 
+                              fontSize: '0.73rem'
                             }}>
                               <div style={{ color: '#1e40af', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                                 <Truck size={11} />
@@ -1593,7 +1980,7 @@ const AdminDashboard = ({ onLogout }) => {
                           <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 400 }}>Deposit: ₹{r.security_deposit || 0}</div>
                         </td>
                         <td style={{ padding: '0.85rem 1.25rem' }}>
-                          <span style={{ 
+                          <span style={{
                             background: r.payment_method === 'CASH_ON_DELIVERY' ? '#fef3c7' : '#e0f2fe',
                             color: r.payment_method === 'CASH_ON_DELIVERY' ? '#92400e' : '#0369a1',
                             padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700
@@ -1602,7 +1989,7 @@ const AdminDashboard = ({ onLogout }) => {
                           </span>
                         </td>
                         <td style={{ padding: '0.85rem 1.25rem' }}>
-                          <span style={{ 
+                          <span style={{
                             background: r.status === 'active' || r.status === 'delivered' ? '#dcfce7' : (r.status === 'inactive' ? '#f1f5f9' : '#fff7ed'),
                             color: r.status === 'active' || r.status === 'delivered' ? '#15803d' : (r.status === 'inactive' ? '#64748b' : '#c2410c'),
                             padding: '0.2rem 0.65rem', borderRadius: '1rem', fontWeight: 700, fontSize: '0.75rem', display: 'inline-block'
@@ -1751,7 +2138,7 @@ const AdminDashboard = ({ onLogout }) => {
                           )}
                         </td>
                         <td style={{ padding: '0.85rem 1.25rem' }}>
-                          <span style={{ 
+                          <span style={{
                             background: c.status === 'RESOLVED' ? '#dcfce7' : (c.status === 'OPEN' ? '#fee2e2' : '#fef3c7'),
                             color: c.status === 'RESOLVED' ? '#15803d' : (c.status === 'OPEN' ? '#b91c1c' : '#92400e'),
                             padding: '0.2rem 0.65rem', borderRadius: '1rem', fontWeight: 700, fontSize: '0.75rem'
@@ -2197,9 +2584,9 @@ const AdminDashboard = ({ onLogout }) => {
                     style={{ flex: 1 }}
                   />
                   {applianceForm.image_url && (
-                    <img 
-                      src={applianceForm.image_url} 
-                      alt="Preview" 
+                    <img
+                      src={applianceForm.image_url}
+                      alt="Preview"
                       style={{ width: '42px', height: '42px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1' }}
                     />
                   )}
@@ -2378,12 +2765,57 @@ const AdminDashboard = ({ onLogout }) => {
                 <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.5rem' }}>
                   Front of Government ID
                 </span>
-                {inspectingKyc.id_proof_preview && inspectingKyc.id_proof_preview.startsWith('data:') ? (
-                  <img
-                    src={inspectingKyc.id_proof_preview}
-                    alt="ID Document"
-                    style={{ width: '100%', height: '140px', objectFit: 'contain', background: '#f1f5f9', borderRadius: '6px' }}
-                  />
+                {inspectingKyc.id_proof_preview && (inspectingKyc.id_proof_preview.startsWith('http') || inspectingKyc.id_proof_preview.startsWith('/') || inspectingKyc.id_proof_preview.startsWith('data:')) && !inspectingKyc.id_proof_preview.startsWith('mock_url_') ? (
+                  <div>
+                    <img
+                      src={inspectingKyc.id_proof_preview}
+                      alt="ID Document"
+                      style={{ width: '100%', height: '140px', objectFit: 'contain', background: '#f1f5f9', borderRadius: '6px' }}
+                    />
+                    <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyProofUrl(inspectingKyc.id_proof_preview, 'id')}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.25rem',
+                          fontSize: '0.72rem',
+                          padding: '0.25rem 0.5rem',
+                          borderRadius: '6px',
+                          border: '1px solid #cbd5e1',
+                          background: copiedProofKey === 'id' ? '#dcfce7' : '#ffffff',
+                          color: copiedProofKey === 'id' ? '#15803d' : '#334155',
+                          cursor: 'pointer',
+                          fontWeight: 600
+                        }}
+                      >
+                        <Copy size={11} />
+                        <span>{copiedProofKey === 'id' ? 'Copied!' : 'Copy URL'}</span>
+                      </button>
+                      <a
+                        href={inspectingKyc.id_proof_preview}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.25rem',
+                          fontSize: '0.72rem',
+                          padding: '0.25rem 0.5rem',
+                          borderRadius: '6px',
+                          border: '1px solid #cbd5e1',
+                          background: '#ffffff',
+                          color: '#334155',
+                          textDecoration: 'none',
+                          fontWeight: 600
+                        }}
+                      >
+                        <ExternalLink size={11} />
+                        <span>Open</span>
+                      </a>
+                    </div>
+                  </div>
                 ) : (
                   <div style={{ height: '140px', background: '#f1f5f9', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#64748b', padding: '0.5rem' }}>
                     <FileText size={32} color="#94a3b8" />
@@ -2396,12 +2828,57 @@ const AdminDashboard = ({ onLogout }) => {
                 <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.5rem' }}>
                   Address Proof (Utility Bill)
                 </span>
-                {inspectingKyc.address_proof_preview && inspectingKyc.address_proof_preview.startsWith('data:') ? (
-                  <img
-                    src={inspectingKyc.address_proof_preview}
-                    alt="Address Document"
-                    style={{ width: '100%', height: '140px', objectFit: 'contain', background: '#f1f5f9', borderRadius: '6px' }}
-                  />
+                {inspectingKyc.address_proof_preview && (inspectingKyc.address_proof_preview.startsWith('http') || inspectingKyc.address_proof_preview.startsWith('/') || inspectingKyc.address_proof_preview.startsWith('data:')) && !inspectingKyc.address_proof_preview.startsWith('mock_url_') ? (
+                  <div>
+                    <img
+                      src={inspectingKyc.address_proof_preview}
+                      alt="Address Document"
+                      style={{ width: '100%', height: '140px', objectFit: 'contain', background: '#f1f5f9', borderRadius: '6px' }}
+                    />
+                    <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyProofUrl(inspectingKyc.address_proof_preview, 'addr')}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.25rem',
+                          fontSize: '0.72rem',
+                          padding: '0.25rem 0.5rem',
+                          borderRadius: '6px',
+                          border: '1px solid #cbd5e1',
+                          background: copiedProofKey === 'addr' ? '#dcfce7' : '#ffffff',
+                          color: copiedProofKey === 'addr' ? '#15803d' : '#334155',
+                          cursor: 'pointer',
+                          fontWeight: 600
+                        }}
+                      >
+                        <Copy size={11} />
+                        <span>{copiedProofKey === 'addr' ? 'Copied!' : 'Copy URL'}</span>
+                      </button>
+                      <a
+                        href={inspectingKyc.address_proof_preview}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.25rem',
+                          fontSize: '0.72rem',
+                          padding: '0.25rem 0.5rem',
+                          borderRadius: '6px',
+                          border: '1px solid #cbd5e1',
+                          background: '#ffffff',
+                          color: '#334155',
+                          textDecoration: 'none',
+                          fontWeight: 600
+                        }}
+                      >
+                        <ExternalLink size={11} />
+                        <span>Open</span>
+                      </a>
+                    </div>
+                  </div>
                 ) : (
                   <div style={{ height: '140px', background: '#f1f5f9', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#64748b', padding: '0.5rem' }}>
                     <FileText size={32} color="#94a3b8" />

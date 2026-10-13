@@ -11,12 +11,6 @@ function ProductDetailsModal({ appliance, onClose, onAddToCart }) {
   // Review & Rating State (Module 8)
   const [reviews, setReviews] = useState([]);
   const [avgRating, setAvgRating] = useState(4.8);
-  const [showReviewForm, setShowReviewForm] = useState(false);
-  const [userRating, setUserRating] = useState(5);
-  const [userComment, setUserComment] = useState('');
-  const [userName, setUserName] = useState('');
-  const [submittingReview, setSubmittingReview] = useState(false);
-  const [reviewSuccess, setReviewSuccess] = useState('');
   const [pairedAccessories, setPairedAccessories] = useState([]);
   const [addedPairedId, setAddedPairedId] = useState(null);
 
@@ -47,38 +41,6 @@ function ProductDetailsModal({ appliance, onClose, onAddToCart }) {
     }
   }, [appliance]);
 
-  const handleSubmitReview = async (e) => {
-    e.preventDefault();
-    setSubmittingReview(true);
-    setReviewSuccess('');
-    try {
-      const token = localStorage.getItem('access_token');
-      const res = await fetch('http://localhost:8000/api/feedback/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({
-          appliance_id: appliance.appliance_id || appliance._id,
-          rating: userRating,
-          comment: userComment,
-          username: userName || 'Verified Customer'
-        })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setReviews([data.feedback, ...reviews]);
-        setReviewSuccess('Review published successfully!');
-        setUserComment('');
-      }
-    } catch (err) {
-      console.error("Error submitting review:", err);
-    } finally {
-      setSubmittingReview(false);
-    }
-  };
-
   if (!appliance) return null;
 
   const pricing = appliance.pricing || {
@@ -89,6 +51,8 @@ function ProductDetailsModal({ appliance, onClose, onAddToCart }) {
   
   const securityDeposit = appliance.security_deposit || Math.round(appliance.monthly_price * 1.5);
   const currentRent = pricing[tenure];
+  const stockQuantity = typeof appliance.stock_quantity === 'number' ? appliance.stock_quantity : (parseInt(appliance.stock_quantity, 10) || 0);
+  const isOutOfStock = stockQuantity <= 0;
 
   // Refurbished Buy calculations (Rentora pre-loved certified)
   const refurbishedPrice = Math.round(appliance.monthly_price * 5.2);
@@ -179,7 +143,7 @@ function ProductDetailsModal({ appliance, onClose, onAddToCart }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
               <div>
                 <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#111827', textTransform: 'uppercase' }}>
-                  Customer Reviews
+                  Verified Customer Ratings
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.2rem' }}>
                   <div style={{ display: 'flex', color: '#eab308' }}>
@@ -191,64 +155,15 @@ function ProductDetailsModal({ appliance, onClose, onAddToCart }) {
                   <span style={{ fontSize: '0.75rem', color: '#64748b' }}>({reviews.length} reviews)</span>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowReviewForm(!showReviewForm)}
-                style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', fontSize: '0.75rem', padding: '0.25rem 0.55rem', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
-              >
-                {showReviewForm ? 'Close' : 'Write Review'}
-              </button>
+              <span style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: 700, background: '#f0fdf4', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                ✓ 100% Verified Renters
+              </span>
             </div>
 
-            {/* Review Submission Form */}
-            {showReviewForm && (
-              <form onSubmit={handleSubmitReview} style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#334155' }}>Your Rating:</span>
-                  {[1, 2, 3, 4, 5].map(st => (
-                    <button
-                      key={st}
-                      type="button"
-                      onClick={() => setUserRating(st)}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.1rem', color: '#eab308' }}
-                    >
-                      <Star size={16} fill={st <= userRating ? '#eab308' : 'none'} color="#eab308" />
-                    </button>
-                  ))}
-                </div>
-                <input
-                  type="text"
-                  placeholder="Your Name (optional)"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  style={{ padding: '0.35rem 0.6rem', fontSize: '0.8rem', borderRadius: '4px', border: '1px solid #cbd5e1' }}
-                />
-                <textarea
-                  rows={2}
-                  placeholder="Share your experience renting this appliance..."
-                  value={userComment}
-                  onChange={(e) => setUserComment(e.target.value)}
-                  required
-                  style={{ padding: '0.35rem 0.6rem', fontSize: '0.8rem', borderRadius: '4px', border: '1px solid #cbd5e1' }}
-                />
-                <button
-                  type="submit"
-                  disabled={submittingReview}
-                  className="btn-primary"
-                  style={{ padding: '0.35rem', fontSize: '0.75rem', alignSelf: 'flex-start' }}
-                >
-                  {submittingReview ? 'Posting...' : 'Submit Review'}
-                </button>
-                {reviewSuccess && (
-                  <span style={{ fontSize: '0.75rem', color: '#16a34a' }}>{reviewSuccess}</span>
-                )}
-              </form>
-            )}
-
             {/* Reviews List */}
-            <div style={{ maxHeight: '160px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+            <div style={{ maxHeight: '140px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
               {reviews.slice(0, 3).map((r, idx) => (
-                <div key={idx} style={{ borderBottom: idx < 2 ? '1px solid #f1f5f9' : 'none', paddingBottom: '0.4rem' }}>
+                <div key={idx} style={{ borderBottom: idx < 2 ? '1px solid #f1f5f9' : 'none', paddingBottom: '0.35rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1e293b' }}>{r.username}</span>
                     <div style={{ display: 'flex', color: '#eab308' }}>
@@ -318,10 +233,28 @@ function ProductDetailsModal({ appliance, onClose, onAddToCart }) {
             </div>
           </div>
 
-          <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#111827', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>
+          <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#111827', margin: '0 0 0.35rem 0', lineHeight: 1.2 }}>
             {appliance.rental_name}
           </h2>
-          <p style={{ color: '#64748b', fontSize: '0.875rem', marginBottom: '1.5rem', lineHeight: 1.5 }}>
+
+          {/* Real-time Stock Availability Status */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.85rem' }}>
+            {stockQuantity > 3 ? (
+              <span style={{ background: '#dcfce7', color: '#15803d', padding: '0.2rem 0.65rem', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span style={{ fontSize: '0.65rem' }}>●</span> In Stock ({stockQuantity} units available for express dispatch)
+              </span>
+            ) : stockQuantity > 0 ? (
+              <span style={{ background: '#fef3c7', color: '#b45309', padding: '0.2rem 0.65rem', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                ⚠️ High Demand: Only {stockQuantity} left in stock!
+              </span>
+            ) : (
+              <span style={{ background: '#fee2e2', color: '#b91c1c', padding: '0.2rem 0.65rem', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                🚫 Currently Out of Stock (Fulfillment in 2-3 Days)
+              </span>
+            )}
+          </div>
+
+          <p style={{ color: '#64748b', fontSize: '0.875rem', marginBottom: '1.25rem', lineHeight: 1.5 }}>
             {appliance.description}
           </p>
 
@@ -528,28 +461,30 @@ function ProductDetailsModal({ appliance, onClose, onAddToCart }) {
           {/* Main Action Button */}
           <button 
             onClick={handleAdd}
-            disabled={isAdding}
+            disabled={isAdding || (isOutOfStock && mode === 'rent')}
             style={{
               marginTop: 'auto',
               width: '100%',
-              backgroundColor: '#e23744',
+              backgroundColor: (isOutOfStock && mode === 'rent') ? '#94a3b8' : '#e23744',
               color: 'white',
               fontWeight: 800,
               fontSize: '1rem',
               padding: '1rem',
               borderRadius: '12px',
               border: 'none',
-              cursor: isAdding ? 'not-allowed' : 'pointer',
+              cursor: (isAdding || (isOutOfStock && mode === 'rent')) ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s',
-              boxShadow: '0 4px 14px rgba(226, 55, 68, 0.35)',
+              boxShadow: (isOutOfStock && mode === 'rent') ? 'none' : '0 4px 14px rgba(226, 55, 68, 0.35)',
               opacity: isAdding ? 0.7 : 1
             }}
           >
             {isAdding 
               ? 'Processing...' 
-              : mode === 'rent'
-                ? `Rent Now • ₹${(currentRent + securityDeposit).toLocaleString('en-IN')} Due Today`
-                : `Buy Refurbished • ₹${refurbishedPrice.toLocaleString('en-IN')}`}
+              : (isOutOfStock && mode === 'rent')
+                ? 'Out of Stock • Restocking Soon'
+                : mode === 'rent'
+                  ? `Rent Now • ₹${(currentRent + securityDeposit).toLocaleString('en-IN')} Due Today`
+                  : `Buy Refurbished • ₹${refurbishedPrice.toLocaleString('en-IN')}`}
           </button>
         </div>
       </div>

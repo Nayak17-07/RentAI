@@ -20,19 +20,33 @@ const trackingRoutes = require('./routes/tracking');
 
 const app = express();
 
-// Middlewares
+// CORS Configuration
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:8000', 'http://127.0.0.1:8000'];
+
 app.use(cors({
-  origin: '*',
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*') || process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    return callback(new Error('Cross-Origin Request Blocked by Rentora Security Policy'));
+  },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(express.json({ limit: '15mb' }));
-app.use(express.urlencoded({ extended: true, limit: '15mb' }));
+// Request payload limit (calibrated for KYC document previews while preventing memory flooding)
+app.use(express.json({ limit: '6mb' }));
+app.use(express.urlencoded({ extended: true, limit: '6mb' }));
 app.use((req, res, next) => {
   if (!req.body) req.body = {};
   next();
 });
+
+// Static file serving for uploaded documents and images
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // Health Check
 app.get(['/', '/api/health', '/api/health/'], (req, res) => {
@@ -64,7 +78,11 @@ app.use('/api', trackingRoutes);
 // Global Error Handler
 app.use((err, req, res, next) => {
   console.error('Unhandled Server Error:', err);
-  res.status(500).json({ error: 'Internal Server Error', message: err.message });
+  const isDev = process.env.NODE_ENV !== 'production';
+  res.status(err.status || 500).json({ 
+    error: 'Internal Server Error', 
+    ...(isDev ? { message: err.message } : {}) 
+  });
 });
 
 module.exports = app;

@@ -7,6 +7,7 @@ import CartPage from './CartPage';
 import MyRentalsPage from './MyRentalsPage';
 import KYCPage from './KYCPage';
 import AdminDashboard from './AdminDashboard';
+import AdminLoginPage from './AdminLoginPage';
 import OwnerDashboard from './OwnerDashboard';
 import RentoraConcierge from './RentoraConcierge';
 
@@ -31,6 +32,8 @@ function App() {
     setIsAuthenticated(false);
   };
 
+  const isAdmin = localStorage.getItem('user_role') === 'admin';
+
   return (
     <Router>
       <Routes>
@@ -41,6 +44,10 @@ function App() {
         <Route 
           path="/register" 
           element={!isAuthenticated ? <RegisterPage onLogin={handleLogin} /> : <Navigate to="/" />} 
+        />
+        <Route 
+          path="/admin/login" 
+          element={<AdminLoginPage />} 
         />
         <Route 
           path="/" 
@@ -60,7 +67,7 @@ function App() {
         />
         <Route 
           path="/admin" 
-          element={isAuthenticated ? <AdminDashboard onLogout={handleLogout} /> : <Navigate to="/login" />} 
+          element={isAuthenticated && isAdmin ? <AdminDashboard onLogout={handleLogout} /> : <Navigate to="/admin/login" replace />} 
         />
         <Route 
           path="/owner" 
