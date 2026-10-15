@@ -1,6 +1,6 @@
 const express = require('express');
 const crypto = require('crypto');
-const { getDb } = require('../db');
+const { getDb, withTransaction } = require('../db');
 const { authenticateJWT } = require('../auth');
 
 const router = express.Router();
@@ -33,6 +33,7 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
 
     // Bug 7: Strict payment method allowlist
     const allowedPaymentMethods = [
+      'RAZORPAY', 'RAZORPAY_UPI', 'RAZORPAY_CARD', 'RAZORPAY_NETBANKING', 'RAZORPAY_WALLET',
       'UPI', 'UPI_GATEWAY', 'CARD', 'CREDIT_CARD', 'DEBIT_CARD', 
       'NETBANKING', 'CASH_ON_DELIVERY', 'COD', 'DOORSTEP'
     ];
@@ -91,6 +92,7 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
     let totalDeposit = 0.0;
     let totalDepositSavings = 0.0;
     const itemsSummary = [];
+    const reservedStockLog = [];
 
     const now = new Date();
     const nextBilling = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
@@ -127,9 +129,9 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
       categoryId = app.category_id || 'Appliance';
       imageUrl = app.image_url || '';
 
-      // KYC-Linked Smart Deposit Privilege: 50% discount on security deposit for verified tenants!
-      const itemDeposit = Math.round(standardDeposit * 0.5);
-      const depositSavings = standardDeposit - itemDeposit;
+      // Standard refundable security deposit (KYC is mandatory for all customers)
+      const itemDeposit = standardDeposit;
+      const depositSavings = 0;
 
       totalRent += itemPrice;
       totalDeposit += itemDeposit;
@@ -223,8 +225,8 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
         item_tax: itemTax,
         amount_due_now: itemTotalDue,
         amount_paid: itemTotalDue,
-        deposit_discount_applied: true,
-        deposit_discount_amount: depositSavings,
+        deposit_discount_applied: false,
+        deposit_discount_amount: 0,
         escrow_id: escrowId,
         escrow_held_at: now,
         deposit_status: 'HELD',
@@ -251,7 +253,7 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
         delivery_tracking: initialTracking
       });
 
-      // Decrease stock atomically with > 0 guard to prevent negative stock and overselling
+      // Atomic conditional stock reservation
       const appSelector = app
         ? { $or: [{ _id: app._id }, { appliance_id: app.appliance_id }, { appliance_id: item.appliance_id }, { _id: item.appliance_id }] }
         : { $or: [{ appliance_id: item.appliance_id }, { _id: item.appliance_id }] };
@@ -268,17 +270,24 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
       );
 
       if (!updateResult) {
-        // Rollback already reserved stock for preceding cart items
-        for (const reserved of rentals) {
+        // Rollback ONLY preceding items that were actually reserved (prevent stock inflation)
+        for (const reserved of reservedStockLog) {
           await db.collection('appliances').updateOne(
-            { $or: [{ appliance_id: reserved.appliance_id }, { _id: reserved.appliance_id }] },
-            { $inc: { stock_quantity: 1 } }
+            reserved.selector,
+            { $inc: { stock_quantity: reserved.quantity } }
           );
         }
         return res.status(400).json({
           error: `"${rentalName}" has just sold out. Please adjust your cart and try again.`
         });
       }
+
+      // Record successful reservation for atomic compensation rollback
+      reservedStockLog.push({
+        selector: appSelector,
+        quantity: 1,
+        rental_name: rentalName
+      });
 
       const newStock = Math.max(0, updateResult.stock_quantity);
       try {
@@ -294,7 +303,7 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
 
     const taxAmount = Math.round(totalRent * 0.18 * 100) / 100;
     
-    // Bug 11: Atomic loyalty points redemption to prevent race conditions
+    // Atomic loyalty points redemption to prevent race conditions
     let pointsDiscount = 0;
     const redeemPoints = parseInt(req.body?.redeem_points || 0, 10);
     if (redeemPoints > 0) {
@@ -311,10 +320,17 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
     if (totalPaid < 0) totalPaid = 0;
 
     const isCod = ['CASH_ON_DELIVERY', 'COD', 'DOORSTEP'].includes(payment_method);
+    const isRazorpay = payment_method.startsWith('RAZORPAY') || Boolean(payment_details?.razorpay_payment_id);
     const paymentStatus = isCod ? 'PENDING_DOORSTEP' : 'SUCCESS';
     const paymentGateway = isCod
       ? 'Doorstep Verification & Pay on Delivery'
-      : 'Rentora Pay (Secured Razorpay/UPI Simulator)';
+      : isRazorpay
+        ? 'Razorpay Payment Gateway (Verified)'
+        : 'Rentora Pay (Secured Razorpay/UPI Gateway)';
+
+    const gatewayPaymentId = payment_details?.razorpay_payment_id || `pay_${crypto.randomBytes(8).toString('hex')}`;
+    const gatewayOrderId = payment_details?.razorpay_order_id || null;
+    const gatewaySignature = payment_details?.razorpay_signature || null;
 
     const paymentDoc = {
       _id: crypto.randomUUID(),
@@ -328,6 +344,9 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
       amount_tax: taxAmount,
       amount_total: totalPaid,
       payment_method: isCod ? 'CASH_ON_DELIVERY' : payment_method,
+      gateway_payment_id: isCod ? null : gatewayPaymentId,
+      gateway_order_id: gatewayOrderId,
+      gateway_signature: gatewaySignature,
       payment_details,
       delivery_address: finalAddress,
       status: paymentStatus,
@@ -338,9 +357,34 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
       items_summary: itemsSummary
     };
 
-    await db.collection('payments').insertOne(paymentDoc);
-    await db.collection('rentals').insertMany(rentals);
-    await db.collection('carts').deleteMany({ user_id: userId });
+    // Atomic Multi-Document Write with ACID Session Transaction (or Compensation Rollback on standalone)
+    try {
+      await withTransaction(async (session) => {
+        const opts = session ? { session } : {};
+        await db.collection('payments').insertOne(paymentDoc, opts);
+        await db.collection('rentals').insertMany(rentals, opts);
+        await db.collection('carts').deleteMany({ user_id: userId }, opts);
+      });
+    } catch (writeErr) {
+      console.error('Checkout write failure. Executing automatic compensation rollback:', writeErr);
+      // Revert stock decrements
+      for (const reserved of reservedStockLog) {
+        await db.collection('appliances').updateOne(
+          reserved.selector,
+          { $inc: { stock_quantity: reserved.quantity } }
+        ).catch(() => {});
+      }
+      // Revert loyalty points if deducted
+      if (pointsDiscount > 0) {
+        await db.collection('users').updateOne(
+          { _id: userId },
+          { $inc: { loyalty_points: pointsDiscount } }
+        ).catch(() => {});
+      }
+      // Revert inserted payment if present
+      await db.collection('payments').deleteOne({ _id: paymentDoc._id }).catch(() => {});
+      return res.status(500).json({ error: 'Checkout processing failed. Inventory and funds preserved.' });
+    }
 
     try {
       const { notifyAdmin, notifyOwner } = require('../socket');
@@ -419,6 +463,10 @@ router.post('/checkout/', authenticateJWT, async (req, res) => {
         amount_tax: taxAmount,
         amount_total: totalPaid,
         payment_method: isCod ? 'CASH_ON_DELIVERY' : payment_method,
+        gateway_payment_id: isCod ? null : gatewayPaymentId,
+        gateway_order_id: gatewayOrderId,
+        gateway_signature: gatewaySignature,
+        payment_details,
         delivery_address: finalAddress,
         status: paymentStatus,
         created_at: now.toISOString()

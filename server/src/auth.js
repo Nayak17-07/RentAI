@@ -1,13 +1,48 @@
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
+require('dotenv').config({ path: path.join(__dirname, '../.env'), override: true });
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { getDb } = require('./db');
 
-const SECRET_KEY = process.env.JWT_SECRET || process.env.SECRET_KEY || 'rentora-secret-key-high-performance-jwt-token-984210a';
+let secretKey = process.env.JWT_SECRET || process.env.SECRET_KEY;
 
-if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET && !process.env.SECRET_KEY)) {
-  throw new Error('FATAL SECURITY ERROR: JWT_SECRET or SECRET_KEY must be configured in production environment.');
+if (!secretKey || secretKey.includes('django-insecure') || secretKey.length < 32) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('FATAL SECURITY ERROR: A secure, high-entropy JWT_SECRET (min 32 characters) must be configured in production environment.');
+  } else {
+    // In development: initialize a stable in-memory 256-bit cryptographically secure secret
+    if (!global.__rentora_dev_secret) {
+      global.__rentora_dev_secret = crypto.randomBytes(32).toString('hex');
+    }
+    secretKey = global.__rentora_dev_secret;
+  }
+}
+
+const SECRET_KEY = secretKey;
+
+function getCookie(req, name) {
+  const header = req.headers.cookie;
+  if (!header) return null;
+  const match = header.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function setAuthCookies(res, tokens) {
+  const isProd = process.env.NODE_ENV === 'production';
+  const sameSite = isProd ? 'Strict' : 'Lax';
+  const secureFlag = isProd ? '; Secure' : '';
+
+  res.setHeader('Set-Cookie', [
+    `access_token=${tokens.access}; HttpOnly; Path=/; Max-Age=3600; SameSite=${sameSite}${secureFlag}`,
+    `refresh_token=${tokens.refresh}; HttpOnly; Path=/; Max-Age=86400; SameSite=${sameSite}${secureFlag}`
+  ]);
+}
+
+function clearAuthCookies(res) {
+  res.setHeader('Set-Cookie', [
+    'access_token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax',
+    'refresh_token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax'
+  ]);
 }
 
 function makePassword(password) {
@@ -36,7 +71,11 @@ function checkPassword(password, storedHash) {
       }
     }
   }
-  // Constant-time comparison for legacy non-pbkdf2 stored hashes
+  // Non-PBKDF2 legacy check: strictly forbidden in production
+  if (process.env.NODE_ENV === 'production') {
+    console.warn('[SECURITY ALERT] Legacy non-PBKDF2 password encountered in production. Access rejected.');
+    return false;
+  }
   try {
     const pBuf = Buffer.from(String(password));
     const sBuf = Buffer.from(String(storedHash));
@@ -68,17 +107,24 @@ function generateTokens(userId) {
 const { ObjectId } = require('mongodb');
 
 async function authenticateJWT(req, res, next) {
+  let token = null;
   const authHeader = req.headers['authorization'];
-  if (!authHeader) {
+  if (authHeader) {
+    const parts = authHeader.split(' ');
+    if (parts.length === 2 && parts[0].toLowerCase() === 'bearer') {
+      token = parts[1];
+    }
+  }
+
+  // Fallback: check HttpOnly cookie
+  if (!token) {
+    token = getCookie(req, 'access_token');
+  }
+
+  if (!token) {
     return res.status(401).json({ detail: 'Authentication credentials were not provided.' });
   }
 
-  const parts = authHeader.split(' ');
-  if (parts.length !== 2 || parts[0].toLowerCase() !== 'bearer') {
-    return res.status(401).json({ detail: 'Invalid authorization header format.' });
-  }
-
-  const token = parts[1];
   try {
     const decoded = jwt.verify(token, SECRET_KEY, { algorithms: ['HS256'] });
     const db = getDb();
@@ -160,6 +206,8 @@ module.exports = {
   makePassword,
   checkPassword,
   generateTokens,
+  setAuthCookies,
+  clearAuthCookies,
   authenticateJWT,
   optionalAuth,
   requireRole

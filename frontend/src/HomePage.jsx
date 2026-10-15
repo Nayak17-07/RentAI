@@ -266,49 +266,77 @@ const HomePage = ({ onLogout }) => {
 
   const fetchData = async (selectedCity) => {
     const token = localStorage.getItem('access_token');
-    if (!token) {
-      navigate('/login');
-      return;
+    if (token) {
+      try {
+        const userRes = await fetchWithAuth('http://localhost:8000/api/auth/me/');
+        if (userRes.ok) {
+          const u = await userRes.json();
+          if (u.role) {
+            setCurrentUserRole(u.role);
+            localStorage.setItem('user_role', u.role);
+          }
+          if (u.username) {
+            setCurrentUsername(u.username);
+            localStorage.setItem('username', u.username);
+          }
+        }
+      } catch (e) {}
     }
-    
-    try {
-      const userRes = await fetchWithAuth('http://localhost:8000/api/auth/me/');
-      if (userRes.ok) {
-        const u = await userRes.json();
-        if (u.role) {
-          setCurrentUserRole(u.role);
-          localStorage.setItem('user_role', u.role);
-        }
-        if (u.username) {
-          setCurrentUsername(u.username);
-          localStorage.setItem('username', u.username);
-        }
-      }
-    } catch (e) {}
     
     setLoading(true);
     try {
-      // Recommendations (Hybrid Engine)
+      // Recommendations (Hybrid Engine with multi-host fallback)
       const cityQuery = selectedCity ? `&city=${encodeURIComponent(selectedCity)}` : '';
-      const recRes = await fetchWithAuth(`http://localhost:8000/api/recommendations/?filter=${activeRecFilter}${cityQuery}`);
-      if (recRes.ok) {
-        const recData = await recRes.json();
-        setRecommendations(recData);
+      let recRes = null;
+      if (token) {
+        try {
+          recRes = await fetchWithAuth(`http://localhost:8000/api/recommendations/?filter=${activeRecFilter}${cityQuery}`);
+        } catch (e) {}
+      }
+      if (!recRes || !recRes.ok) {
+        try {
+          recRes = await fetch(`http://localhost:8000/api/recommendations/?filter=${activeRecFilter}${cityQuery}`);
+        } catch (e1) {
+          try {
+            recRes = await fetch(`http://127.0.0.1:8000/api/recommendations/?filter=${activeRecFilter}${cityQuery}`);
+          } catch (e2) {
+            recRes = await fetch(`/api/recommendations/?filter=${activeRecFilter}${cityQuery}`).catch(() => null);
+          }
+        }
+      }
+      if (recRes && recRes.ok) {
+        const recData = await recRes.json().catch(() => []);
+        setRecommendations(Array.isArray(recData) ? recData : []);
       }
       
-      // Catalog
-      const catCityQuery = selectedCity ? `?city=${selectedCity}` : '';
-      const appRes = await fetch(`http://localhost:8000/api/appliances/${catCityQuery}`);
-      if (appRes.ok) {
-        const appData = await appRes.json();
-        setAppliances(appData);
+      // Catalog (Multi-Host Fallback: localhost -> 127.0.0.1 -> Vite proxy)
+      const catCityQuery = selectedCity ? `?city=${encodeURIComponent(selectedCity)}` : '';
+      let appRes = null;
+      try {
+        appRes = await fetch(`http://localhost:8000/api/appliances/${catCityQuery}`);
+      } catch (e1) {
+        try {
+          appRes = await fetch(`http://127.0.0.1:8000/api/appliances/${catCityQuery}`);
+        } catch (e2) {
+          appRes = await fetch(`/api/appliances/${catCityQuery}`).catch(() => null);
+        }
+      }
+      if (appRes && appRes.ok) {
+        const appData = await appRes.json().catch(() => []);
+        setAppliances(Array.isArray(appData) ? appData : []);
       }
 
       // Cart count
-      const cartRes = await fetchWithAuth('http://localhost:8000/api/cart/');
-      if (cartRes.ok) {
-        const cartData = await cartRes.json();
-        setCartCount(Array.isArray(cartData) ? cartData.length : 0);
+      if (token) {
+        try {
+          const cartRes = await fetchWithAuth('http://localhost:8000/api/cart/');
+          if (cartRes.ok) {
+            const cartData = await cartRes.json();
+            setCartCount(Array.isArray(cartData) ? cartData.length : 0);
+          }
+        } catch (e) {}
+      } else {
+        setCartCount(0);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -326,13 +354,25 @@ const HomePage = ({ onLogout }) => {
       try {
         recRes = await fetchWithAuth(`http://localhost:8000/api/recommendations/?filter=${filterKey}${cityQuery}`);
       } catch (authErr) {
-        recRes = await fetch(`http://localhost:8000/api/recommendations/?filter=${filterKey}${cityQuery}`);
+        try {
+          recRes = await fetch(`http://localhost:8000/api/recommendations/?filter=${filterKey}${cityQuery}`);
+        } catch (e1) {
+          try {
+            recRes = await fetch(`http://127.0.0.1:8000/api/recommendations/?filter=${filterKey}${cityQuery}`);
+          } catch (e2) {
+            recRes = await fetch(`/api/recommendations/?filter=${filterKey}${cityQuery}`).catch(() => null);
+          }
+        }
       }
       if (!recRes || !recRes.ok) {
-        recRes = await fetch(`http://localhost:8000/api/recommendations/?filter=${filterKey}${cityQuery}`);
+        try {
+          recRes = await fetch(`http://127.0.0.1:8000/api/recommendations/?filter=${filterKey}${cityQuery}`);
+        } catch (e) {
+          recRes = await fetch(`/api/recommendations/?filter=${filterKey}${cityQuery}`).catch(() => null);
+        }
       }
       if (recRes && recRes.ok) {
-        const recData = await recRes.json();
+        const recData = await recRes.json().catch(() => []);
         setRecommendations(Array.isArray(recData) ? recData : []);
       }
     } catch (err) {
@@ -1782,6 +1822,289 @@ const HomePage = ({ onLogout }) => {
       <CuratedRoomCombos onRentCombo={handleRentCombo} />
 
       {/* ========================================================
+          5. AI RECOMMENDATIONS (REAL-TIME HYBRID ENGINE & XAI)
+          ======================================================== */}
+      {recommendations.length > 0 && (
+        <section style={{ maxWidth: '1280px', margin: '3rem auto 0', padding: '0 1.5rem' }}>
+          {/* Header & Multi-Rail Filter Navigation */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+            marginBottom: '1.5rem',
+            flexWrap: 'wrap',
+            gap: '1rem'
+          }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                <div style={{ background: 'var(--primary-glow)', padding: '0.4rem', borderRadius: '8px' }}>
+                  <Sparkles size={20} color="var(--primary-color)" />
+                </div>
+                <h2 style={{ fontSize: '1.6rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+                  AI Recommendation Hub
+                </h2>
+                <span style={{
+                  fontSize: '0.72rem',
+                  background: 'linear-gradient(135deg, #e23744 0%, #b91c1c 100%)',
+                  color: '#ffffff',
+                  padding: '0.2rem 0.6rem',
+                  borderRadius: '999px',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em'
+                }}>
+                  Hybrid Engine 2.0
+                </span>
+              </div>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', margin: 0 }}>
+                Context-aware suggestions based on your cart, room setups, and popular trends in <strong>{city}</strong>.
+              </p>
+            </div>
+
+            {/* Filter Tabs */}
+            <div style={{
+              display: 'flex',
+              background: 'var(--surface-muted)',
+              border: '1px solid var(--border-color)',
+              padding: '0.25rem',
+              borderRadius: '10px',
+              gap: '0.35rem',
+              flexWrap: 'wrap'
+            }}>
+              {[
+                { id: 'for_you', label: '🌟 For You' },
+                { id: 'room_bundles', label: '🛋️ Room Combos' },
+                { id: 'eco_saver', label: '⚡ Eco Savers' },
+                { id: 'trending', label: `📍 Popular in ${city}` }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => fetchFilteredRecommendations(tab.id)}
+                  style={{
+                    background: activeRecFilter === tab.id ? 'var(--surface-color)' : 'transparent',
+                    color: activeRecFilter === tab.id ? 'var(--text-primary)' : 'var(--text-secondary)',
+                    border: activeRecFilter === tab.id ? '1px solid var(--border-color)' : '1px solid transparent',
+                    padding: '0.45rem 0.8rem',
+                    borderRadius: '8px',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    boxShadow: activeRecFilter === tab.id ? 'var(--card-shadow)' : 'none',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Cards Grid */}
+          {recLoading ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+              <Loader2 size={32} className="animate-spin" style={{ margin: '0 auto 0.5rem', color: 'var(--primary-color)' }} />
+              <div style={{ fontSize: '0.85rem' }}>Recalculating real-time hybrid scores...</div>
+            </div>
+          ) : (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(285px, 1fr))',
+              gap: '1.5rem'
+            }}>
+              {recommendations.slice(0, 8).map((rec, idx) => {
+                const app = rec.recommended_appliance_details;
+                if (!app) return null;
+                const appId = app.appliance_id || app._id;
+                const isAdded = addedItems[appId];
+
+                return (
+                  <div
+                    key={rec.recommendation_id || idx}
+                    onClick={() => setSelectedProduct(app)}
+                    className="product-card panel"
+                    style={{
+                      background: 'var(--surface-color)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '16px',
+                      overflow: 'hidden',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      boxShadow: 'var(--card-shadow)',
+                      transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                      position: 'relative'
+                    }}
+                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = 'var(--card-shadow-hover)'; }}
+                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'var(--card-shadow)'; }}
+                  >
+                    {/* Image Container with Badges */}
+                    <div style={{ height: '195px', background: 'var(--surface-muted)', overflow: 'hidden', position: 'relative' }}>
+                      {/* Match Score Badge */}
+                      <span style={{
+                        position: 'absolute',
+                        top: '10px',
+                        left: '10px',
+                        background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                        color: 'white',
+                        fontSize: '0.72rem',
+                        fontWeight: 800,
+                        padding: '0.25rem 0.6rem',
+                        borderRadius: '6px',
+                        zIndex: 2,
+                        boxShadow: '0 2px 6px rgba(2, 132, 199, 0.3)'
+                      }}>
+                        {rec.match_percentage || (rec.similarity_score * 100).toFixed(0)}% Match ⚡
+                      </span>
+
+                      {/* Bundle / Smart Add-on / Eco Badges */}
+                      <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end', zIndex: 2 }}>
+                        {rec.bundle_badge && (
+                          <span style={{
+                            background: rec.bundle_badge.includes('5★') ? 'rgba(16, 185, 129, 0.9)' : 'rgba(16, 185, 129, 0.15)',
+                            color: rec.bundle_badge.includes('5★') ? '#ffffff' : '#10b981',
+                            border: '1px solid rgba(16, 185, 129, 0.3)',
+                            fontSize: '0.68rem',
+                            fontWeight: 800,
+                            padding: '0.2rem 0.55rem',
+                            borderRadius: '6px'
+                          }}>
+                            {rec.bundle_badge}
+                          </span>
+                        )}
+                        {rec.energy_savings_est > 100 && (
+                          <span style={{
+                            background: '#047857',
+                            color: '#ffffff',
+                            fontSize: '0.65rem',
+                            fontWeight: 700,
+                            padding: '0.15rem 0.45rem',
+                            borderRadius: '4px'
+                          }}>
+                            Save ~₹{rec.energy_savings_est}/mo power
+                          </span>
+                        )}
+                      </div>
+
+                      <img 
+                        src={app.image_url} 
+                        alt={app.rental_name} 
+                        style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '0.5rem' }} 
+                      />
+                    </div>
+
+                    {/* Card Content */}
+                    <div style={{ padding: '1.15rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.35rem' }}>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          {app.category_id || 'Appliances'}
+                        </span>
+                        {app.rating && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.75rem', fontWeight: 700, color: '#f59e0b' }}>
+                            <Star size={12} fill="#f59e0b" color="#f59e0b" />
+                            <span>{app.rating}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <h3 style={{
+                        fontSize: '0.95rem',
+                        fontWeight: 700,
+                        color: 'var(--text-primary)',
+                        margin: '0 0 0.6rem',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {app.rental_name}
+                      </h3>
+
+                      {/* Explainable AI (XAI) Reason Pill */}
+                      <div style={{
+                        background: 'var(--surface-muted)',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: '8px',
+                        padding: '0.45rem 0.65rem',
+                        fontSize: '0.75rem',
+                        color: 'var(--text-secondary)',
+                        marginBottom: '0.85rem',
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '0.35rem',
+                        lineHeight: 1.35
+                      }}>
+                        <Sparkles size={13} color="var(--primary-color)" style={{ flexShrink: 0, marginTop: '2px' }} />
+                        <span>{rec.recommendation_reason}</span>
+                      </div>
+
+                      {/* Pricing & 1-Click Action Buttons */}
+                      <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
+                        <div>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block' }}>Monthly Rent</span>
+                          {rec.bundle_price && rec.bundle_price < app.monthly_price ? (
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem' }}>
+                              <span style={{ fontWeight: 900, fontSize: '1.15rem', color: '#10b981' }}>
+                                ₹{rec.bundle_price}
+                                <span style={{ fontSize: '0.72rem', fontWeight: 500, color: 'var(--text-secondary)' }}>/mo</span>
+                              </span>
+                              <span style={{ fontSize: '0.75rem', textDecoration: 'line-through', color: 'var(--text-muted)' }}>
+                                ₹{app.monthly_price}
+                              </span>
+                            </div>
+                          ) : (
+                            <span style={{ fontWeight: 900, fontSize: '1.15rem', color: 'var(--text-primary)' }}>
+                              ₹{app.monthly_price}
+                              <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-secondary)' }}>/mo</span>
+                            </span>
+                          )}
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.35rem' }}>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              addToCart(appId, "6", app);
+                            }}
+                            style={{
+                              background: isAdded ? '#059669' : '#e23744',
+                              color: '#ffffff',
+                              border: 'none',
+                              borderRadius: '8px',
+                              padding: '0.45rem 0.75rem',
+                              fontSize: '0.78rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.3rem',
+                              transition: 'all 0.15s ease'
+                            }}
+                          >
+                            {isAdded ? (
+                              <>
+                                <Check size={14} />
+                                <span>Added</span>
+                              </>
+                            ) : (
+                              <>
+                                <Plus size={14} />
+                                <span>Add</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* ========================================================
           3. SCREENSHOT 2: LISTING & FILTER EXPERIENCE
           ======================================================== */}
       <section id="catalog-listing-section" style={{ maxWidth: '1280px', margin: '4rem auto 0', padding: '0 1.5rem' }}>
@@ -2477,288 +2800,7 @@ const HomePage = ({ onLogout }) => {
         <RentVsBuyCalculator />
       </section>
 
-      {/* ========================================================
-          5. AI RECOMMENDATIONS (REAL-TIME HYBRID ENGINE & XAI)
-          ======================================================== */}
-      {recommendations.length > 0 && (
-        <section style={{ maxWidth: '1280px', margin: '4.5rem auto 0', padding: '0 1.5rem' }}>
-          {/* Header & Multi-Rail Filter Navigation */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            marginBottom: '1.5rem',
-            flexWrap: 'wrap',
-            gap: '1rem'
-          }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                <div style={{ background: 'var(--primary-glow)', padding: '0.4rem', borderRadius: '8px' }}>
-                  <Sparkles size={20} color="var(--primary-color)" />
-                </div>
-                <h2 style={{ fontSize: '1.6rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-                  AI Recommendation Hub
-                </h2>
-                <span style={{
-                  fontSize: '0.72rem',
-                  background: 'linear-gradient(135deg, #e23744 0%, #b91c1c 100%)',
-                  color: '#ffffff',
-                  padding: '0.2rem 0.6rem',
-                  borderRadius: '999px',
-                  fontWeight: 800,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.04em'
-                }}>
-                  Hybrid Engine 2.0
-                </span>
-              </div>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', margin: 0 }}>
-                Context-aware suggestions based on your cart, room setups, and popular trends in <strong>{city}</strong>.
-              </p>
-            </div>
-
-            {/* Filter Tabs */}
-            <div style={{
-              display: 'flex',
-              background: 'var(--surface-muted)',
-              border: '1px solid var(--border-color)',
-              padding: '0.25rem',
-              borderRadius: '10px',
-              gap: '0.35rem',
-              flexWrap: 'wrap'
-            }}>
-              {[
-                { id: 'for_you', label: '🌟 For You' },
-                { id: 'room_bundles', label: '🛋️ Room Combos' },
-                { id: 'eco_saver', label: '⚡ Eco Savers' },
-                { id: 'trending', label: `📍 Popular in ${city}` }
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => fetchFilteredRecommendations(tab.id)}
-                  style={{
-                    background: activeRecFilter === tab.id ? 'var(--surface-color)' : 'transparent',
-                    color: activeRecFilter === tab.id ? 'var(--text-primary)' : 'var(--text-secondary)',
-                    border: activeRecFilter === tab.id ? '1px solid var(--border-color)' : '1px solid transparent',
-                    padding: '0.45rem 0.8rem',
-                    borderRadius: '8px',
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    boxShadow: activeRecFilter === tab.id ? 'var(--card-shadow)' : 'none',
-                    transition: 'all 0.15s ease'
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Cards Grid */}
-          {recLoading ? (
-            <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-              <Loader2 size={32} className="animate-spin" style={{ margin: '0 auto 0.5rem', color: 'var(--primary-color)' }} />
-              <div style={{ fontSize: '0.85rem' }}>Recalculating real-time hybrid scores...</div>
-            </div>
-          ) : (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(285px, 1fr))',
-              gap: '1.5rem'
-            }}>
-              {recommendations.slice(0, 8).map((rec, idx) => {
-                const app = rec.recommended_appliance_details;
-                if (!app) return null;
-                const appId = app.appliance_id || app._id;
-                const isAdded = addedItems[appId];
-
-                return (
-                  <div
-                    key={rec.recommendation_id || idx}
-                    onClick={() => setSelectedProduct(app)}
-                    className="product-card panel"
-                    style={{
-                      background: 'var(--surface-color)',
-                      border: '1px solid var(--border-color)',
-                      borderRadius: '16px',
-                      overflow: 'hidden',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      boxShadow: 'var(--card-shadow)',
-                      transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-                      position: 'relative'
-                    }}
-                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = 'var(--card-shadow-hover)'; }}
-                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'var(--card-shadow)'; }}
-                  >
-                    {/* Image Container with Badges */}
-                    <div style={{ height: '195px', background: 'var(--surface-muted)', overflow: 'hidden', position: 'relative' }}>
-                      {/* Match Score Badge */}
-                      <span style={{
-                        position: 'absolute',
-                        top: '10px',
-                        left: '10px',
-                        background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
-                        color: 'white',
-                        fontSize: '0.72rem',
-                        fontWeight: 800,
-                        padding: '0.25rem 0.6rem',
-                        borderRadius: '6px',
-                        zIndex: 2,
-                        boxShadow: '0 2px 6px rgba(2, 132, 199, 0.3)'
-                      }}>
-                        {rec.match_percentage || (rec.similarity_score * 100).toFixed(0)}% Match ⚡
-                      </span>
-
-                      {/* Bundle / Smart Add-on / Eco Badges */}
-                      <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end', zIndex: 2 }}>
-                        {rec.bundle_badge && (
-                          <span style={{
-                            background: rec.bundle_badge.includes('5★') ? 'rgba(16, 185, 129, 0.9)' : 'rgba(16, 185, 129, 0.15)',
-                            color: rec.bundle_badge.includes('5★') ? '#ffffff' : '#10b981',
-                            border: '1px solid rgba(16, 185, 129, 0.3)',
-                            fontSize: '0.68rem',
-                            fontWeight: 800,
-                            padding: '0.2rem 0.55rem',
-                            borderRadius: '6px'
-                          }}>
-                            {rec.bundle_badge}
-                          </span>
-                        )}
-                        {rec.energy_savings_est > 100 && (
-                          <span style={{
-                            background: '#047857',
-                            color: '#ffffff',
-                            fontSize: '0.65rem',
-                            fontWeight: 700,
-                            padding: '0.15rem 0.45rem',
-                            borderRadius: '4px'
-                          }}>
-                            Save ~₹{rec.energy_savings_est}/mo power
-                          </span>
-                        )}
-                      </div>
-
-                      <img 
-                        src={app.image_url} 
-                        alt={app.rental_name} 
-                        style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '0.5rem' }} 
-                      />
-                    </div>
-
-                    {/* Card Content */}
-                    <div style={{ padding: '1.15rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.35rem' }}>
-                        <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                          {app.category_id || 'Appliances'}
-                        </span>
-                        {app.rating && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.75rem', fontWeight: 700, color: '#f59e0b' }}>
-                            <Star size={12} fill="#f59e0b" color="#f59e0b" />
-                            <span>{app.rating}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <h3 style={{
-                        fontSize: '0.95rem',
-                        fontWeight: 700,
-                        color: 'var(--text-primary)',
-                        margin: '0 0 0.6rem',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap'
-                      }}>
-                        {app.rental_name}
-                      </h3>
-
-                      {/* Explainable AI (XAI) Reason Pill */}
-                      <div style={{
-                        background: 'var(--surface-muted)',
-                        border: '1px solid var(--border-color)',
-                        borderRadius: '8px',
-                        padding: '0.45rem 0.65rem',
-                        fontSize: '0.75rem',
-                        color: 'var(--text-secondary)',
-                        marginBottom: '0.85rem',
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        gap: '0.35rem',
-                        lineHeight: 1.35
-                      }}>
-                        <Sparkles size={13} color="var(--primary-color)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                        <span>{rec.recommendation_reason}</span>
-                      </div>
-
-                      {/* Pricing & 1-Click Action Buttons */}
-                      <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
-                        <div>
-                          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block' }}>Monthly Rent</span>
-                          {rec.bundle_price && rec.bundle_price < app.monthly_price ? (
-                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem' }}>
-                              <span style={{ fontWeight: 900, fontSize: '1.15rem', color: '#10b981' }}>
-                                ₹{rec.bundle_price}
-                                <span style={{ fontSize: '0.72rem', fontWeight: 500, color: 'var(--text-secondary)' }}>/mo</span>
-                              </span>
-                              <span style={{ fontSize: '0.75rem', textDecoration: 'line-through', color: 'var(--text-muted)' }}>
-                                ₹{app.monthly_price}
-                              </span>
-                            </div>
-                          ) : (
-                            <span style={{ fontWeight: 900, fontSize: '1.15rem', color: 'var(--text-primary)' }}>
-                              ₹{app.monthly_price}
-                              <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-secondary)' }}>/mo</span>
-                            </span>
-                          )}
-                        </div>
-
-                        <div style={{ display: 'flex', gap: '0.35rem' }}>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              addToCart(appId, "6", app);
-                            }}
-                            style={{
-                              background: isAdded ? '#059669' : '#e23744',
-                              color: '#ffffff',
-                              border: 'none',
-                              borderRadius: '8px',
-                              padding: '0.45rem 0.75rem',
-                              fontSize: '0.78rem',
-                              fontWeight: 700,
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.3rem',
-                              transition: 'all 0.15s ease'
-                            }}
-                          >
-                            {isAdded ? (
-                              <>
-                                <Check size={14} />
-                                <span>Added</span>
-                              </>
-                            ) : (
-                              <>
-                                <Plus size={14} />
-                                <span>Add</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </section>
-      )}
+      
 
       {/* ========================================================
           5. FLOATING "NEED HELP?" WIDGET (Screenshot 1 & 2 exact)

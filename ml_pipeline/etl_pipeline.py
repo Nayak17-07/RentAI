@@ -24,11 +24,18 @@ FEATURE_LABELS = {
     'tenure_months': 'Short account tenure duration',
     'monthly_spend': 'Low monthly rental commitment',
     'active_rentals': 'Low active appliance subscriptions',
+    'credit_score': 'Financial credit standing and risk profile',
+    'customer_age': 'Demographic lifecycle profile',
+    'is_active_member': 'Platform loyalty and engagement status',
     'late_payments': 'Payment delays and past-due billing',
     'early_returns': 'Premature lease termination history',
     'cart_abandonment': 'Frequent cart abandonment sessions',
     'days_inactive': 'Decreased platform engagement and inactivity',
-    'avg_rating': 'Lower satisfaction feedback rating'
+    'avg_rating': 'Lower satisfaction feedback rating',
+    'spend_per_rental': 'Low rental ticket spend per appliance',
+    'delinquency_rate': 'Elevated default rate on active subscriptions',
+    'inactivity_rate': 'High dormancy proportion of account tenure',
+    'engagement_score': 'Diverging engagement and satisfaction index'
 }
 
 def load_or_train_churn_model():
@@ -115,16 +122,31 @@ def run_etl_and_predict_churn():
         else:
             avg_rating = 4.2
             
-        # Build feature vector
+        # Build feature vector matching upgraded model schema
+        spend_per_rental = round(monthly_spend / (active_rentals + 0.1), 2)
+        delinquency_rate = round(late_payments / (active_rentals + 1.0), 4)
+        inactivity_rate = round(days_inactive / (tenure_months * 30.0 + 1.0), 4)
+        engagement_score = round(avg_rating * (1.0 - min(1.0, max(0.0, days_inactive / 90.0))), 3)
+        credit_score = 650 if late_payments == 0 else max(480, 650 - (late_payments * 45))
+        customer_age = 32
+        is_active_member = 1 if days_inactive < 20 and active_rentals > 0 else 0
+
         user_features = {
             'tenure_months': tenure_months,
             'monthly_spend': monthly_spend,
             'active_rentals': active_rentals,
+            'credit_score': credit_score,
+            'customer_age': customer_age,
+            'is_active_member': is_active_member,
             'late_payments': late_payments,
             'early_returns': early_returns,
             'cart_abandonment': cart_abandonment,
             'days_inactive': days_inactive,
-            'avg_rating': avg_rating
+            'avg_rating': avg_rating,
+            'spend_per_rental': spend_per_rental,
+            'delinquency_rate': delinquency_rate,
+            'inactivity_rate': inactivity_rate,
+            'engagement_score': engagement_score
         }
         
         X_user = pd.DataFrame([[user_features[c] for c in feature_cols]], columns=feature_cols)

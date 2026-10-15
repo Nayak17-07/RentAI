@@ -164,14 +164,24 @@ const InvoiceReceiptModal = ({ isOpen, onClose, invoiceData }) => {
             </div>
 
             <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700, display: 'block', marginBottom: '0.25rem' }}>
-                Payment Transaction Details
-              </span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                <span style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>
+                  Payment Transaction Details
+                </span>
+                <span style={{ fontSize: '0.68rem', background: '#eff6ff', color: '#2563eb', padding: '0.1rem 0.4rem', borderRadius: '4px', fontWeight: 700 }}>
+                  Razorpay Verified
+                </span>
+              </div>
               <div style={{ color: '#0f172a', fontWeight: 600 }}>
                 TXN ID: <span style={{ fontFamily: 'monospace', color: '#2563eb' }}>{invoiceData.transaction_id || 'TXN_ONLINE_PAID'}</span>
               </div>
+              {(invoiceData.gateway_payment_id || invoiceData.payment_details?.razorpay_payment_id) && (
+                <div style={{ color: '#475569', fontSize: '0.78rem', marginTop: '0.15rem' }}>
+                  Razorpay ID: <span style={{ fontFamily: 'monospace', color: '#059669', fontWeight: 600 }}>{invoiceData.gateway_payment_id || invoiceData.payment_details?.razorpay_payment_id}</span>
+                </div>
+              )}
               <div style={{ color: '#64748b', marginTop: '0.2rem' }}>
-                Method: <strong>{invoiceData.payment_method || 'UPI Gateway'}</strong>
+                Method: <strong>{invoiceData.payment_method || 'Razorpay Gateway'}</strong>
               </div>
               <div style={{ color: '#16a34a', fontWeight: 600, fontSize: '0.8rem', marginTop: '0.2rem' }}>
                 Status: PAID & CLEARED

@@ -32,7 +32,7 @@ app.use(cors({
     return callback(new Error('Cross-Origin Request Blocked by Rentora Security Policy'));
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key', 'idempotency-key']
 }));
 
 // Request payload limit (calibrated for KYC document previews while preventing memory flooding)

@@ -14,8 +14,8 @@ import {
 import ThemeToggle from './ThemeToggle';
 
 export default function AdminLoginPage() {
-  const [identifier, setIdentifier] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -34,6 +34,7 @@ export default function AdminLoginPage() {
       const res = await fetch('http://localhost:8000/api/auth/admin-login/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           username: identifier.trim(),
           password: password.trim()
@@ -54,7 +55,11 @@ export default function AdminLoginPage() {
         // Redirect to isolated Admin Operations Console
         navigate('/admin');
       } else {
-        setError(data.error || data.detail || 'Authorization failed. Verify your staff credentials.');
+        if (res.status === 429) {
+          setError(data.error || 'Security Alert: Maximum login attempts exceeded. Access locked for 15 minutes.');
+        } else {
+          setError(data.error || data.detail || 'Authorization failed. Verify your staff credentials.');
+        }
       }
     } catch (err) {
       console.error('Admin login error:', err);

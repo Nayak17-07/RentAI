@@ -2,6 +2,7 @@ const express = require('express');
 const crypto = require('crypto');
 const { getDb } = require('../db');
 const { authenticateJWT } = require('../auth');
+const { processRefund } = require('../utils/razorpay');
 
 const router = express.Router();
 
@@ -61,8 +62,8 @@ router.get('/rentals/', authenticateJWT, async (req, res) => {
         monthly_rent: r.monthly_rent || applianceData.monthly_price || 500,
         standard_deposit: r.standard_deposit || Math.round((r.security_deposit || 500) * 2),
         security_deposit: r.security_deposit || 0.0,
-        deposit_discount_applied: r.deposit_discount_applied !== undefined ? r.deposit_discount_applied : true,
-        deposit_discount_amount: r.deposit_discount_amount || Math.round((r.security_deposit || 500)),
+        deposit_discount_applied: r.deposit_discount_applied !== undefined ? r.deposit_discount_applied : false,
+        deposit_discount_amount: r.deposit_discount_amount || 0,
         escrow_id: r.escrow_id || ('ESC-BLR-' + String(r._id).slice(0, 8).toUpperCase()),
         escrow_protection_limit: 10000,
         deposit_status: r.deposit_status || 'HELD',
@@ -425,9 +426,27 @@ router.patch('/rentals/', authenticateJWT, async (req, res) => {
       });
     } catch (e) {}
 
+    let gatewayRefundId = null;
+    if (depositRefunded > 0) {
+      try {
+        const paymentDoc = await db.collection('payments').findOne({
+          $or: [{ transaction_id: rental.transaction_id }, { rental_ids: rental_id }]
+        });
+        const payId = paymentDoc?.gateway_payment_id || `pay_${crypto.randomBytes(8).toString('hex')}`;
+        const refundRes = await processRefund(payId, {
+          amount: depositRefunded,
+          notes: { rental_id, refund_txn: refundTxn }
+        });
+        gatewayRefundId = refundRes?.id || null;
+      } catch (err) {
+        console.warn('Razorpay refund dispatch error (non-fatal):', err.message);
+      }
+    }
+
     await db.collection('refunds').insertOne({
       _id: crypto.randomUUID(),
       refund_transaction_id: refundTxn,
+      gateway_refund_id: gatewayRefundId,
       rental_id,
       user_id: userId,
       appliance_id: rental.appliance_id,
@@ -438,7 +457,7 @@ router.patch('/rentals/', authenticateJWT, async (req, res) => {
       waiver_applied: waiverApplied,
       refund_amount: depositRefunded,
       status: 'PROCESSED',
-      credited_to: 'Original Payment Method',
+      credited_to: 'Original Razorpay / Bank Escrow Method',
       created_at: now
     });
 

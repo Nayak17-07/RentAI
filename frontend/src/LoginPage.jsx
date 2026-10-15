@@ -20,23 +20,43 @@ const LoginPage = ({ onLogin }) => {
   const [resetError, setResetError] = useState('');
   const [resetLoading, setResetLoading] = useState(false);
 
+  const fetchApi = async (url, opts) => {
+    try {
+      return await fetch(url, opts);
+    } catch (e1) {
+      if (typeof url === 'string' && url.includes('localhost:8000')) {
+        try {
+          return await fetch(url.replace('localhost:8000', '127.0.0.1:8000'), opts);
+        } catch (e2) {
+          return await fetch(url.replace(/^http:\/\/localhost:8000/, ''), opts);
+        }
+      }
+      throw e1;
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
     
     try {
-      const response = await fetch('http://localhost:8000/api/token/', {
+      const response = await fetchApi('http://localhost:8000/api/token/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ username, password })
       });
       
+      const data = await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        throw new Error('Invalid credentials');
+        if (response.status === 429) {
+          throw new Error(data.error || 'Too many login attempts. Please wait 15 minutes.');
+        }
+        throw new Error(data.detail || data.error || 'Invalid credentials');
       }
       
-      const data = await response.json();
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
       onLogin(data.access);
@@ -55,7 +75,7 @@ const LoginPage = ({ onLogin }) => {
     setResetMessage('');
 
     try {
-      const res = await fetch('http://localhost:8000/api/auth/password-reset-request/', {
+      const res = await fetchApi('http://localhost:8000/api/auth/password-reset-request/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: resetEmail })
@@ -82,7 +102,7 @@ const LoginPage = ({ onLogin }) => {
     setResetError('');
 
     try {
-      const res = await fetch('http://localhost:8000/api/auth/password-reset-confirm/', {
+      const res = await fetchApi('http://localhost:8000/api/auth/password-reset-confirm/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: resetEmail, otp: resetOtp, new_password: newPassword })

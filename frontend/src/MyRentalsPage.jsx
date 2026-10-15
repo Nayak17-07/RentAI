@@ -40,6 +40,7 @@ import DeliveryTrackerModal from './DeliveryTrackerModal';
 import RentToOwnModal from './RentToOwnModal';
 import OwnershipCertificateModal from './OwnershipCertificateModal';
 import EscrowLedgerModal from './EscrowLedgerModal';
+import PaymentGatewayModal from './PaymentGatewayModal';
 
 const MyRentalsPage = ({ onLogout }) => {
   const [rentals, setRentals] = useState([]);
@@ -88,6 +89,8 @@ const MyRentalsPage = ({ onLogout }) => {
   const [autoPayEnabled, setAutoPayEnabled] = useState(true);
   const [payingBillLoading, setPayingBillLoading] = useState(false);
   const [billPaySuccess, setBillPaySuccess] = useState(null);
+  const [isMonthlyPayModalOpen, setIsMonthlyPayModalOpen] = useState(false);
+  const [monthlyBillToPay, setMonthlyBillToPay] = useState(0);
 
   const navigate = useNavigate();
 
@@ -230,31 +233,39 @@ const MyRentalsPage = ({ onLogout }) => {
     }
   };
 
-  const handlePayMonthlyBill = async (amount) => {
+  const handlePayMonthlyBill = (amount) => {
+    setMonthlyBillToPay(amount);
+    setIsMonthlyPayModalOpen(true);
+  };
+
+  const handleMonthlyPaymentSuccess = async (paymentPayload) => {
+    setIsMonthlyPayModalOpen(false);
     setPayingBillLoading(true);
     try {
       const res = await fetchWithAuth('http://localhost:8000/api/payments/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: amount,
+          amount: monthlyBillToPay,
           payment_type: 'MONTHLY_RENT',
-          payment_method: 'UPI',
+          payment_method: paymentPayload.payment_method || 'RAZORPAY',
+          razorpay_payment_id: paymentPayload.payment_details?.razorpay_payment_id,
+          razorpay_order_id: paymentPayload.payment_details?.razorpay_order_id,
+          razorpay_signature: paymentPayload.payment_details?.razorpay_signature,
+          payment_details: paymentPayload.payment_details,
           status: 'SUCCESS'
         })
       });
-      setBillPaySuccess({
-        amount: amount,
-        date: new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })
-      });
-      fetchRentalsAndPayments();
-      setTimeout(() => setBillPaySuccess(null), 8000);
+      if (res.ok) {
+        setBillPaySuccess({
+          amount: monthlyBillToPay,
+          date: new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })
+        });
+        await fetchRentalsAndPayments();
+        setTimeout(() => setBillPaySuccess(null), 8000);
+      }
     } catch (e) {
-      setBillPaySuccess({
-        amount: amount,
-        date: new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })
-      });
-      setTimeout(() => setBillPaySuccess(null), 8000);
+      console.error('Monthly payment error:', e);
     } finally {
       setPayingBillLoading(false);
     }
@@ -1302,11 +1313,9 @@ const MyRentalsPage = ({ onLogout }) => {
                       >
                         <ShieldCheck size={14} color="#059669" />
                         <span>Deposit: ₹{rental.security_deposit || 750}</span>
-                        {rental.deposit_discount_applied && (
-                          <span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.68rem', padding: '0.1rem 0.35rem', borderRadius: '4px', fontWeight: 800 }}>
-                            50% KYC OFF
-                          </span>
-                        )}
+                        <span style={{ background: '#ecfdf5', color: '#15803d', fontSize: '0.68rem', padding: '0.1rem 0.35rem', borderRadius: '4px', fontWeight: 700 }}>
+                          Escrow Held
+                        </span>
                         <span style={{ color: '#059669', fontSize: '0.72rem', textDecoration: 'underline' }}>Ledger ↗</span>
                       </button>
                       <button 
@@ -1621,18 +1630,27 @@ const MyRentalsPage = ({ onLogout }) => {
                           <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{formatDate(payment.created_at)}</span>
                         </td>
                         <td style={{ padding: '1rem 1.25rem', fontFamily: 'monospace', color: '#2563eb' }}>
-                          {payment.transaction_id}
+                          <div>{payment.transaction_id}</div>
+                          {payment.gateway_payment_id && (
+                            <div style={{ fontSize: '0.72rem', color: '#059669', marginTop: '0.15rem', fontFamily: 'monospace' }}>
+                              ⚡ {payment.gateway_payment_id}
+                            </div>
+                          )}
                         </td>
                         <td style={{ padding: '1rem 1.25rem' }}>
                           <span style={{
-                            background: '#f1f5f9',
-                            color: '#334155',
+                            background: payment.payment_method?.startsWith('RAZORPAY') ? '#eff6ff' : '#f1f5f9',
+                            color: payment.payment_method?.startsWith('RAZORPAY') ? '#2563eb' : '#334155',
+                            border: payment.payment_method?.startsWith('RAZORPAY') ? '1px solid #bfdbfe' : 'none',
                             padding: '0.2rem 0.6rem',
                             borderRadius: '6px',
                             fontSize: '0.75rem',
-                            fontWeight: 600
+                            fontWeight: 600,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.25rem'
                           }}>
-                            {payment.payment_method || 'UPI'}
+                            {payment.payment_method?.startsWith('RAZORPAY') ? '⚡ Razorpay' : (payment.payment_method || 'Razorpay')}
                           </span>
                         </td>
                         <td style={{ padding: '1rem 1.25rem', textAlign: 'right' }}>
@@ -2036,6 +2054,18 @@ const MyRentalsPage = ({ onLogout }) => {
           onClose={() => setCertificateModalRental(null)}
         />
       )}
+
+      {/* Monthly Subscription Renewal Razorpay Gateway Modal */}
+      <PaymentGatewayModal
+        isOpen={isMonthlyPayModalOpen}
+        onClose={() => setIsMonthlyPayModalOpen(false)}
+        totalAmount={monthlyBillToPay}
+        rentAmount={Math.round(monthlyBillToPay / 1.18)}
+        depositAmount={0}
+        taxAmount={Math.round(monthlyBillToPay - (monthlyBillToPay / 1.18))}
+        customerInfo={{ name: 'Tenant Subscriber' }}
+        onPaymentSuccess={handleMonthlyPaymentSuccess}
+      />
     </div>
   );
 };

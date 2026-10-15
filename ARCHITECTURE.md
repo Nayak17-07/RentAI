@@ -116,3 +116,8 @@ graph TB
 * **Functionality**: Financial SaaS KPIs (MRR, ARR run-rate, ARPU, Customer LTV, RBI-compliant security deposit escrow liability, 96.8% collection efficiency), 6-month seasonal category predictive demand forecasting, metro city profitability heatmaps (Bangalore, Mumbai, Delhi-NCR, Hyderabad, Pune), customer cohort retention decay matrices, and 1-click executive brief CSV/Excel export.
 * **Component**: [BusinessIntelligenceTab.jsx](file:///c:/Users/dhran/Desktop/RentAI/frontend/src/BusinessIntelligenceTab.jsx), [routes/admin.js](file:///c:/Users/dhran/Desktop/RentAI/server/src/routes/admin.js).
 
+### 19. Enterprise Razorpay Payment Gateway & Escrow Refund Pipeline
+* **Functionality**: Full-lifecycle Razorpay payment gateway integration supporting Razorpay Standard Checkout popup, UPI, 3D-Secure Cards, NetBanking, and Doorstep COD. Features backend order generation (`/api/payments/create-order`), constant-time cryptographic HMAC-SHA256 signature verification (`/api/payments/verify-signature`), monthly subscription renewals, Razorpay webhook event processing with signature verification (`/api/payments/webhook`), automated security deposit refunds (`/api/payments/refund`), and dual-mode operation (Live credentials or enterprise sandbox simulator).
+* **Component**: [razorpay.js](file:///c:/Users/dhran/Desktop/RentAI/server/src/utils/razorpay.js), [payments.js](file:///c:/Users/dhran/Desktop/RentAI/server/src/routes/payments.js), [PaymentGatewayModal.jsx](file:///c:/Users/dhran/Desktop/RentAI/frontend/src/PaymentGatewayModal.jsx).
+
+

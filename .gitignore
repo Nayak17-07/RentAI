@@ -30,4 +30,7 @@ Thumbs.db
 
 # Uploads
 server/public/uploads/
+server/uploads/
 
+# Temporary scratch files
+scratch/

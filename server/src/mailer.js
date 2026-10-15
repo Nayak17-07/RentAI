@@ -8,7 +8,7 @@ function getTransporter() {
   const user = process.env.GMAIL_USER;
   const pass = process.env.GMAIL_APP_PASSWORD;
 
-  if (!user || !pass || pass === 'your_16_character_app_password') {
+  if (!user || !pass || pass === 'your_16_character_app_password' || pass.includes('your_') || pass.includes('placeholder')) {
     return null;
   }
 
@@ -36,13 +36,15 @@ async function sendOtpEmail(toEmail, otp, type = 'signup') {
   const titleMap = {
     signup: 'Verify Your Gmail Address - Rentora',
     login: 'One-Time Login Code - Rentora',
-    reset: 'Password Reset Code - Rentora'
+    reset: 'Password Reset Code - Rentora',
+    kyc: 'Aadhaar KYC Verification OTP - Rentora'
   };
 
   const headingMap = {
     signup: 'Welcome to Rentora!',
     login: 'Your Secure Login Code',
-    reset: 'Reset Your Rentora Password'
+    reset: 'Reset Your Rentora Password',
+    kyc: 'Your Aadhaar KYC OTP'
   };
 
   const subject = titleMap[type] || 'Your Verification Code - Rentora';
@@ -75,7 +77,10 @@ async function sendOtpEmail(toEmail, otp, type = 'signup') {
         <div class="content">
           <h2 style="margin-top: 0; font-size: 20px; color: #0f172a;">${heading}</h2>
           <p style="color: #475569; font-size: 15px; line-height: 1.6;">
-            Use the 6-digit verification code below to complete your real-time Gmail verification for your Rentora account:
+            ${type === 'kyc'
+              ? 'Use this 6-digit code to complete your <strong>Aadhaar KYC verification</strong> on Rentora. This confirms your identity as a verified tenant.'
+              : 'Use the 6-digit verification code below to complete your real-time Gmail verification for your Rentora account:'
+            }
           </p>
           <div class="otp-badge">
             <div class="otp-code">${otp}</div>

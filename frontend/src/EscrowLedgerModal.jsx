@@ -201,7 +201,7 @@ export default function EscrowLedgerModal({ isOpen, onClose, rental, onDepositSe
                 ₹{depositAmount.toLocaleString('en-IN')}
               </div>
               <span style={{ fontSize: '0.72rem', color: '#16a34a' }}>
-                {isDiscounted ? '💎 KYC 50% Privilege Applied' : '100% Refundable Buffer'}
+                100% Refundable Escrow Buffer
               </span>
             </div>
 

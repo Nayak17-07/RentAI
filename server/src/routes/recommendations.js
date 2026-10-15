@@ -75,7 +75,7 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
     let targetAppliance = null;
 
     if (userId) {
-      userCartItems = await db.collection('cart').find({ user_id: userId }).toArray();
+      userCartItems = await db.collection('carts').find({ user_id: userId }).toArray();
       userActiveRentals = await db.collection('rentals').find({ user_id: userId }).toArray();
     }
 
@@ -133,51 +133,90 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
 
     const avgBudget = rentCount > 0 ? (totalRentSum / rentCount) : 1200;
 
-    // 2. Fetch all active catalog items with available stock
-    const catalog = await db.collection('appliances')
-      .find({ stock_quantity: { $gt: 0 } })
-      .toArray();
+    // 2. Memory-Safe & Indexed Database Candidate Retrieval
+    // Rather than pulling the entire catalog into Node heap, filter directly in MongoDB with a bounded candidate pool (max 40)
+    let candidatePool = [];
 
-    if (!catalog || catalog.length === 0) {
-      return res.status(200).json([]);
+    if (filter === 'eco_saver') {
+      const ecoRegex = /inverter|5[- ]star|4[- ]star/i;
+      candidatePool = await db.collection('appliances')
+        .find({
+          stock_quantity: { $gt: 0 },
+          $or: [
+            { rental_name: { $regex: ecoRegex } },
+            { description: { $regex: ecoRegex } },
+            { specifications: { $regex: ecoRegex } }
+          ]
+        })
+        .limit(40)
+        .toArray();
+    } else if (filter === 'room_bundles') {
+      const bundleRegex = /sofa|table|bed|refrigerator|microwave|washing|conditioner|purifier|tv|chair|package/i;
+      candidatePool = await db.collection('appliances')
+        .find({
+          stock_quantity: { $gt: 0 },
+          $or: [
+            { category_id: { $regex: bundleRegex } },
+            { sub_category: { $regex: bundleRegex } },
+            { rental_name: { $regex: bundleRegex } }
+          ]
+        })
+        .limit(40)
+        .toArray();
+    } else if (filter === 'trending') {
+      candidatePool = await db.collection('appliances')
+        .find({
+          stock_quantity: { $gt: 0 },
+          available_cities: { $regex: requestedCity, $options: 'i' }
+        })
+        .sort({ rating: -1, stock_quantity: -1 })
+        .limit(40)
+        .toArray();
+    } else {
+      // 'for_you' hybrid personalized pool
+      const complementaryTargets = [];
+      for (const interacted of interactedSubCategories) {
+        const comps = findComplementaryCategories(interacted.subCategory, interacted.category);
+        complementaryTargets.push(...comps);
+      }
+
+      const orConditions = [{ rating: { $gte: 4.5 } }];
+      if (complementaryTargets.length > 0) {
+        const uniqueComps = [...new Set(complementaryTargets)].slice(0, 10);
+        orConditions.unshift(
+          { category_id: { $in: uniqueComps.map(c => new RegExp(c, 'i')) } },
+          { sub_category: { $in: uniqueComps.map(c => new RegExp(c, 'i')) } }
+        );
+      }
+
+      candidatePool = await db.collection('appliances')
+        .find({
+          stock_quantity: { $gt: 0 },
+          $or: orConditions
+        })
+        .limit(40)
+        .toArray();
     }
 
-    // 3. Compute Real-Time Filter-Specific Selection & Scoring
-    let candidatePool = [...catalog];
+    // Safety fallback: if specific filter returned fewer than 4 items, top-up with general active inventory
+    if (candidatePool.length < 4) {
+      const fallbackItems = await db.collection('appliances')
+        .find({ stock_quantity: { $gt: 0 } })
+        .sort({ rating: -1 })
+        .limit(20)
+        .toArray();
 
-    // Specific Hard Filters & Category Prioritization per Rail:
-    if (filter === 'eco_saver') {
-      // Prioritize 5-star, 4-star, inverter, and energy saving appliances
-      const ecoItems = candidatePool.filter(item => {
-        const info = extractEcoEnergyInfo(item);
-        return info.star >= 4 || (item.rental_name && item.rental_name.toLowerCase().includes('inverter'));
-      });
-      if (ecoItems.length >= 4) {
-        candidatePool = ecoItems;
+      const existingIds = new Set(candidatePool.map(c => String(c._id)));
+      for (const fb of fallbackItems) {
+        if (!existingIds.has(String(fb._id))) {
+          candidatePool.push(fb);
+          existingIds.add(String(fb._id));
+        }
       }
-    } else if (filter === 'room_bundles') {
-      // Ensure cross-category room pairing items (living room, bedroom, kitchen, laundry)
-      // If user has no active cart, curate classic room package essentials
-      const bundleEligible = candidatePool.filter(item => {
-        const normCat = normalizeCategory(item.category_id);
-        const normSub = normalizeCategory(item.sub_category);
-        const normName = normalizeCategory(item.rental_name);
-        return ['sofa', 'table', 'bed', 'refrigerator', 'microwave', 'washing', 'conditioner', 'purifier', 'tv', 'chair'].some(
-          k => normCat.includes(k) || normSub.includes(k) || normName.includes(k)
-        );
-      });
-      if (bundleEligible.length >= 4) {
-        candidatePool = bundleEligible;
-      }
-    } else if (filter === 'trending') {
-      // Strict city filter if available
-      const cityFiltered = candidatePool.filter(item => {
-        const itemCityStr = String(item.available_cities || '').toLowerCase();
-        return requestedCity ? itemCityStr.includes(requestedCity.toLowerCase()) : true;
-      });
-      if (cityFiltered.length >= 4) {
-        candidatePool = cityFiltered;
-      }
+    }
+
+    if (candidatePool.length === 0) {
+      return res.status(200).json([]);
     }
 
     const scoredList = candidatePool.map((item, itemIdx) => {
@@ -375,20 +414,18 @@ router.get('/recommendations/', optionalAuth, async (req, res) => {
 // POST /api/recommendations/recompute (Admin trigger to rerun batch recommendation pipeline)
 router.post('/recommendations/recompute', authenticateJWT, requireRole('admin'), async (req, res) => {
   try {
-    const { exec } = require('child_process');
-    const path = require('path');
-    const scriptPath = path.resolve(__dirname, '../../../ml_pipeline/train_model.py');
-    const venvPython = path.resolve(__dirname, '../../../venv/Scripts/python.exe');
-
-    exec(`"${venvPython}" "${scriptPath}"`, (error, stdout, stderr) => {
-      if (error) {
-        console.error('Recompute batch recommendations error:', error);
-        return res.status(500).json({ error: 'Failed to execute recommendation training pipeline', details: stderr });
-      }
-      return res.status(200).json({ message: 'Batch recommendation engine completed successfully', output: stdout });
+    const { runPythonScript } = require('../utils/pythonRunner');
+    const result = await runPythonScript('ml_pipeline/train_model.py', [], 45000);
+    return res.status(200).json({ 
+      message: 'Batch recommendation engine completed successfully', 
+      output: result.stdout 
     });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.error('Recompute batch recommendations error:', err.message);
+    return res.status(500).json({ 
+      error: 'Failed to execute recommendation training pipeline', 
+      details: err.message 
+    });
   }
 });
 

@@ -1,57 +1,120 @@
 const express = require('express');
 const { getDb } = require('../db');
-const { authenticateJWT } = require('../auth');
+const { optionalAuth } = require('../auth');
 
 const router = express.Router();
 
-// Knowledge Base policies for instant, zero-latency answers
+// ─────────────────────────────────────────────────────────────────────────────
+// KNOWLEDGE BASE — Verified Rentora Policies & Guarantees
+// ─────────────────────────────────────────────────────────────────────────────
 const KNOWLEDGE_BASE = {
   damage_waiver: {
     title: "🛡️ Rentora Damage Waiver Policy",
-    summary: "Accidental spills, minor fabric tears, surface scuffs, and electronic voltage surges are covered up to ₹10,000 at ₹0 deduction from your security deposit. For severe motor or structural defects, our technician arrives within 24 hours for free doorstep replacement.",
-    action: { type: 'OPEN_MAINTENANCE', label: '🛠️ Book Free Inspection / Repair' }
+    summary: "Accidental spills, minor fabric tears, surface scuffs, and electronic voltage surges are covered up to ₹10,000 at ₹0 deduction from your security deposit. For severe motor or structural defects, our certified technician arrives within 24 hours for free doorstep repair or zero-cost replacement.",
+    action: { type: 'OPEN_MAINTENANCE', label: '🛠️ Book Free Inspection / Repair' },
+    followUps: ["🛠️ Book Free Repair", "💰 Deposit Refund Rules", "💎 Buyout This Item"]
   },
   relocation: {
     title: "🚚 Free Inter-City Shifting",
-    summary: "Relocating to another city? Rentora provides 100% FREE doorstep packing, transit insurance, and installation across 8 metro cities (Hyderabad, Bangalore, Mumbai, Pune, Delhi-NCR, Chennai, Kolkata, Ahmedabad) after 6 months of active tenure.",
-    action: { type: 'OPEN_RELOCATION', label: '🚚 Book Free Relocation Shifting' }
+    summary: "Relocating to another city? Rentora provides 100% FREE doorstep packing, transit insurance, and re-installation across 8 metro hubs (Hyderabad, Bangalore, Mumbai, Pune, Delhi-NCR, Chennai, Kolkata, Ahmedabad) after 6 months of active tenure.",
+    action: { type: 'OPEN_RELOCATION', label: '🚚 Book Free Relocation Shifting' },
+    followUps: ["🚚 Start Relocation Request", "🛡️ Damage Waiver Policy", "⚡ Extend Tenure (Save 20%)"]
   },
   buyout: {
     title: "💎 Rent-to-Own Equity Buyout Engine",
     summary: "You can own your rented appliance anytime! 70% of every rupee you have paid in monthly rent is credited directly as equity toward the buyout value. Your original security deposit is also offset against the balance, and an official Certificate of Permanent Ownership & title deed is generated immediately.",
-    action: { type: 'NAVIGATE_RENTALS', label: '💎 Open Buyout & Tenure Engine' }
+    action: { type: 'NAVIGATE_RENTALS', label: '💎 Open Buyout & Tenure Engine' },
+    followUps: ["💎 Calculate My Equity", "⚡ Tenure Extension (Save 20%)", "📦 View Active Rentals"]
   },
   tenure_extension: {
     title: "⚡ Tenure Extension & Long-Term Savings",
     summary: "Extend your rental plan anytime to unlock lower monthly rentals: Enjoy 10% OFF for 6-month extensions and 20% OFF for 12-month extensions. Plus, long-term subscribers receive complimentary annual deep cleaning.",
-    action: { type: 'NAVIGATE_RENTALS', label: '⚡ View Tenure Extension Discounts' }
+    action: { type: 'NAVIGATE_RENTALS', label: '⚡ View Tenure Extension Discounts' },
+    followUps: ["⚡ Extend 6 Months (10% Off)", "⚡ Extend 12 Months (20% Off)", "💎 Permanent Buyout"]
   },
   deposit_refund: {
     title: "💰 Security Deposit Refund Policy",
-    summary: "Your refundable security deposit is held securely in escrow. Once your rental concludes and our QA team completes the doorstep pickup inspection, 100% of the deposit balance is credited back to your bank account or UPI within 5 to 7 business days.",
-    action: { type: 'NAVIGATE_RENTALS', label: '📦 View Active Rentals & Deposit' }
+    summary: "Your refundable security deposit is held securely in an RBI-compliant escrow facility. Once your rental concludes and our QA team completes the doorstep pickup inspection, 100% of the deposit balance is credited back to your bank account or UPI within 5 to 7 business days.",
+    action: { type: 'NAVIGATE_RENTALS', label: '📦 View Active Rentals & Deposit' },
+    followUps: ["📦 View Active Orders", "🛡️ Damage Waiver Policy", "🚚 Free Shifting"]
   },
   delivery: {
     title: "📍 48-Hour Delivery & White-Glove Setup",
     summary: "All Rentora orders include free doorstep delivery, hydraulic elevator handling, plumbing connections, and electric demos within 24 to 48 hours. You can track your delivery vehicle in real-time and provide your secure 4-digit OTP to the technician.",
-    action: { type: 'NAVIGATE_RENTALS', label: '📍 Track Active Delivery & OTP' }
+    action: { type: 'NAVIGATE_RENTALS', label: '📍 Track Active Delivery & OTP' },
+    followUps: ["📍 Track Live Van & OTP", "🛠️ Book Installation Help", "💡 Recommend Combos"]
   },
   pincode: {
     title: "🌍 Serviceable Cities & Delivery Pincodes",
-    summary: "We currently deliver to over 4,500 pincodes across 8 major hubs: Bangalore, Mumbai, Hyderabad, Pune, Delhi-NCR, Chennai, Kolkata, and Ahmedabad. Same-day delivery slots are available in select metro zones.",
-    action: { type: 'CHECK_PINCODE', label: '📍 Check My Pincode' }
+    summary: "We deliver to over 4,500 pincodes across 5 primary metro zones: Bangalore, Mumbai, Hyderabad, Delhi-NCR, and Pune. Same-day delivery slots are available in select metro sectors.",
+    action: { type: 'CHECK_PINCODE', label: '📍 Check My Pincode' },
+    followUps: ["📍 Check Pincode", "💡 1 BHK Setup under ₹1,500", "🚚 Free Relocation"]
+  },
+  kyc: {
+    title: "🔐 Mandatory Tenant KYC Compliance",
+    summary: "Tenant verification is fast, digital, and 100% paperless! Every customer completes UIDAI Aadhaar verification in under 60 seconds to satisfy mandatory compliance for order approval, doorstep appliance delivery, and 100% refundable escrow deposit protection.",
+    action: { type: 'NAVIGATE_KYC', label: '🔐 Complete Mandatory KYC' },
+    followUps: ["🔐 Go to KYC Page", "💰 Deposit Refund Rules", "💡 Explore Catalog"]
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// FUZZY / INTENT TOKEN MATCHER
+// ─────────────────────────────────────────────────────────────────────────────
+function calculateIntentScore(tokens, keywords) {
+  let score = 0;
+  for (const token of tokens) {
+    for (const kw of keywords) {
+      if (token === kw) {
+        score += 3;
+      } else if (token.length >= 4 && kw.length >= 4) {
+        if (token.includes(kw) || kw.includes(token)) {
+          score += 1.5;
+        }
+      }
+    }
+  }
+  return score;
+}
+
+const INTENT_KEYWORDS = {
+  damage_waiver: ['damage', 'waiver', 'scratch', 'broken', 'break', 'leak', 'spill', 'defect', 'repair', 'technician', 'fix', 'wear', 'tear', 'burn', 'surge'],
+  relocation: ['relocate', 'relocation', 'shift', 'shifting', 'move', 'moving', 'transfer', 'city', 'intercity', 'bangalore', 'mumbai', 'hyderabad', 'pune', 'delhi'],
+  buyout: ['buyout', 'buy', 'own', 'purchase', 'equity', 'permanent', 'certificate', 'keep', 'renttoown', 'title'],
+  tenure_extension: ['extend', 'tenure', 'extension', 'renew', 'renewal', 'longer', 'duration', 'discount', 'months', 'save'],
+  deposit_refund: ['deposit', 'refund', 'return', 'money', 'back', 'escrow', 'deduction', 'guarantee'],
+  delivery: ['delivery', 'deliver', 'track', 'tracking', 'status', 'van', 'vehicle', 'otp', 'installation', 'eta', 'when', 'arrives', 'courier'],
+  pincode: ['pincode', 'area', 'locality', 'location', 'serviceable', 'service', 'deliverable', 'cities'],
+  kyc: ['kyc', 'aadhaar', 'verification', 'verify', 'identity', 'document', 'proof', 'ekyc', 'approved']
+};
+
 // POST /api/concierge/chat
-router.post('/concierge/chat', async (req, res) => {
+router.post('/concierge/chat', optionalAuth, async (req, res) => {
   try {
     const { message = '', context = {} } = req.body;
     const db = getDb();
-    const cleanMsg = message.trim().toLowerCase();
+    const cleanMsg = String(message || '').trim().toLowerCase();
 
     if (!cleanMsg) {
       return res.status(400).json({ error: 'Message cannot be empty' });
+    }
+
+    // Tokenize
+    const tokens = cleanMsg
+      .replace(/[^a-z0-9\s₹]/g, ' ')
+      .split(/\s+/)
+      .filter(t => t.length > 1);
+
+    // 1. Evaluate Policy Intents
+    let bestIntent = null;
+    let highestScore = 0;
+
+    for (const [intentKey, keywords] of Object.entries(INTENT_KEYWORDS)) {
+      const score = calculateIntentScore(tokens, keywords);
+      if (score > highestScore && score >= 2.5) {
+        highestScore = score;
+        bestIntent = intentKey;
+      }
     }
 
     let reply = "";
@@ -65,99 +128,98 @@ router.post('/concierge/chat', async (req, res) => {
       "📦 Track My Delivery"
     ];
 
-    // 1. Check for Policy Inquiries
-    if (cleanMsg.includes('damage') || cleanMsg.includes('scratch') || cleanMsg.includes('leak') || cleanMsg.includes('break') || cleanMsg.includes('spill') || cleanMsg.includes('waiver')) {
-      reply = `${KNOWLEDGE_BASE.damage_waiver.title}\n\n${KNOWLEDGE_BASE.damage_waiver.summary}`;
-      action = KNOWLEDGE_BASE.damage_waiver.action;
-      suggestedChips = ["🛠️ Book Free Repair", "💰 Deposit Refund Rules", "💎 Buyout This Item"];
-    } 
-    else if (cleanMsg.includes('relocat') || cleanMsg.includes('shift') || cleanMsg.includes('move city') || cleanMsg.includes('moving') || cleanMsg.includes('bangalore') || cleanMsg.includes('hyderabad') || cleanMsg.includes('mumbai') || cleanMsg.includes('pune')) {
-      reply = `${KNOWLEDGE_BASE.relocation.title}\n\n${KNOWLEDGE_BASE.relocation.summary}`;
-      action = KNOWLEDGE_BASE.relocation.action;
-      suggestedChips = ["🚚 Start Relocation Request", "🛡️ Damage Waiver Policy", "⚡ Extend Tenure (Save 20%)"];
-    }
-    else if (cleanMsg.includes('buyout') || cleanMsg.includes('buy out') || cleanMsg.includes('buy-out') || cleanMsg.includes('own') || cleanMsg.includes('purchase') || cleanMsg.includes('rent to own') || cleanMsg.includes('equity') || cleanMsg.includes('certificate')) {
-      reply = `${KNOWLEDGE_BASE.buyout.title}\n\n${KNOWLEDGE_BASE.buyout.summary}`;
-      action = KNOWLEDGE_BASE.buyout.action;
-      suggestedChips = ["💎 Calculate My Equity", "⚡ Tenure Extension (Save 20%)", "📦 View Active Rentals"];
-    }
-    else if (cleanMsg.includes('extend') || cleanMsg.includes('tenure') || cleanMsg.includes('discount') || cleanMsg.includes('longer') || cleanMsg.includes('save')) {
-      reply = `${KNOWLEDGE_BASE.tenure_extension.title}\n\n${KNOWLEDGE_BASE.tenure_extension.summary}`;
-      action = KNOWLEDGE_BASE.tenure_extension.action;
-      suggestedChips = ["⚡ Extend 6 Months (10% Off)", "⚡ Extend 12 Months (20% Off)", "💎 Permanent Buyout"];
-    }
-    else if (cleanMsg.includes('deposit') || cleanMsg.includes('refund') || cleanMsg.includes('return') || cleanMsg.includes('money back')) {
-      reply = `${KNOWLEDGE_BASE.deposit_refund.title}\n\n${KNOWLEDGE_BASE.deposit_refund.summary}`;
-      action = KNOWLEDGE_BASE.deposit_refund.action;
-      suggestedChips = ["📦 View Active Orders", "🛡️ Damage Waiver Policy", "🚚 Free Shifting"];
-    }
-    else if (cleanMsg.includes('track') || cleanMsg.includes('delivery') || cleanMsg.includes('status') || cleanMsg.includes('install') || cleanMsg.includes('otp')) {
-      reply = `${KNOWLEDGE_BASE.delivery.title}\n\n${KNOWLEDGE_BASE.delivery.summary}`;
-      action = KNOWLEDGE_BASE.delivery.action;
-      suggestedChips = ["📍 Track Live Van & OTP", "🛠️ Book Installation Help", "💡 Recommend Combos"];
-    }
-    else if (cleanMsg.includes('pincode') || cleanMsg.includes('area') || cleanMsg.includes('city') || cleanMsg.includes('serviceable')) {
-      reply = `${KNOWLEDGE_BASE.pincode.title}\n\n${KNOWLEDGE_BASE.pincode.summary}`;
-      action = KNOWLEDGE_BASE.pincode.action;
-      suggestedChips = ["📍 Check Pincode", "💡 1 BHK Setup under ₹1,500", "🚚 Free Relocation"];
-    }
-    else if (cleanMsg.includes('cart') || cleanMsg.includes('checkout') || cleanMsg.includes('bag')) {
-      reply = "Your shopping bag holds your chosen rental appliances with transparent security deposits and zero hidden delivery fees. Would you like to review your cart and proceed to KYC checkout?";
-      action = { type: 'NAVIGATE_CART', label: '🛒 Review Shopping Cart' };
-      suggestedChips = ["🛒 Go to Cart", "💡 Recommend Combos", "🛡️ Damage Waiver Policy"];
+    // If a policy intent was identified with good confidence
+    if (bestIntent && KNOWLEDGE_BASE[bestIntent]) {
+      const kb = KNOWLEDGE_BASE[bestIntent];
+      reply = `${kb.title}\n\n${kb.summary}`;
+      action = kb.action;
+      suggestedChips = kb.followUps;
     }
 
     // 2. Product & Room Package Recommendations
-    const wantsRecommendation = cleanMsg.includes('recommend') || cleanMsg.includes('suggest') || cleanMsg.includes('show') || cleanMsg.includes('combo') || cleanMsg.includes('bhk') || cleanMsg.includes('setup') || cleanMsg.includes('fridge') || cleanMsg.includes('sofa') || cleanMsg.includes('bed') || cleanMsg.includes('washing') || cleanMsg.includes('ac') || cleanMsg.includes('purifier') || cleanMsg.includes('under') || cleanMsg.includes('budget') || cleanMsg.includes('1500') || cleanMsg.includes('2000');
+    // Detect whether user wants recommendations, or mentioned a product / budget
+    const categoryPatterns = [
+      { key: 'fridge', regex: /fridge|refrigerator|freezer/i, cat: 'Appliances', sub: 'Refrigerators' },
+      { key: 'washing', regex: /washing|washer|dryer|laundry/i, cat: 'Appliances', sub: 'Washing Machines' },
+      { key: 'ac', regex: /air conditioner|ac\b|cooler/i, cat: 'Appliances', sub: 'Air Conditioners' },
+      { key: 'purifier', regex: /purifier|ro|water/i, cat: 'Appliances', sub: 'Water Purifiers' },
+      { key: 'tv', regex: /television|tv\b|oled|smart tv/i, cat: 'Appliances', sub: 'Televisions' },
+      { key: 'microwave', regex: /microwave|oven|grill/i, cat: 'Appliances', sub: 'Microwaves' },
+      { key: 'sofa', regex: /sofa|couch|recliner|seating/i, cat: 'Living Room', sub: 'Sofas' },
+      { key: 'bed', regex: /bed|mattress|cot/i, cat: 'Bedroom', sub: 'Beds' },
+      { key: 'table', regex: /table|desk|dining|study/i, cat: 'Living Room', sub: 'Tables' },
+      { key: 'chair', regex: /chair|stool|ergonomic/i, cat: 'Living Room', sub: 'Chairs' },
+      { key: 'combo', regex: /combo|package|bhk|setup|suite|bundle/i, cat: 'Packages', sub: 'Packages' }
+    ];
 
-    if (wantsRecommendation || !reply) {
-      // Extract budget if present (e.g. under 1500, 2000, etc.)
-      const budgetMatch = cleanMsg.match(/(?:under|below|less than|within|budget)\s*(?:₹|rs\.?|inr)?\s*(\d{3,5})/i) || cleanMsg.match(/(\d{3,5})\s*(?:rs|inr|per month|\/mo)/i);
-      const maxBudget = budgetMatch ? parseInt(budgetMatch[1], 10) : null;
+    const matchedCat = categoryPatterns.find(p => p.regex.test(cleanMsg));
+    const budgetMatch = cleanMsg.match(/(?:under|below|less than|within|budget)\s*(?:₹|rs\.?|inr)?\s*(\d{3,5})/i) ||
+                        cleanMsg.match(/(?:₹|rs\.?|inr)\s*(\d{3,5})/i) ||
+                        cleanMsg.match(/(\d{3,5})\s*(?:rs|inr|per month|\/mo)/i);
+    const maxBudget = budgetMatch ? parseInt(budgetMatch[1], 10) : null;
 
-      // Extract category keywords
+    const isRecQuery = Boolean(
+      matchedCat ||
+      maxBudget ||
+      /recommend|suggest|show me|find|look for|options|cheap|budget|cost/i.test(cleanMsg)
+    );
+
+    if (isRecQuery || !reply) {
       const query = { stock_quantity: { $gt: 0 } };
+
       if (maxBudget) {
         query.monthly_price = { $lte: maxBudget };
       }
 
-      if (cleanMsg.includes('fridge') || cleanMsg.includes('refrigerator')) {
-        query.rental_name = { $regex: 'refrigerator|fridge', $options: 'i' };
-      } else if (cleanMsg.includes('washing')) {
-        query.rental_name = { $regex: 'washing machine|washer', $options: 'i' };
-      } else if (cleanMsg.includes('sofa') || cleanMsg.includes('couch')) {
-        query.rental_name = { $regex: 'sofa', $options: 'i' };
-      } else if (cleanMsg.includes('bed') || cleanMsg.includes('mattress')) {
-        query.rental_name = { $regex: 'bed|mattress', $options: 'i' };
-      } else if (cleanMsg.includes('ac') || cleanMsg.includes('air conditioner')) {
-        query.rental_name = { $regex: 'air conditioner|ac', $options: 'i' };
-      } else if (cleanMsg.includes('combo') || cleanMsg.includes('bhk') || cleanMsg.includes('package')) {
-        query.$or = [
-          { category_id: { $regex: 'package|combo|living|bedroom', $options: 'i' } },
-          { rental_name: { $regex: 'package|combo|set', $options: 'i' } }
-        ];
+      if (matchedCat) {
+        if (matchedCat.key === 'combo') {
+          query.$or = [
+            { category_id: { $regex: /package|combo|living|bedroom/i } },
+            { sub_category: { $regex: /package|combo/i } },
+            { rental_name: { $regex: /combo|set|package|bhk/i } }
+          ];
+        } else {
+          query.$or = [
+            { rental_name: { $regex: matchedCat.regex } },
+            { sub_category: { $regex: new RegExp(matchedCat.sub, 'i') } },
+            { category_id: { $regex: new RegExp(matchedCat.cat, 'i') } }
+          ];
+        }
       }
 
-      const matchingApps = await db.collection('appliances')
+      // Live MongoDB search
+      let matchingApps = await db.collection('appliances')
         .find(query)
-        .sort({ monthly_price: 1 })
+        .sort({ rating: -1, monthly_price: 1 })
         .limit(4)
         .toArray();
+
+      // Fallback: If budget was too strict, loosen budget constraint
+      if (matchingApps.length === 0 && maxBudget) {
+        delete query.monthly_price;
+        matchingApps = await db.collection('appliances')
+          .find(query)
+          .sort({ monthly_price: 1 })
+          .limit(4)
+          .toArray();
+      }
 
       if (matchingApps.length > 0) {
         recommendations = matchingApps.map(app => ({
           appliance_id: app.appliance_id || String(app._id),
           rental_name: app.rental_name,
           monthly_price: app.monthly_price,
-          security_deposit: app.security_deposit || 500,
+          security_deposit: app.security_deposit || Math.round(app.monthly_price * 1.5),
           category_id: app.category_id,
+          sub_category: app.sub_category,
           image_url: app.image_url || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80',
           rating: app.rating || 4.8
         }));
 
         if (!reply) {
           const budgetText = maxBudget ? ` under ₹${maxBudget.toLocaleString('en-IN')}/mo` : '';
-          reply = `Here are ${matchingApps.length} hand-picked rental recommendations${budgetText} that offer maximum comfort, high energy ratings, and zero maintenance liability. You can add any item directly to your cart below! ⚡`;
+          const categoryName = matchedCat ? (matchedCat.sub || matchedCat.cat) : 'top-rated';
+          reply = `Here are ${matchingApps.length} verified ${categoryName} selections${budgetText} ready for priority 24–48h dispatch. Each includes our ₹10,000 accidental damage waiver and free annual maintenance! ⚡`;
           action = { type: 'VIEW_CATALOG', label: '🔍 Explore All Catalog Items' };
           suggestedChips = [
             "💡 1 BHK Living Combo",

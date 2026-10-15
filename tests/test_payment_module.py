@@ -79,15 +79,15 @@ def run_tests():
     assert txn_id and txn_id.startswith("TXN_"), f"Invalid txn_id: {txn_id}"
     assert inv_num and inv_num.startswith("INV-"), f"Invalid inv_num: {inv_num}"
     
-    # 799 rent + 750 deposit (50% KYC rebate on 1500) + 143.82 GST (18% on rent) = 1692.82
+    # 799 rent + 1500 deposit (Mandatory KYC, standard refundable deposit) + 143.82 GST (18% on rent) = 2442.82
     expected_tax = round(799.0 * 0.18, 2)
-    expected_deposit = 750.0 # 50% discount for KYC-verified customer
+    expected_deposit = 1500.0 # Full standard refundable deposit (KYC mandatory for all customers)
     expected_total = round(799.0 + expected_deposit + expected_tax, 2)
     assert total_paid == expected_total, f"Expected total {expected_total}, got {total_paid}"
     print(f"[OK] 5. Checkout payment processed successfully!")
     print(f"       |-- Transaction ID : {txn_id}")
     print(f"       |-- Invoice Number : {inv_num}")
-    print(f"       |-- Amount Breakdown: Rent Rs. 799 + Deposit Rs. {expected_deposit} (50% KYC Rebate) + 18% GST Rs. {expected_tax} = Rs. {total_paid}")
+    print(f"       |-- Amount Breakdown: Rent Rs. 799 + Deposit Rs. {expected_deposit} (Refundable Deposit) + 18% GST Rs. {expected_tax} = Rs. {total_paid}")
 
     # 6. Verify MongoDB Payments Collection
     payment_doc = db.payments.find_one({"transaction_id": txn_id})

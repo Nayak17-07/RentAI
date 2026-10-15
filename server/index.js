@@ -13,10 +13,10 @@ async function startServer() {
     const server = http.createServer(app);
     initSocket(server);
 
-    server.listen(PORT, '0.0.0.0', () => {
+    server.listen(PORT, () => {
       console.log(`====================================================`);
       console.log(`  🚀 Rentora Node.js, Express & WebSocket API Server Running!`);
-      console.log(`  📡 URL: http://127.0.0.1:${PORT}`);
+      console.log(`  📡 URL: http://127.0.0.1:${PORT} (Dual-Stack IPv4/IPv6)`);
       console.log(`  ⚡ Socket.io: ws://127.0.0.1:${PORT}`);
       console.log(`  🔗 Health: http://127.0.0.1:${PORT}/api/health`);
       console.log(`====================================================`);

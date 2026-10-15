@@ -14,10 +14,10 @@
 
 ## 🚀 Key Architectural Innovations
 
-### 1. 🛡️ KYC-Linked Smart Security Deposit & 50% Rebate
+### 1. 🛡️ Mandatory Tenant KYC & RBI-Compliant Escrow Protection
 * **Client-Side Document OCR**: Powered by Tesseract.js for client-side Aadhaar & residence document verification.
-* **50% Deposit Discount Engine**: Verified KYC customers receive an instant 50% reduction on security deposit requirements at checkout.
-* **Segregated RBI-Compliant Escrow**: Every lease is allocated a unique Escrow Custody Account ID (`ESC-BLR-xxxxxx`), protecting customer funds from arbitrary vendor withholding.
+* **Mandatory Universal KYC**: All customers complete automated digital verification prior to checkout, ensuring trust, fraud elimination, and verified doorstep fulfillment.
+* **Segregated RBI-Compliant Escrow**: Every lease is allocated a unique Escrow Custody Account ID (`ESC-BLR-xxxxxx`), protecting 100% of customer deposits from arbitrary vendor withholding.
 
 ### 2. 🏛️ Interactive Escrow Ledger & Rentora Shield
 * **Rentora Shield Damage Waiver**: Built-in **₹10,000 accidental protection policy** that absorbs ordinary cosmetic wear, voltage surges, and transit scuffs with **₹0 deposit forfeiture**.
@@ -122,7 +122,7 @@ RentAI/
 ├── frontend/               # Vite + React 19 Client Application
 │   ├── src/
 │   │   ├── HomePage.jsx             # Catalog, Combos, Rent-vs-Buy Calculator
-│   │   ├── CartPage.jsx             # Dynamic Tenure Checkout & 50% KYC Rebate
+│   │   ├── CartPage.jsx             # Dynamic Tenure Checkout & Escrow Deposits
 │   │   ├── MyRentalsPage.jsx        # Leases, Relocation, Service & Return Hub
 │   │   ├── EscrowLedgerModal.jsx    # RBI-Compliant Escrow Ledger & Damage Waiver
 │   │   ├── RentToOwnModal.jsx       # Equity Buyout & Tenure Extension

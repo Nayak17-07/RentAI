@@ -2,13 +2,14 @@ const express = require('express');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { getDb } = require('../db');
-const { makePassword, checkPassword, generateTokens, SECRET_KEY, authenticateJWT } = require('../auth');
+const { makePassword, checkPassword, generateTokens, setAuthCookies, clearAuthCookies, SECRET_KEY, authenticateJWT } = require('../auth');
 const { sendOtpEmail } = require('../mailer');
+const { authLimiter, adminAuthLimiter, otpLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
 // POST /api/auth/send-signup-otp/ (Real-Time Gmail OTP Request for Registration)
-router.post('/auth/send-signup-otp/', async (req, res) => {
+router.post('/auth/send-signup-otp/', otpLimiter, async (req, res) => {
   try {
     const { username, email, password, phone_num } = req.body;
     const db = getDb();
@@ -62,11 +63,15 @@ router.post('/auth/send-signup-otp/', async (req, res) => {
     // Send real-time OTP to the user's Gmail
     const mailResult = await sendOtpEmail(cleanEmail, otp, 'signup');
 
+    // Security Gate: NEVER expose OTP in production environment
+    const isProduction = process.env.NODE_ENV === 'production';
+    const allowDevMockOtp = !isProduction && (process.env.ALLOW_DEV_MOCK_OTP !== 'false');
+
     return res.status(200).json({
       success: 'Real-time 6-digit verification code sent to your Gmail',
       email: cleanEmail,
       simulated: mailResult.simulated,
-      mock_otp: mailResult.simulated ? otp : undefined
+      mock_otp: (allowDevMockOtp && mailResult.simulated) ? otp : undefined
     });
   } catch (err) {
     console.error('Send signup OTP error:', err);
@@ -75,7 +80,7 @@ router.post('/auth/send-signup-otp/', async (req, res) => {
 });
 
 // POST /api/auth/verify-signup-otp/ (Verify OTP and Create Account)
-router.post('/auth/verify-signup-otp/', async (req, res) => {
+router.post('/auth/verify-signup-otp/', otpLimiter, async (req, res) => {
   try {
     const { email, otp } = req.body;
     if (!email || !otp) {
@@ -185,7 +190,7 @@ router.post('/users/', async (req, res) => {
 });
 
 // POST /api/token/ (Login)
-router.post('/token/', async (req, res) => {
+router.post('/token/', authLimiter, async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -202,7 +207,16 @@ router.post('/token/', async (req, res) => {
     });
 
     if (user && checkPassword(password, user.password)) {
+      // Auto-migrate legacy non-PBKDF2 passwords transparently to secure PBKDF2
+      if (!String(user.password || '').startsWith('pbkdf2_sha256$')) {
+        db.collection('users').updateOne(
+          { _id: user._id },
+          { $set: { password: makePassword(password), password_upgraded_at: new Date() } }
+        ).catch(e => console.warn('Password re-hash migration note:', e.message));
+      }
+
       const tokens = generateTokens(user._id);
+      setAuthCookies(res, tokens);
       return res.status(200).json({
         ...tokens,
         user: {
@@ -221,8 +235,8 @@ router.post('/token/', async (req, res) => {
   }
 });
 
-// POST /api/auth/admin-login/ (Internal Operations & Administrative Portal Login)
-router.post('/auth/admin-login/', async (req, res) => {
+// POST /api/auth/admin-login/ (Internal Operations & Administrative Portal Login with Strict Rate Limiting)
+router.post('/auth/admin-login/', adminAuthLimiter, async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -248,7 +262,16 @@ router.post('/auth/admin-login/', async (req, res) => {
       });
     }
 
+    // Auto-migrate legacy non-PBKDF2 passwords transparently to secure PBKDF2
+    if (!String(user.password || '').startsWith('pbkdf2_sha256$')) {
+      db.collection('users').updateOne(
+        { _id: user._id },
+        { $set: { password: makePassword(password), password_upgraded_at: new Date() } }
+      ).catch(e => console.warn('Admin password re-hash migration note:', e.message));
+    }
+
     const tokens = generateTokens(user._id);
+    setAuthCookies(res, tokens);
     return res.status(200).json({
       ...tokens,
       user: {
@@ -267,7 +290,7 @@ router.post('/auth/admin-login/', async (req, res) => {
 // POST /api/token/refresh/ (Token Refresh)
 router.post('/token/refresh/', async (req, res) => {
   try {
-    const { refresh } = req.body;
+    const refresh = req.body?.refresh || req.headers?.cookie?.match(/refresh_token=([^;]+)/)?.[1];
     if (!refresh) {
       return res.status(400).json({ error: 'Refresh token required' });
     }
@@ -275,6 +298,7 @@ router.post('/token/refresh/', async (req, res) => {
     try {
       const payload = jwt.verify(refresh, SECRET_KEY, { algorithms: ['HS256'] });
       const tokens = generateTokens(payload.user_id);
+      setAuthCookies(res, tokens);
       return res.status(200).json(tokens);
     } catch (err) {
       if (err.name === 'TokenExpiredError') {
@@ -288,8 +312,14 @@ router.post('/token/refresh/', async (req, res) => {
   }
 });
 
+// POST /api/auth/logout/ (Clear HttpOnly Auth Cookies)
+router.post('/auth/logout/', (req, res) => {
+  clearAuthCookies(res);
+  return res.status(200).json({ success: 'Logged out successfully' });
+});
+
 // POST /api/auth/password-reset-request/ (Module 1: Password Reset Request)
-router.post('/auth/password-reset-request/', async (req, res) => {
+router.post('/auth/password-reset-request/', otpLimiter, async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) {
@@ -333,11 +363,15 @@ router.post('/auth/password-reset-request/', async (req, res) => {
 
     const mailResult = await sendOtpEmail(cleanEmail, otp, 'reset');
 
+    // Security Gate: NEVER expose OTP in production environment
+    const isProduction = process.env.NODE_ENV === 'production';
+    const allowDevMockOtp = !isProduction && (process.env.ALLOW_DEV_MOCK_OTP !== 'false');
+
     return res.status(200).json({
       success: 'Verification code has been sent to your registered email',
       email: cleanEmail,
       simulated: mailResult.simulated,
-      mock_otp: mailResult.simulated ? otp : undefined
+      mock_otp: (allowDevMockOtp && mailResult.simulated) ? otp : undefined
     });
   } catch (err) {
     console.error('Password reset request error:', err);

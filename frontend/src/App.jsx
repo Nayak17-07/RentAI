@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -6,34 +6,32 @@ import {
   Navigate
 } from 'react-router-dom';
 
-// ── Core pages ──────────────────────────────────────────────────────────────
-import LoginPage        from './LoginPage';
-import RegisterPage     from './RegisterPage';
-import HomePage         from './HomePage';
-import CartPage         from './CartPage';
-import MyRentalsPage    from './MyRentalsPage';
-import KYCPage          from './KYCPage';
-import AdminDashboard   from './AdminDashboard';
-import AdminLoginPage   from './AdminLoginPage';
-import OwnerDashboard   from './OwnerDashboard';
-import RentoraConcierge from './RentoraConcierge';
+// ── Lazy-loaded Core pages (On-Demand Code Splitting) ─────────────────────────
+const HomePage         = lazy(() => import('./HomePage'));
+const CartPage         = lazy(() => import('./CartPage'));
+const MyRentalsPage    = lazy(() => import('./MyRentalsPage'));
+const KYCPage          = lazy(() => import('./KYCPage'));
+const AdminDashboard   = lazy(() => import('./AdminDashboard'));
+const AdminLoginPage   = lazy(() => import('./AdminLoginPage'));
+const OwnerDashboard   = lazy(() => import('./OwnerDashboard'));
+const LoginPage        = lazy(() => import('./LoginPage'));
+const RegisterPage     = lazy(() => import('./RegisterPage'));
 
 // ── Error / system pages ─────────────────────────────────────────────────────
-import ErrorBoundary    from './ErrorBoundary';
-import NotFoundPage     from './NotFoundPage';
-import ForbiddenPage    from './ForbiddenPage';
+import ErrorBoundary      from './ErrorBoundary';
+import NotFoundPage       from './NotFoundPage';
+import ForbiddenPage      from './ForbiddenPage';
 import SessionExpiredPage from './SessionExpiredPage';
-import OfflinePage      from './OfflinePage';
+import OfflinePage        from './OfflinePage';
+import RentoraConcierge   from './RentoraConcierge';
 
-// ── Legal / info pages ────────────────────────────────────────────────────────
-import {
-  TermsPage,
-  PrivacyPage,
-  CookiesPage,
-  RefundPolicyPage,
-  FAQPage,
-  ContactPage
-} from './LegalPages';
+// ── Lazy-loaded Legal & Info pages ───────────────────────────────────────────
+const TermsPage        = lazy(() => import('./LegalPages').then(m => ({ default: m.TermsPage })));
+const PrivacyPage      = lazy(() => import('./LegalPages').then(m => ({ default: m.PrivacyPage })));
+const CookiesPage      = lazy(() => import('./LegalPages').then(m => ({ default: m.CookiesPage })));
+const RefundPolicyPage = lazy(() => import('./LegalPages').then(m => ({ default: m.RefundPolicyPage })));
+const FAQPage          = lazy(() => import('./LegalPages').then(m => ({ default: m.FAQPage })));
+const ContactPage      = lazy(() => import('./LegalPages').then(m => ({ default: m.ContactPage })));
 
 // ── Route guards ─────────────────────────────────────────────────────────────
 import {
@@ -42,8 +40,30 @@ import {
   GuestRoute
 } from './RouteGuards';
 
+// Sleek fallback loader during async route chunk transitions
+const PageLoader = () => (
+  <div style={{
+    minHeight: '75vh',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '0.85rem'
+  }}>
+    <div style={{
+      width: '40px',
+      height: '40px',
+      border: '3px solid #fee2e2',
+      borderTopColor: '#e23744',
+      borderRadius: '50%',
+      animation: 'spin 0.75s linear infinite'
+    }} />
+    <span style={{ fontSize: '0.825rem', color: '#64748b', fontWeight: 600 }}>Loading Rentora...</span>
+  </div>
+);
+
 /* ══════════════════════════════════════════════════════════════════════════
-   App
+   App Component
    ══════════════════════════════════════════════════════════════════════════ */
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -92,99 +112,101 @@ function App() {
   return (
     <Router>
       <ErrorBoundary>
-        <Routes>
-          {/* ── Auth (guest-only) ─────────────────────────────────────────── */}
-          <Route
-            path="/login"
-            element={
-              <GuestRoute>
-                <LoginPage onLogin={handleLogin} />
-              </GuestRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <GuestRoute>
-                <RegisterPage onLogin={handleLogin} />
-              </GuestRoute>
-            }
-          />
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            {/* ── Auth (guest-only) ─────────────────────────────────────────── */}
+            <Route
+              path="/login"
+              element={
+                <GuestRoute>
+                  <LoginPage onLogin={handleLogin} />
+                </GuestRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <GuestRoute>
+                  <RegisterPage onLogin={handleLogin} />
+                </GuestRoute>
+              }
+            />
 
-          {/* ── Admin login (public – has its own auth logic) ─────────────── */}
-          <Route path="/admin/login" element={<AdminLoginPage />} />
+            {/* ── Admin login (public – has its own auth logic) ─────────────── */}
+            <Route path="/admin/login" element={<AdminLoginPage />} />
 
-          {/* ── System / error pages ─────────────────────────────────────── */}
-          <Route path="/404"             element={<NotFoundPage />} />
-          <Route path="/403"             element={<ForbiddenPage />} />
-          <Route path="/session-expired" element={<SessionExpiredPage />} />
-          <Route path="/offline"         element={<OfflinePage />} />
+            {/* ── System / error pages ─────────────────────────────────────── */}
+            <Route path="/404"             element={<NotFoundPage />} />
+            <Route path="/403"             element={<ForbiddenPage />} />
+            <Route path="/session-expired" element={<SessionExpiredPage />} />
+            <Route path="/offline"         element={<OfflinePage />} />
 
-          {/* ── Legal & informational pages (public) ─────────────────────── */}
-          <Route path="/terms"           element={<TermsPage />} />
-          <Route path="/privacy"         element={<PrivacyPage />} />
-          <Route path="/cookies"         element={<CookiesPage />} />
-          <Route path="/refund-policy"   element={<RefundPolicyPage />} />
-          <Route path="/faq"             element={<FAQPage />} />
-          <Route path="/contact"         element={<ContactPage />} />
+            {/* ── Legal & informational pages (public) ─────────────────────── */}
+            <Route path="/terms"           element={<TermsPage />} />
+            <Route path="/privacy"         element={<PrivacyPage />} />
+            <Route path="/cookies"         element={<CookiesPage />} />
+            <Route path="/refund-policy"   element={<RefundPolicyPage />} />
+            <Route path="/faq"             element={<FAQPage />} />
+            <Route path="/contact"         element={<ContactPage />} />
 
-          {/* ── Protected customer routes ─────────────────────────────────── */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <HomePage onLogout={handleLogout} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/cart"
-            element={
-              <ProtectedRoute>
-                <CartPage onLogout={handleLogout} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/rentals"
-            element={
-              <ProtectedRoute>
-                <MyRentalsPage onLogout={handleLogout} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/kyc"
-            element={
-              <ProtectedRoute>
-                <KYCPage />
-              </ProtectedRoute>
-            }
-          />
+            {/* ── Protected customer routes ─────────────────────────────────── */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <HomePage onLogout={handleLogout} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cart"
+              element={
+                <ProtectedRoute>
+                  <CartPage onLogout={handleLogout} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/rentals"
+              element={
+                <ProtectedRoute>
+                  <MyRentalsPage onLogout={handleLogout} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/kyc"
+              element={
+                <ProtectedRoute>
+                  <KYCPage />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* ── Owner dashboard (role-gated) ──────────────────────────────── */}
-          <Route
-            path="/owner"
-            element={
-              <RoleRoute role="owner">
-                <OwnerDashboard onLogout={handleLogout} />
-              </RoleRoute>
-            }
-          />
+            {/* ── Owner dashboard (role-gated) ──────────────────────────────── */}
+            <Route
+              path="/owner"
+              element={
+                <RoleRoute role="owner">
+                  <OwnerDashboard onLogout={handleLogout} />
+                </RoleRoute>
+              }
+            />
 
-          {/* ── Admin dashboard (role-gated) ──────────────────────────────── */}
-          <Route
-            path="/admin"
-            element={
-              <RoleRoute role="admin">
-                <AdminDashboard onLogout={handleLogout} />
-              </RoleRoute>
-            }
-          />
+            {/* ── Admin dashboard (role-gated) ──────────────────────────────── */}
+            <Route
+              path="/admin"
+              element={
+                <RoleRoute role="admin">
+                  <AdminDashboard onLogout={handleLogout} />
+                </RoleRoute>
+              }
+            />
 
-          {/* ── 404 catch-all ────────────────────────────────────────────── */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+            {/* ── 404 catch-all ────────────────────────────────────────────── */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
 
         {/* Global AI concierge – shown on all pages */}
         <RentoraConcierge />

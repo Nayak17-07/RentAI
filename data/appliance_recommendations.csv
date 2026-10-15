@@ -1,0 +1,607 @@
+user_id,recommended_appliance_id,match_percentage,recommendation_reason,recommendation_type,bundle_badge,energy_savings_est,combo_discount_pct,last_updated
+98aff14d-5e66-4eff-a037-08c44765ebe5,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,86,Room Synergy Pairing: Frequently leased alongside Smart Alkaline RO Water Purifier with Display,ROOM_BUNDLE,Smart Bundle,380,15,2026-10-14 16:04:26.757
+98aff14d-5e66-4eff-a037-08c44765ebe5,fbc3c492-56a5-431f-8db2-bf5baec1b93c,86,Room Synergy Pairing: Frequently leased alongside Smart Alkaline RO Water Purifier with Display,ROOM_BUNDLE,Smart Bundle,380,15,2026-10-14 16:04:26.757
+98aff14d-5e66-4eff-a037-08c44765ebe5,d7fb899c-5352-4da6-a298-00c2c6a08a40,85,Room Synergy Pairing: Frequently leased alongside Designer Wardrobe,ROOM_BUNDLE,Smart Bundle,380,15,2026-10-14 16:04:26.757
+98aff14d-5e66-4eff-a037-08c44765ebe5,9229745d-8887-4b2d-9ae7-a51e8acadefd,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+98aff14d-5e66-4eff-a037-08c44765ebe5,a9398770-c51f-4f67-9486-6c426666e893,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+98aff14d-5e66-4eff-a037-08c44765ebe5,74cffe35-b364-4890-837c-a37d3115a829,85,Room Synergy Pairing: Frequently leased alongside Designer Wardrobe,ROOM_BUNDLE,Smart Bundle,80,15,2026-10-14 16:04:26.757
+606da634-2d4b-4331-86c9-c1054f68727d,f479cba1-09e8-4f4f-b620-99e0b7faccf4,87,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+606da634-2d4b-4331-86c9-c1054f68727d,0378f50f-6bb2-46ae-8a37-46cab5d281b6,86,Room Synergy Pairing: Frequently leased alongside Velvet Luxe 3-Seater Sofa,ROOM_BUNDLE,Smart Bundle,80,15,2026-10-14 16:04:26.757
+606da634-2d4b-4331-86c9-c1054f68727d,79e3a823-a9eb-4249-9971-89f237baaa21,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+606da634-2d4b-4331-86c9-c1054f68727d,13e2ebda-09d7-42c1-9110-44d55e3e40cd,85,Highly co-rented combo: Frequent pairing with your previous rentals,ROOM_BUNDLE,Combo Match,80,15,2026-10-14 16:04:26.757
+606da634-2d4b-4331-86c9-c1054f68727d,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+606da634-2d4b-4331-86c9-c1054f68727d,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+8b7fb397-d427-4537-a29c-fc919b9c0f16,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+8b7fb397-d427-4537-a29c-fc919b9c0f16,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+8b7fb397-d427-4537-a29c-fc919b9c0f16,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+8b7fb397-d427-4537-a29c-fc919b9c0f16,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+8b7fb397-d427-4537-a29c-fc919b9c0f16,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+8b7fb397-d427-4537-a29c-fc919b9c0f16,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7bcb9d2f-7abc-4ea0-ba7a-ba868733c9ba,0cf010d0-ed2e-4d96-9bc6-f8e1e5e6b4f0,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7bcb9d2f-7abc-4ea0-ba7a-ba868733c9ba,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7bcb9d2f-7abc-4ea0-ba7a-ba868733c9ba,9229745d-8887-4b2d-9ae7-a51e8acadefd,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7bcb9d2f-7abc-4ea0-ba7a-ba868733c9ba,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7bcb9d2f-7abc-4ea0-ba7a-ba868733c9ba,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7bcb9d2f-7abc-4ea0-ba7a-ba868733c9ba,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+997bcf0a-3261-4f12-a565-f83de8876b9c,f479cba1-09e8-4f4f-b620-99e0b7faccf4,87,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+997bcf0a-3261-4f12-a565-f83de8876b9c,0378f50f-6bb2-46ae-8a37-46cab5d281b6,86,Room Synergy Pairing: Frequently leased alongside Velvet Luxe 3-Seater Sofa,ROOM_BUNDLE,Smart Bundle,80,15,2026-10-14 16:04:26.757
+997bcf0a-3261-4f12-a565-f83de8876b9c,79e3a823-a9eb-4249-9971-89f237baaa21,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+997bcf0a-3261-4f12-a565-f83de8876b9c,13e2ebda-09d7-42c1-9110-44d55e3e40cd,85,Highly co-rented combo: Frequent pairing with your previous rentals,ROOM_BUNDLE,Combo Match,80,15,2026-10-14 16:04:26.757
+997bcf0a-3261-4f12-a565-f83de8876b9c,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+997bcf0a-3261-4f12-a565-f83de8876b9c,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+demouser_id,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+demouser_id,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+demouser_id,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+demouser_id,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+demouser_id,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+demouser_id,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b19c9c20-92dd-448f-b025-4c801e53931d,3db83f6f-e443-415a-92da-c8e2947a2a76,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+b19c9c20-92dd-448f-b025-4c801e53931d,99775eda-6dec-4c3e-a21f-b808a94bcaee,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+b19c9c20-92dd-448f-b025-4c801e53931d,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b19c9c20-92dd-448f-b025-4c801e53931d,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b19c9c20-92dd-448f-b025-4c801e53931d,9229745d-8887-4b2d-9ae7-a51e8acadefd,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b19c9c20-92dd-448f-b025-4c801e53931d,a9398770-c51f-4f67-9486-6c426666e893,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+04534baa-ff80-470d-bca6-2b448fc4c72b,3db83f6f-e443-415a-92da-c8e2947a2a76,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+04534baa-ff80-470d-bca6-2b448fc4c72b,99775eda-6dec-4c3e-a21f-b808a94bcaee,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+04534baa-ff80-470d-bca6-2b448fc4c72b,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+04534baa-ff80-470d-bca6-2b448fc4c72b,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+04534baa-ff80-470d-bca6-2b448fc4c72b,9229745d-8887-4b2d-9ae7-a51e8acadefd,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+04534baa-ff80-470d-bca6-2b448fc4c72b,a9398770-c51f-4f67-9486-6c426666e893,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3d2b300c-015f-402d-bfda-4e759736ab7e,3db83f6f-e443-415a-92da-c8e2947a2a76,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+3d2b300c-015f-402d-bfda-4e759736ab7e,99775eda-6dec-4c3e-a21f-b808a94bcaee,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+3d2b300c-015f-402d-bfda-4e759736ab7e,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3d2b300c-015f-402d-bfda-4e759736ab7e,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3d2b300c-015f-402d-bfda-4e759736ab7e,9229745d-8887-4b2d-9ae7-a51e8acadefd,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3d2b300c-015f-402d-bfda-4e759736ab7e,a9398770-c51f-4f67-9486-6c426666e893,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+e105fee2-0351-487a-9930-b198216c2161,3db83f6f-e443-415a-92da-c8e2947a2a76,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+e105fee2-0351-487a-9930-b198216c2161,99775eda-6dec-4c3e-a21f-b808a94bcaee,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+e105fee2-0351-487a-9930-b198216c2161,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+e105fee2-0351-487a-9930-b198216c2161,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+e105fee2-0351-487a-9930-b198216c2161,9229745d-8887-4b2d-9ae7-a51e8acadefd,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+e105fee2-0351-487a-9930-b198216c2161,a9398770-c51f-4f67-9486-6c426666e893,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c95522aa-2877-4b5d-b8ac-5ae4cb0bb313,3db83f6f-e443-415a-92da-c8e2947a2a76,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+c95522aa-2877-4b5d-b8ac-5ae4cb0bb313,99775eda-6dec-4c3e-a21f-b808a94bcaee,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+c95522aa-2877-4b5d-b8ac-5ae4cb0bb313,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c95522aa-2877-4b5d-b8ac-5ae4cb0bb313,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c95522aa-2877-4b5d-b8ac-5ae4cb0bb313,9229745d-8887-4b2d-9ae7-a51e8acadefd,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c95522aa-2877-4b5d-b8ac-5ae4cb0bb313,a9398770-c51f-4f67-9486-6c426666e893,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+37c4dd02-99bd-469e-9dbc-6d83e29eadb7,f479cba1-09e8-4f4f-b620-99e0b7faccf4,87,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+37c4dd02-99bd-469e-9dbc-6d83e29eadb7,0378f50f-6bb2-46ae-8a37-46cab5d281b6,86,Room Synergy Pairing: Frequently leased alongside Velvet Luxe 3-Seater Sofa,ROOM_BUNDLE,Smart Bundle,80,15,2026-10-14 16:04:26.757
+37c4dd02-99bd-469e-9dbc-6d83e29eadb7,79e3a823-a9eb-4249-9971-89f237baaa21,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+37c4dd02-99bd-469e-9dbc-6d83e29eadb7,13e2ebda-09d7-42c1-9110-44d55e3e40cd,85,Highly co-rented combo: Frequent pairing with your previous rentals,ROOM_BUNDLE,Combo Match,80,15,2026-10-14 16:04:26.757
+37c4dd02-99bd-469e-9dbc-6d83e29eadb7,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+37c4dd02-99bd-469e-9dbc-6d83e29eadb7,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+38a911f5-286c-465f-8868-6b7df8734948,f479cba1-09e8-4f4f-b620-99e0b7faccf4,87,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+38a911f5-286c-465f-8868-6b7df8734948,0378f50f-6bb2-46ae-8a37-46cab5d281b6,86,Room Synergy Pairing: Frequently leased alongside Velvet Luxe 3-Seater Sofa,ROOM_BUNDLE,Smart Bundle,80,15,2026-10-14 16:04:26.757
+38a911f5-286c-465f-8868-6b7df8734948,79e3a823-a9eb-4249-9971-89f237baaa21,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+38a911f5-286c-465f-8868-6b7df8734948,13e2ebda-09d7-42c1-9110-44d55e3e40cd,85,Highly co-rented combo: Frequent pairing with your previous rentals,ROOM_BUNDLE,Combo Match,80,15,2026-10-14 16:04:26.757
+38a911f5-286c-465f-8868-6b7df8734948,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+38a911f5-286c-465f-8868-6b7df8734948,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1b55f544-79d6-4d56-892f-6cb86882d575,f479cba1-09e8-4f4f-b620-99e0b7faccf4,87,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+1b55f544-79d6-4d56-892f-6cb86882d575,0378f50f-6bb2-46ae-8a37-46cab5d281b6,86,Room Synergy Pairing: Frequently leased alongside Velvet Luxe 3-Seater Sofa,ROOM_BUNDLE,Smart Bundle,80,15,2026-10-14 16:04:26.757
+1b55f544-79d6-4d56-892f-6cb86882d575,79e3a823-a9eb-4249-9971-89f237baaa21,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+1b55f544-79d6-4d56-892f-6cb86882d575,13e2ebda-09d7-42c1-9110-44d55e3e40cd,85,Highly co-rented combo: Frequent pairing with your previous rentals,ROOM_BUNDLE,Combo Match,80,15,2026-10-14 16:04:26.757
+1b55f544-79d6-4d56-892f-6cb86882d575,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1b55f544-79d6-4d56-892f-6cb86882d575,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c2edb190-64ca-423e-8569-3eab253fe2d1,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c2edb190-64ca-423e-8569-3eab253fe2d1,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c2edb190-64ca-423e-8569-3eab253fe2d1,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c2edb190-64ca-423e-8569-3eab253fe2d1,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c2edb190-64ca-423e-8569-3eab253fe2d1,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c2edb190-64ca-423e-8569-3eab253fe2d1,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c0b60968-118c-43a1-9883-0a0a44b7c576,f479cba1-09e8-4f4f-b620-99e0b7faccf4,87,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+c0b60968-118c-43a1-9883-0a0a44b7c576,0378f50f-6bb2-46ae-8a37-46cab5d281b6,86,Room Synergy Pairing: Frequently leased alongside Velvet Luxe 3-Seater Sofa,ROOM_BUNDLE,Smart Bundle,80,15,2026-10-14 16:04:26.757
+c0b60968-118c-43a1-9883-0a0a44b7c576,79e3a823-a9eb-4249-9971-89f237baaa21,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+c0b60968-118c-43a1-9883-0a0a44b7c576,13e2ebda-09d7-42c1-9110-44d55e3e40cd,85,Highly co-rented combo: Frequent pairing with your previous rentals,ROOM_BUNDLE,Combo Match,80,15,2026-10-14 16:04:26.757
+c0b60968-118c-43a1-9883-0a0a44b7c576,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c0b60968-118c-43a1-9883-0a0a44b7c576,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a7faf768-fafa-4564-9e8e-b2add6025869,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a7faf768-fafa-4564-9e8e-b2add6025869,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a7faf768-fafa-4564-9e8e-b2add6025869,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a7faf768-fafa-4564-9e8e-b2add6025869,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a7faf768-fafa-4564-9e8e-b2add6025869,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a7faf768-fafa-4564-9e8e-b2add6025869,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+5a831201-352b-4783-af42-eede983932d6,f479cba1-09e8-4f4f-b620-99e0b7faccf4,87,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+5a831201-352b-4783-af42-eede983932d6,0378f50f-6bb2-46ae-8a37-46cab5d281b6,86,Room Synergy Pairing: Frequently leased alongside Velvet Luxe 3-Seater Sofa,ROOM_BUNDLE,Smart Bundle,80,15,2026-10-14 16:04:26.757
+5a831201-352b-4783-af42-eede983932d6,79e3a823-a9eb-4249-9971-89f237baaa21,85,Tailored style match for Living Room,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+5a831201-352b-4783-af42-eede983932d6,13e2ebda-09d7-42c1-9110-44d55e3e40cd,85,Highly co-rented combo: Frequent pairing with your previous rentals,ROOM_BUNDLE,Combo Match,80,15,2026-10-14 16:04:26.757
+5a831201-352b-4783-af42-eede983932d6,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+5a831201-352b-4783-af42-eede983932d6,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b79cecfe-5e65-4b5c-963c-b2cec4ef4f32,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b79cecfe-5e65-4b5c-963c-b2cec4ef4f32,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b79cecfe-5e65-4b5c-963c-b2cec4ef4f32,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b79cecfe-5e65-4b5c-963c-b2cec4ef4f32,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b79cecfe-5e65-4b5c-963c-b2cec4ef4f32,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b79cecfe-5e65-4b5c-963c-b2cec4ef4f32,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+9c6b6bc9-b0fd-4fb2-be50-8d1ba4abe16f,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+9c6b6bc9-b0fd-4fb2-be50-8d1ba4abe16f,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+9c6b6bc9-b0fd-4fb2-be50-8d1ba4abe16f,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+9c6b6bc9-b0fd-4fb2-be50-8d1ba4abe16f,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+9c6b6bc9-b0fd-4fb2-be50-8d1ba4abe16f,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+9c6b6bc9-b0fd-4fb2-be50-8d1ba4abe16f,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1ff7d671-3614-49ee-b3dc-5322fdde6f46,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1ff7d671-3614-49ee-b3dc-5322fdde6f46,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1ff7d671-3614-49ee-b3dc-5322fdde6f46,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1ff7d671-3614-49ee-b3dc-5322fdde6f46,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1ff7d671-3614-49ee-b3dc-5322fdde6f46,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1ff7d671-3614-49ee-b3dc-5322fdde6f46,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ab6e3eab-35d1-4269-b340-ee9da22ee4b7,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ab6e3eab-35d1-4269-b340-ee9da22ee4b7,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ab6e3eab-35d1-4269-b340-ee9da22ee4b7,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ab6e3eab-35d1-4269-b340-ee9da22ee4b7,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ab6e3eab-35d1-4269-b340-ee9da22ee4b7,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ab6e3eab-35d1-4269-b340-ee9da22ee4b7,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+cebb85f0-0ce8-48a6-b566-1adc77a7e18c,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+cebb85f0-0ce8-48a6-b566-1adc77a7e18c,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+cebb85f0-0ce8-48a6-b566-1adc77a7e18c,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+cebb85f0-0ce8-48a6-b566-1adc77a7e18c,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+cebb85f0-0ce8-48a6-b566-1adc77a7e18c,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+cebb85f0-0ce8-48a6-b566-1adc77a7e18c,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+72a43a11-9574-4094-b4b6-6bd519b98f44,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+72a43a11-9574-4094-b4b6-6bd519b98f44,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+72a43a11-9574-4094-b4b6-6bd519b98f44,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+72a43a11-9574-4094-b4b6-6bd519b98f44,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+72a43a11-9574-4094-b4b6-6bd519b98f44,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+72a43a11-9574-4094-b4b6-6bd519b98f44,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+2905b30f-d594-4b76-92d3-6c0c334c60e7,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+2905b30f-d594-4b76-92d3-6c0c334c60e7,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+2905b30f-d594-4b76-92d3-6c0c334c60e7,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+2905b30f-d594-4b76-92d3-6c0c334c60e7,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+2905b30f-d594-4b76-92d3-6c0c334c60e7,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+2905b30f-d594-4b76-92d3-6c0c334c60e7,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40eda005-e8f3-491f-a97e-2eda58b3eff9,0cf010d0-ed2e-4d96-9bc6-f8e1e5e6b4f0,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40eda005-e8f3-491f-a97e-2eda58b3eff9,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40eda005-e8f3-491f-a97e-2eda58b3eff9,9229745d-8887-4b2d-9ae7-a51e8acadefd,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40eda005-e8f3-491f-a97e-2eda58b3eff9,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40eda005-e8f3-491f-a97e-2eda58b3eff9,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40eda005-e8f3-491f-a97e-2eda58b3eff9,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f39ae626-9159-44cc-bc70-0377935edd74,0cf010d0-ed2e-4d96-9bc6-f8e1e5e6b4f0,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f39ae626-9159-44cc-bc70-0377935edd74,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f39ae626-9159-44cc-bc70-0377935edd74,9229745d-8887-4b2d-9ae7-a51e8acadefd,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f39ae626-9159-44cc-bc70-0377935edd74,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f39ae626-9159-44cc-bc70-0377935edd74,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f39ae626-9159-44cc-bc70-0377935edd74,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7244fdf9-1c09-4777-8c18-9d84be78f29a,0cf010d0-ed2e-4d96-9bc6-f8e1e5e6b4f0,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7244fdf9-1c09-4777-8c18-9d84be78f29a,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7244fdf9-1c09-4777-8c18-9d84be78f29a,9229745d-8887-4b2d-9ae7-a51e8acadefd,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7244fdf9-1c09-4777-8c18-9d84be78f29a,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7244fdf9-1c09-4777-8c18-9d84be78f29a,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7244fdf9-1c09-4777-8c18-9d84be78f29a,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1ceb0a62-8acc-4d3f-b89c-2b444ab4ec2c,0cf010d0-ed2e-4d96-9bc6-f8e1e5e6b4f0,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1ceb0a62-8acc-4d3f-b89c-2b444ab4ec2c,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1ceb0a62-8acc-4d3f-b89c-2b444ab4ec2c,9229745d-8887-4b2d-9ae7-a51e8acadefd,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1ceb0a62-8acc-4d3f-b89c-2b444ab4ec2c,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1ceb0a62-8acc-4d3f-b89c-2b444ab4ec2c,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1ceb0a62-8acc-4d3f-b89c-2b444ab4ec2c,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+34178183-fc3b-4eab-a672-9cb5d448f396,0cf010d0-ed2e-4d96-9bc6-f8e1e5e6b4f0,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+34178183-fc3b-4eab-a672-9cb5d448f396,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+34178183-fc3b-4eab-a672-9cb5d448f396,9229745d-8887-4b2d-9ae7-a51e8acadefd,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+34178183-fc3b-4eab-a672-9cb5d448f396,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+34178183-fc3b-4eab-a672-9cb5d448f396,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+34178183-fc3b-4eab-a672-9cb5d448f396,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+96d3d57e-579d-4b29-b31e-6f2037fe2d6c,0cf010d0-ed2e-4d96-9bc6-f8e1e5e6b4f0,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+96d3d57e-579d-4b29-b31e-6f2037fe2d6c,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+96d3d57e-579d-4b29-b31e-6f2037fe2d6c,9229745d-8887-4b2d-9ae7-a51e8acadefd,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+96d3d57e-579d-4b29-b31e-6f2037fe2d6c,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+96d3d57e-579d-4b29-b31e-6f2037fe2d6c,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+96d3d57e-579d-4b29-b31e-6f2037fe2d6c,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a4b91311-befd-4ec4-8c06-b669565ea7a0,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a4b91311-befd-4ec4-8c06-b669565ea7a0,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a4b91311-befd-4ec4-8c06-b669565ea7a0,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a4b91311-befd-4ec4-8c06-b669565ea7a0,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a4b91311-befd-4ec4-8c06-b669565ea7a0,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a4b91311-befd-4ec4-8c06-b669565ea7a0,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6c171aaa-36a0-45e5-a3f5-4a007dc0fa87,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6c171aaa-36a0-45e5-a3f5-4a007dc0fa87,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6c171aaa-36a0-45e5-a3f5-4a007dc0fa87,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6c171aaa-36a0-45e5-a3f5-4a007dc0fa87,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6c171aaa-36a0-45e5-a3f5-4a007dc0fa87,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6c171aaa-36a0-45e5-a3f5-4a007dc0fa87,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+004a1d52-90f3-43c3-b707-bb224b879e37,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+004a1d52-90f3-43c3-b707-bb224b879e37,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+004a1d52-90f3-43c3-b707-bb224b879e37,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+004a1d52-90f3-43c3-b707-bb224b879e37,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+004a1d52-90f3-43c3-b707-bb224b879e37,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+004a1d52-90f3-43c3-b707-bb224b879e37,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+10728dde-02f9-4e67-ae15-4c6aadfceed7,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+10728dde-02f9-4e67-ae15-4c6aadfceed7,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+10728dde-02f9-4e67-ae15-4c6aadfceed7,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+10728dde-02f9-4e67-ae15-4c6aadfceed7,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+10728dde-02f9-4e67-ae15-4c6aadfceed7,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+10728dde-02f9-4e67-ae15-4c6aadfceed7,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+43bdb180-913d-4d0e-9692-3a131ad08faf,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+43bdb180-913d-4d0e-9692-3a131ad08faf,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+43bdb180-913d-4d0e-9692-3a131ad08faf,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+43bdb180-913d-4d0e-9692-3a131ad08faf,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+43bdb180-913d-4d0e-9692-3a131ad08faf,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+43bdb180-913d-4d0e-9692-3a131ad08faf,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+70c5b569-88f9-47fc-a400-167f7c23893d,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+70c5b569-88f9-47fc-a400-167f7c23893d,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+70c5b569-88f9-47fc-a400-167f7c23893d,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+70c5b569-88f9-47fc-a400-167f7c23893d,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+70c5b569-88f9-47fc-a400-167f7c23893d,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+70c5b569-88f9-47fc-a400-167f7c23893d,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+037dba33-6589-45d2-af98-a18e915bb7ac,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+037dba33-6589-45d2-af98-a18e915bb7ac,74acb969-44ab-4b27-9533-238a9aac5a83,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+037dba33-6589-45d2-af98-a18e915bb7ac,d7fb899c-5352-4da6-a298-00c2c6a08a40,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+037dba33-6589-45d2-af98-a18e915bb7ac,dcbbd107-5ef7-40b1-8409-56b0c5e00cf5,85,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,240,10,2026-10-14 16:04:26.757
+037dba33-6589-45d2-af98-a18e915bb7ac,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+037dba33-6589-45d2-af98-a18e915bb7ac,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ed94a3fb-bd89-47d0-a0b3-001953b6fa05,d7fb899c-5352-4da6-a298-00c2c6a08a40,85,Room Synergy Pairing: Frequently leased alongside Luxury King Size Bed,ROOM_BUNDLE,Smart Bundle,380,15,2026-10-14 16:04:26.757
+ed94a3fb-bd89-47d0-a0b3-001953b6fa05,0432a7f3-a08e-4091-9363-dd90a9a1ce84,85,Tailored style match for Bedroom,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+ed94a3fb-bd89-47d0-a0b3-001953b6fa05,57fe67f4-c012-4e89-b658-39be09dee6cd,85,Tailored style match for Bedroom,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+ed94a3fb-bd89-47d0-a0b3-001953b6fa05,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ed94a3fb-bd89-47d0-a0b3-001953b6fa05,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ed94a3fb-bd89-47d0-a0b3-001953b6fa05,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d40dbc1a-3185-4057-a627-fb484c24f683,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d40dbc1a-3185-4057-a627-fb484c24f683,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d40dbc1a-3185-4057-a627-fb484c24f683,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d40dbc1a-3185-4057-a627-fb484c24f683,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d40dbc1a-3185-4057-a627-fb484c24f683,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d40dbc1a-3185-4057-a627-fb484c24f683,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+42154f9d-6cf8-4bcb-9345-8a04b92fcbd3,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+42154f9d-6cf8-4bcb-9345-8a04b92fcbd3,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+42154f9d-6cf8-4bcb-9345-8a04b92fcbd3,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+42154f9d-6cf8-4bcb-9345-8a04b92fcbd3,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+42154f9d-6cf8-4bcb-9345-8a04b92fcbd3,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+42154f9d-6cf8-4bcb-9345-8a04b92fcbd3,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d2be0e86-3bb0-4259-8366-379ac00e0d8a,0cf010d0-ed2e-4d96-9bc6-f8e1e5e6b4f0,86,Room Synergy Pairing: Frequently leased alongside Premium Water Purifier,ROOM_BUNDLE,Smart Bundle,380,15,2026-10-14 16:04:26.757
+d2be0e86-3bb0-4259-8366-379ac00e0d8a,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,86,Room Synergy Pairing: Frequently leased alongside Premium Water Purifier,ROOM_BUNDLE,Smart Bundle,380,15,2026-10-14 16:04:26.757
+d2be0e86-3bb0-4259-8366-379ac00e0d8a,9229745d-8887-4b2d-9ae7-a51e8acadefd,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d2be0e86-3bb0-4259-8366-379ac00e0d8a,fb4dfd2d-b335-4d57-a04d-306cddb1695f,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d2be0e86-3bb0-4259-8366-379ac00e0d8a,4868579c-b7ab-4913-a7f6-61ec47f160c1,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d2be0e86-3bb0-4259-8366-379ac00e0d8a,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+fbb29a47-fd32-41d7-a892-4f582cf36a6b,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+fbb29a47-fd32-41d7-a892-4f582cf36a6b,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+fbb29a47-fd32-41d7-a892-4f582cf36a6b,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+fbb29a47-fd32-41d7-a892-4f582cf36a6b,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+fbb29a47-fd32-41d7-a892-4f582cf36a6b,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+fbb29a47-fd32-41d7-a892-4f582cf36a6b,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ef5ead2c-74fb-4748-8db3-5da1a951c514,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ef5ead2c-74fb-4748-8db3-5da1a951c514,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ef5ead2c-74fb-4748-8db3-5da1a951c514,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ef5ead2c-74fb-4748-8db3-5da1a951c514,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ef5ead2c-74fb-4748-8db3-5da1a951c514,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ef5ead2c-74fb-4748-8db3-5da1a951c514,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+60234ed9-3e17-4131-b06c-252c43462cdf,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+60234ed9-3e17-4131-b06c-252c43462cdf,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+60234ed9-3e17-4131-b06c-252c43462cdf,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+60234ed9-3e17-4131-b06c-252c43462cdf,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+60234ed9-3e17-4131-b06c-252c43462cdf,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+60234ed9-3e17-4131-b06c-252c43462cdf,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+43f3239a-4e99-4a44-a7ba-287a38649d82,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+43f3239a-4e99-4a44-a7ba-287a38649d82,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+43f3239a-4e99-4a44-a7ba-287a38649d82,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+43f3239a-4e99-4a44-a7ba-287a38649d82,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+43f3239a-4e99-4a44-a7ba-287a38649d82,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+43f3239a-4e99-4a44-a7ba-287a38649d82,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d3eedb22-1ef5-4b15-8de3-d5749930851a,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d3eedb22-1ef5-4b15-8de3-d5749930851a,74acb969-44ab-4b27-9533-238a9aac5a83,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d3eedb22-1ef5-4b15-8de3-d5749930851a,d7fb899c-5352-4da6-a298-00c2c6a08a40,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d3eedb22-1ef5-4b15-8de3-d5749930851a,dcbbd107-5ef7-40b1-8409-56b0c5e00cf5,85,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,240,10,2026-10-14 16:04:26.757
+d3eedb22-1ef5-4b15-8de3-d5749930851a,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d3eedb22-1ef5-4b15-8de3-d5749930851a,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+34383060-504d-4b09-95e7-06ad70a4ecb3,4868579c-b7ab-4913-a7f6-61ec47f160c1,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+34383060-504d-4b09-95e7-06ad70a4ecb3,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+34383060-504d-4b09-95e7-06ad70a4ecb3,d7fb899c-5352-4da6-a298-00c2c6a08a40,86,Room Synergy Pairing: Frequently leased alongside Front Load Fully Automatic Washing Machine (7.5 Kg),ROOM_BUNDLE,Smart Bundle,380,15,2026-10-14 16:04:26.757
+34383060-504d-4b09-95e7-06ad70a4ecb3,9229745d-8887-4b2d-9ae7-a51e8acadefd,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+34383060-504d-4b09-95e7-06ad70a4ecb3,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+34383060-504d-4b09-95e7-06ad70a4ecb3,318cb64f-47ad-48ba-98cf-ae53cb414a05,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6acd128dec7c5f2ad92a461f,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6acd128dec7c5f2ad92a461f,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6acd128dec7c5f2ad92a461f,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6acd128dec7c5f2ad92a461f,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6acd128dec7c5f2ad92a461f,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6acd128dec7c5f2ad92a461f,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+36e20ff8-332c-44e9-909e-a8361d6067c5,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+36e20ff8-332c-44e9-909e-a8361d6067c5,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+36e20ff8-332c-44e9-909e-a8361d6067c5,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+36e20ff8-332c-44e9-909e-a8361d6067c5,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+36e20ff8-332c-44e9-909e-a8361d6067c5,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+36e20ff8-332c-44e9-909e-a8361d6067c5,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+68e8058e-9a30-4e16-b920-c1d3e11b0eab,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+68e8058e-9a30-4e16-b920-c1d3e11b0eab,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+68e8058e-9a30-4e16-b920-c1d3e11b0eab,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+68e8058e-9a30-4e16-b920-c1d3e11b0eab,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+68e8058e-9a30-4e16-b920-c1d3e11b0eab,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+68e8058e-9a30-4e16-b920-c1d3e11b0eab,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+01d9c40e-b04a-424f-a9bd-71b85f51f57d,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+01d9c40e-b04a-424f-a9bd-71b85f51f57d,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+01d9c40e-b04a-424f-a9bd-71b85f51f57d,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+01d9c40e-b04a-424f-a9bd-71b85f51f57d,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+01d9c40e-b04a-424f-a9bd-71b85f51f57d,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+01d9c40e-b04a-424f-a9bd-71b85f51f57d,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+07fb99af-790a-4544-bb2e-705188802faa,test_stock_app_196d47,88,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+07fb99af-790a-4544-bb2e-705188802faa,test_stock_app_3e8a3f,88,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+07fb99af-790a-4544-bb2e-705188802faa,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+07fb99af-790a-4544-bb2e-705188802faa,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+07fb99af-790a-4544-bb2e-705188802faa,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+07fb99af-790a-4544-bb2e-705188802faa,fb4dfd2d-b335-4d57-a04d-306cddb1695f,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1566658b-74dc-43a6-8e2b-3499dcce08b8,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1566658b-74dc-43a6-8e2b-3499dcce08b8,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1566658b-74dc-43a6-8e2b-3499dcce08b8,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1566658b-74dc-43a6-8e2b-3499dcce08b8,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1566658b-74dc-43a6-8e2b-3499dcce08b8,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1566658b-74dc-43a6-8e2b-3499dcce08b8,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+742ddbce-017d-47c3-bcd8-61fd91d39326,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+742ddbce-017d-47c3-bcd8-61fd91d39326,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+742ddbce-017d-47c3-bcd8-61fd91d39326,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+742ddbce-017d-47c3-bcd8-61fd91d39326,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+742ddbce-017d-47c3-bcd8-61fd91d39326,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+742ddbce-017d-47c3-bcd8-61fd91d39326,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c13d61f4-939e-4386-9b28-6692013484be,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c13d61f4-939e-4386-9b28-6692013484be,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c13d61f4-939e-4386-9b28-6692013484be,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c13d61f4-939e-4386-9b28-6692013484be,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c13d61f4-939e-4386-9b28-6692013484be,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c13d61f4-939e-4386-9b28-6692013484be,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3b2f988c-e156-491b-81b9-9b48812cb3b5,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3b2f988c-e156-491b-81b9-9b48812cb3b5,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3b2f988c-e156-491b-81b9-9b48812cb3b5,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3b2f988c-e156-491b-81b9-9b48812cb3b5,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3b2f988c-e156-491b-81b9-9b48812cb3b5,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3b2f988c-e156-491b-81b9-9b48812cb3b5,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d481f7e3-aaf8-4010-b778-39ad966ff6e4,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d481f7e3-aaf8-4010-b778-39ad966ff6e4,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d481f7e3-aaf8-4010-b778-39ad966ff6e4,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d481f7e3-aaf8-4010-b778-39ad966ff6e4,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d481f7e3-aaf8-4010-b778-39ad966ff6e4,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d481f7e3-aaf8-4010-b778-39ad966ff6e4,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+0e59ca6f-570e-42e4-a53a-7d56160b2abe,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+0e59ca6f-570e-42e4-a53a-7d56160b2abe,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+0e59ca6f-570e-42e4-a53a-7d56160b2abe,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+0e59ca6f-570e-42e4-a53a-7d56160b2abe,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+0e59ca6f-570e-42e4-a53a-7d56160b2abe,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+0e59ca6f-570e-42e4-a53a-7d56160b2abe,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c4919e7c-0468-40ea-9ef9-1a6ad5fba020,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c4919e7c-0468-40ea-9ef9-1a6ad5fba020,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c4919e7c-0468-40ea-9ef9-1a6ad5fba020,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c4919e7c-0468-40ea-9ef9-1a6ad5fba020,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c4919e7c-0468-40ea-9ef9-1a6ad5fba020,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+c4919e7c-0468-40ea-9ef9-1a6ad5fba020,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+50bca55f-a7b6-494b-ad73-6e617c8525e3,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+50bca55f-a7b6-494b-ad73-6e617c8525e3,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+50bca55f-a7b6-494b-ad73-6e617c8525e3,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+50bca55f-a7b6-494b-ad73-6e617c8525e3,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+50bca55f-a7b6-494b-ad73-6e617c8525e3,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+50bca55f-a7b6-494b-ad73-6e617c8525e3,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+e4a033dc-3974-42e6-8d41-af83be68c771,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+e4a033dc-3974-42e6-8d41-af83be68c771,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+e4a033dc-3974-42e6-8d41-af83be68c771,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+e4a033dc-3974-42e6-8d41-af83be68c771,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+e4a033dc-3974-42e6-8d41-af83be68c771,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+e4a033dc-3974-42e6-8d41-af83be68c771,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3d7d80a6-25bd-4651-9e28-c67fc1011881,bd0c55f0-fca1-4395-9e60-9ffbaa3901dd,89,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+3d7d80a6-25bd-4651-9e28-c67fc1011881,ef728358-3b47-4c80-abaf-a2f15ec6735c,88,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+3d7d80a6-25bd-4651-9e28-c67fc1011881,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3d7d80a6-25bd-4651-9e28-c67fc1011881,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3d7d80a6-25bd-4651-9e28-c67fc1011881,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3d7d80a6-25bd-4651-9e28-c67fc1011881,fb4dfd2d-b335-4d57-a04d-306cddb1695f,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ddc97fb4-e26f-4cf1-b28b-e892fdfff1c8,bd0c55f0-fca1-4395-9e60-9ffbaa3901dd,89,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+ddc97fb4-e26f-4cf1-b28b-e892fdfff1c8,ef728358-3b47-4c80-abaf-a2f15ec6735c,88,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+ddc97fb4-e26f-4cf1-b28b-e892fdfff1c8,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ddc97fb4-e26f-4cf1-b28b-e892fdfff1c8,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ddc97fb4-e26f-4cf1-b28b-e892fdfff1c8,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ddc97fb4-e26f-4cf1-b28b-e892fdfff1c8,fb4dfd2d-b335-4d57-a04d-306cddb1695f,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+eeb596cc-b63c-4472-afe1-ba73537f1711,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+eeb596cc-b63c-4472-afe1-ba73537f1711,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+eeb596cc-b63c-4472-afe1-ba73537f1711,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+eeb596cc-b63c-4472-afe1-ba73537f1711,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+eeb596cc-b63c-4472-afe1-ba73537f1711,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+eeb596cc-b63c-4472-afe1-ba73537f1711,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a58ceda1-e525-473d-a5cb-0646a7a3a40f,3a1561bd-31bb-47e4-929e-7441f3f4964a,89,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+a58ceda1-e525-473d-a5cb-0646a7a3a40f,ef728358-3b47-4c80-abaf-a2f15ec6735c,88,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+a58ceda1-e525-473d-a5cb-0646a7a3a40f,970c1b16-9df5-455f-adfa-1e231783fc6c,85,Highly co-rented combo: Frequent pairing with your previous rentals,ROOM_BUNDLE,Combo Match,80,15,2026-10-14 16:04:26.757
+a58ceda1-e525-473d-a5cb-0646a7a3a40f,13e2ebda-09d7-42c1-9110-44d55e3e40cd,85,Highly co-rented combo: Frequent pairing with your previous rentals,ROOM_BUNDLE,Combo Match,80,15,2026-10-14 16:04:26.757
+a58ceda1-e525-473d-a5cb-0646a7a3a40f,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a58ceda1-e525-473d-a5cb-0646a7a3a40f,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ac69bd52-f989-4a99-9cb3-7cbfeb1f33f1,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ac69bd52-f989-4a99-9cb3-7cbfeb1f33f1,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ac69bd52-f989-4a99-9cb3-7cbfeb1f33f1,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ac69bd52-f989-4a99-9cb3-7cbfeb1f33f1,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ac69bd52-f989-4a99-9cb3-7cbfeb1f33f1,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ac69bd52-f989-4a99-9cb3-7cbfeb1f33f1,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40177963-b067-4b42-94ae-0897aaec44eb,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40177963-b067-4b42-94ae-0897aaec44eb,74acb969-44ab-4b27-9533-238a9aac5a83,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40177963-b067-4b42-94ae-0897aaec44eb,d7fb899c-5352-4da6-a298-00c2c6a08a40,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40177963-b067-4b42-94ae-0897aaec44eb,dcbbd107-5ef7-40b1-8409-56b0c5e00cf5,85,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,240,10,2026-10-14 16:04:26.757
+40177963-b067-4b42-94ae-0897aaec44eb,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40177963-b067-4b42-94ae-0897aaec44eb,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b12e8a9d-1692-4aa9-8307-2efa04f6dd5e,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b12e8a9d-1692-4aa9-8307-2efa04f6dd5e,74acb969-44ab-4b27-9533-238a9aac5a83,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b12e8a9d-1692-4aa9-8307-2efa04f6dd5e,d7fb899c-5352-4da6-a298-00c2c6a08a40,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b12e8a9d-1692-4aa9-8307-2efa04f6dd5e,dcbbd107-5ef7-40b1-8409-56b0c5e00cf5,85,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,240,10,2026-10-14 16:04:26.757
+b12e8a9d-1692-4aa9-8307-2efa04f6dd5e,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b12e8a9d-1692-4aa9-8307-2efa04f6dd5e,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+49f0630b-5b6e-4f32-9322-085de3b076c0,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+49f0630b-5b6e-4f32-9322-085de3b076c0,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+49f0630b-5b6e-4f32-9322-085de3b076c0,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+49f0630b-5b6e-4f32-9322-085de3b076c0,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+49f0630b-5b6e-4f32-9322-085de3b076c0,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+49f0630b-5b6e-4f32-9322-085de3b076c0,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ae4db457-b756-445c-a863-8d4ffac470b9,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ae4db457-b756-445c-a863-8d4ffac470b9,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ae4db457-b756-445c-a863-8d4ffac470b9,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ae4db457-b756-445c-a863-8d4ffac470b9,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ae4db457-b756-445c-a863-8d4ffac470b9,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+ae4db457-b756-445c-a863-8d4ffac470b9,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+0ee76b91-fc89-47f7-9315-cd96b17b4e3f,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+0ee76b91-fc89-47f7-9315-cd96b17b4e3f,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+0ee76b91-fc89-47f7-9315-cd96b17b4e3f,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+0ee76b91-fc89-47f7-9315-cd96b17b4e3f,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+0ee76b91-fc89-47f7-9315-cd96b17b4e3f,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+0ee76b91-fc89-47f7-9315-cd96b17b4e3f,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+73327657-fa97-408e-be21-279938b781eb,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+73327657-fa97-408e-be21-279938b781eb,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+73327657-fa97-408e-be21-279938b781eb,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+73327657-fa97-408e-be21-279938b781eb,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+73327657-fa97-408e-be21-279938b781eb,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+73327657-fa97-408e-be21-279938b781eb,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f69efa28-7b88-4758-92d0-815691e70639,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f69efa28-7b88-4758-92d0-815691e70639,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f69efa28-7b88-4758-92d0-815691e70639,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f69efa28-7b88-4758-92d0-815691e70639,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f69efa28-7b88-4758-92d0-815691e70639,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f69efa28-7b88-4758-92d0-815691e70639,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+95844bd5-2447-4ddd-9172-837411470900,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+95844bd5-2447-4ddd-9172-837411470900,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+95844bd5-2447-4ddd-9172-837411470900,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+95844bd5-2447-4ddd-9172-837411470900,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+95844bd5-2447-4ddd-9172-837411470900,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+95844bd5-2447-4ddd-9172-837411470900,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7a922052-d720-4fdf-8bf0-12c948ddb683,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7a922052-d720-4fdf-8bf0-12c948ddb683,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7a922052-d720-4fdf-8bf0-12c948ddb683,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7a922052-d720-4fdf-8bf0-12c948ddb683,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7a922052-d720-4fdf-8bf0-12c948ddb683,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+7a922052-d720-4fdf-8bf0-12c948ddb683,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+77b9cf07-d2ed-42f4-9250-150d2788d7da,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+77b9cf07-d2ed-42f4-9250-150d2788d7da,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+77b9cf07-d2ed-42f4-9250-150d2788d7da,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+77b9cf07-d2ed-42f4-9250-150d2788d7da,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+77b9cf07-d2ed-42f4-9250-150d2788d7da,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+77b9cf07-d2ed-42f4-9250-150d2788d7da,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d33bb1f6-4651-4cb2-8013-dafb3f07b113,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d33bb1f6-4651-4cb2-8013-dafb3f07b113,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d33bb1f6-4651-4cb2-8013-dafb3f07b113,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d33bb1f6-4651-4cb2-8013-dafb3f07b113,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d33bb1f6-4651-4cb2-8013-dafb3f07b113,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+d33bb1f6-4651-4cb2-8013-dafb3f07b113,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+abee4121-ecf9-47af-8633-7f7d341b9de9,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+abee4121-ecf9-47af-8633-7f7d341b9de9,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+abee4121-ecf9-47af-8633-7f7d341b9de9,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+abee4121-ecf9-47af-8633-7f7d341b9de9,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+abee4121-ecf9-47af-8633-7f7d341b9de9,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+abee4121-ecf9-47af-8633-7f7d341b9de9,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6a0a0ade-525f-4d66-872b-22b5b7653795,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6a0a0ade-525f-4d66-872b-22b5b7653795,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6a0a0ade-525f-4d66-872b-22b5b7653795,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6a0a0ade-525f-4d66-872b-22b5b7653795,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6a0a0ade-525f-4d66-872b-22b5b7653795,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+6a0a0ade-525f-4d66-872b-22b5b7653795,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1964ec82-3925-4dfd-8299-7f90630bb04c,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1964ec82-3925-4dfd-8299-7f90630bb04c,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1964ec82-3925-4dfd-8299-7f90630bb04c,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1964ec82-3925-4dfd-8299-7f90630bb04c,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1964ec82-3925-4dfd-8299-7f90630bb04c,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+1964ec82-3925-4dfd-8299-7f90630bb04c,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b3a2bca4-fe4b-4492-a14e-285f3be4543a,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b3a2bca4-fe4b-4492-a14e-285f3be4543a,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b3a2bca4-fe4b-4492-a14e-285f3be4543a,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b3a2bca4-fe4b-4492-a14e-285f3be4543a,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b3a2bca4-fe4b-4492-a14e-285f3be4543a,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b3a2bca4-fe4b-4492-a14e-285f3be4543a,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+63fcf65f-86b8-4f56-b552-b2d3aaa0f32c,bd0c55f0-fca1-4395-9e60-9ffbaa3901dd,88,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+63fcf65f-86b8-4f56-b552-b2d3aaa0f32c,3a1561bd-31bb-47e4-929e-7441f3f4964a,88,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+63fcf65f-86b8-4f56-b552-b2d3aaa0f32c,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+63fcf65f-86b8-4f56-b552-b2d3aaa0f32c,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+63fcf65f-86b8-4f56-b552-b2d3aaa0f32c,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+63fcf65f-86b8-4f56-b552-b2d3aaa0f32c,fb4dfd2d-b335-4d57-a04d-306cddb1695f,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f7d01fe8-69aa-48e5-92fe-5d0ff59d3c38,bd0c55f0-fca1-4395-9e60-9ffbaa3901dd,88,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+f7d01fe8-69aa-48e5-92fe-5d0ff59d3c38,3a1561bd-31bb-47e4-929e-7441f3f4964a,88,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+f7d01fe8-69aa-48e5-92fe-5d0ff59d3c38,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f7d01fe8-69aa-48e5-92fe-5d0ff59d3c38,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f7d01fe8-69aa-48e5-92fe-5d0ff59d3c38,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+f7d01fe8-69aa-48e5-92fe-5d0ff59d3c38,fb4dfd2d-b335-4d57-a04d-306cddb1695f,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+86056cb3-f241-4990-9adb-41e1c57a0223,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+86056cb3-f241-4990-9adb-41e1c57a0223,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+86056cb3-f241-4990-9adb-41e1c57a0223,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+86056cb3-f241-4990-9adb-41e1c57a0223,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+86056cb3-f241-4990-9adb-41e1c57a0223,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+86056cb3-f241-4990-9adb-41e1c57a0223,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a3d8a23c-2986-4021-b9b7-0ec537079a4e,bd0c55f0-fca1-4395-9e60-9ffbaa3901dd,88,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+a3d8a23c-2986-4021-b9b7-0ec537079a4e,3a1561bd-31bb-47e4-929e-7441f3f4964a,88,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+a3d8a23c-2986-4021-b9b7-0ec537079a4e,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a3d8a23c-2986-4021-b9b7-0ec537079a4e,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a3d8a23c-2986-4021-b9b7-0ec537079a4e,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a3d8a23c-2986-4021-b9b7-0ec537079a4e,fb4dfd2d-b335-4d57-a04d-306cddb1695f,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+55b3f484-5775-4af7-81a1-b6e432c637d8,bd0c55f0-fca1-4395-9e60-9ffbaa3901dd,88,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+55b3f484-5775-4af7-81a1-b6e432c637d8,3a1561bd-31bb-47e4-929e-7441f3f4964a,88,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,80,10,2026-10-14 16:04:26.757
+55b3f484-5775-4af7-81a1-b6e432c637d8,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+55b3f484-5775-4af7-81a1-b6e432c637d8,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+55b3f484-5775-4af7-81a1-b6e432c637d8,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+55b3f484-5775-4af7-81a1-b6e432c637d8,fb4dfd2d-b335-4d57-a04d-306cddb1695f,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+82870129-4c7e-4941-ac5d-4ed2775c9dbd,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+82870129-4c7e-4941-ac5d-4ed2775c9dbd,74acb969-44ab-4b27-9533-238a9aac5a83,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+82870129-4c7e-4941-ac5d-4ed2775c9dbd,d7fb899c-5352-4da6-a298-00c2c6a08a40,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+82870129-4c7e-4941-ac5d-4ed2775c9dbd,dcbbd107-5ef7-40b1-8409-56b0c5e00cf5,85,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,240,10,2026-10-14 16:04:26.757
+82870129-4c7e-4941-ac5d-4ed2775c9dbd,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+82870129-4c7e-4941-ac5d-4ed2775c9dbd,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+db12ab35-a808-4add-a6a7-23e8af5588dd,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+db12ab35-a808-4add-a6a7-23e8af5588dd,74acb969-44ab-4b27-9533-238a9aac5a83,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+db12ab35-a808-4add-a6a7-23e8af5588dd,d7fb899c-5352-4da6-a298-00c2c6a08a40,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+db12ab35-a808-4add-a6a7-23e8af5588dd,dcbbd107-5ef7-40b1-8409-56b0c5e00cf5,85,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,240,10,2026-10-14 16:04:26.757
+db12ab35-a808-4add-a6a7-23e8af5588dd,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+db12ab35-a808-4add-a6a7-23e8af5588dd,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+5e71672e-0607-4a72-956c-75637a240e1a,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+5e71672e-0607-4a72-956c-75637a240e1a,74acb969-44ab-4b27-9533-238a9aac5a83,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+5e71672e-0607-4a72-956c-75637a240e1a,d7fb899c-5352-4da6-a298-00c2c6a08a40,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+5e71672e-0607-4a72-956c-75637a240e1a,dcbbd107-5ef7-40b1-8409-56b0c5e00cf5,85,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,240,10,2026-10-14 16:04:26.757
+5e71672e-0607-4a72-956c-75637a240e1a,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+5e71672e-0607-4a72-956c-75637a240e1a,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a17c041c-98f6-4286-97ca-92025716c396,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a17c041c-98f6-4286-97ca-92025716c396,74acb969-44ab-4b27-9533-238a9aac5a83,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a17c041c-98f6-4286-97ca-92025716c396,d7fb899c-5352-4da6-a298-00c2c6a08a40,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a17c041c-98f6-4286-97ca-92025716c396,dcbbd107-5ef7-40b1-8409-56b0c5e00cf5,85,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,240,10,2026-10-14 16:04:26.757
+a17c041c-98f6-4286-97ca-92025716c396,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+a17c041c-98f6-4286-97ca-92025716c396,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+11cbe3db-c00a-45cf-a1ef-a81389c8bbaa,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+11cbe3db-c00a-45cf-a1ef-a81389c8bbaa,74acb969-44ab-4b27-9533-238a9aac5a83,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+11cbe3db-c00a-45cf-a1ef-a81389c8bbaa,d7fb899c-5352-4da6-a298-00c2c6a08a40,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+11cbe3db-c00a-45cf-a1ef-a81389c8bbaa,dcbbd107-5ef7-40b1-8409-56b0c5e00cf5,85,Tailored style match for Appliances,HYBRID_AFFINITY,Smart Pick,240,10,2026-10-14 16:04:26.757
+11cbe3db-c00a-45cf-a1ef-a81389c8bbaa,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+11cbe3db-c00a-45cf-a1ef-a81389c8bbaa,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+627efd5a-6025-4e32-abe9-6196d0f0fd4f,0cf010d0-ed2e-4d96-9bc6-f8e1e5e6b4f0,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+627efd5a-6025-4e32-abe9-6196d0f0fd4f,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+627efd5a-6025-4e32-abe9-6196d0f0fd4f,9229745d-8887-4b2d-9ae7-a51e8acadefd,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+627efd5a-6025-4e32-abe9-6196d0f0fd4f,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+627efd5a-6025-4e32-abe9-6196d0f0fd4f,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+627efd5a-6025-4e32-abe9-6196d0f0fd4f,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+991eba10-c104-4c32-b166-6e3bf6e413a5,0cf010d0-ed2e-4d96-9bc6-f8e1e5e6b4f0,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+991eba10-c104-4c32-b166-6e3bf6e413a5,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+991eba10-c104-4c32-b166-6e3bf6e413a5,9229745d-8887-4b2d-9ae7-a51e8acadefd,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+991eba10-c104-4c32-b166-6e3bf6e413a5,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+991eba10-c104-4c32-b166-6e3bf6e413a5,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+991eba10-c104-4c32-b166-6e3bf6e413a5,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+757fd4b8-c978-471c-8148-1f0252ee8eac,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+757fd4b8-c978-471c-8148-1f0252ee8eac,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+757fd4b8-c978-471c-8148-1f0252ee8eac,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+757fd4b8-c978-471c-8148-1f0252ee8eac,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+757fd4b8-c978-471c-8148-1f0252ee8eac,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+757fd4b8-c978-471c-8148-1f0252ee8eac,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40eb57c9-940d-485e-a1d8-ea3a3c683cd5,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40eb57c9-940d-485e-a1d8-ea3a3c683cd5,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40eb57c9-940d-485e-a1d8-ea3a3c683cd5,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40eb57c9-940d-485e-a1d8-ea3a3c683cd5,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40eb57c9-940d-485e-a1d8-ea3a3c683cd5,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+40eb57c9-940d-485e-a1d8-ea3a3c683cd5,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b67693ea-8e5d-4337-ad73-12738dc915cb,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b67693ea-8e5d-4337-ad73-12738dc915cb,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b67693ea-8e5d-4337-ad73-12738dc915cb,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b67693ea-8e5d-4337-ad73-12738dc915cb,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b67693ea-8e5d-4337-ad73-12738dc915cb,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b67693ea-8e5d-4337-ad73-12738dc915cb,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+85e4a8c8-8d2b-4e1d-9663-5dc8636229d5,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+85e4a8c8-8d2b-4e1d-9663-5dc8636229d5,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+85e4a8c8-8d2b-4e1d-9663-5dc8636229d5,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+85e4a8c8-8d2b-4e1d-9663-5dc8636229d5,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+85e4a8c8-8d2b-4e1d-9663-5dc8636229d5,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+85e4a8c8-8d2b-4e1d-9663-5dc8636229d5,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+5a42dbdd-93bd-4bfd-ba8d-a177be4d5435,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+5a42dbdd-93bd-4bfd-ba8d-a177be4d5435,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+5a42dbdd-93bd-4bfd-ba8d-a177be4d5435,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+5a42dbdd-93bd-4bfd-ba8d-a177be4d5435,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+5a42dbdd-93bd-4bfd-ba8d-a177be4d5435,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+5a42dbdd-93bd-4bfd-ba8d-a177be4d5435,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b0b2f754-f01d-4f1c-b2c8-4c5d6f9aa307,b5a4c90d-74ff-4524-978e-f0e8057a6b9b,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b0b2f754-f01d-4f1c-b2c8-4c5d6f9aa307,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b0b2f754-f01d-4f1c-b2c8-4c5d6f9aa307,a9398770-c51f-4f67-9486-6c426666e893,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b0b2f754-f01d-4f1c-b2c8-4c5d6f9aa307,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b0b2f754-f01d-4f1c-b2c8-4c5d6f9aa307,9229745d-8887-4b2d-9ae7-a51e8acadefd,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+b0b2f754-f01d-4f1c-b2c8-4c5d6f9aa307,fb4dfd2d-b335-4d57-a04d-306cddb1695f,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3361f705-688f-454d-9996-7fe46d1797cf,fbc3c492-56a5-431f-8db2-bf5baec1b93c,87,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3361f705-688f-454d-9996-7fe46d1797cf,5aa08469-2eec-447a-bdc7-84c7e2f8c4a5,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3361f705-688f-454d-9996-7fe46d1797cf,9229745d-8887-4b2d-9ae7-a51e8acadefd,86,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3361f705-688f-454d-9996-7fe46d1797cf,cf28e3f3-6a65-407a-9844-166fbe9d88c8,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3361f705-688f-454d-9996-7fe46d1797cf,a9398770-c51f-4f67-9486-6c426666e893,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
+3361f705-688f-454d-9996-7fe46d1797cf,b7dc7b77-6d45-435a-8a2d-e2dcabdac266,85,⚡ 5★ Inverter Eco Champion: Saves ~₹380/mo in power,ECO_SAVER,5★ Eco Saver,380,10,2026-10-14 16:04:26.757
